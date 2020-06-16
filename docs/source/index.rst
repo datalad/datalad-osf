@@ -8,6 +8,13 @@ that equips DataLad with additional functionality.
 API
 ===
 
+Introduction 
+
+.. toctree:: 
+   
+   intro
+
+
 High-level API commands
 -----------------------
 

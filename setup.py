@@ -19,7 +19,7 @@ SETUP_REQUIRES = ['setuptools >= 30.3.0']
 SETUP_REQUIRES += ['wheel'] if 'bdist_wheel' in sys.argv else []
 
 if __name__ == '__main__':
-    setup(name='datalad_helloworld',
+    setup(name='datalad_osf',
           version=versioneer.get_version(),
           cmdclass=cmdclass,
           setup_requires=SETUP_REQUIRES,
@@ -29,7 +29,7 @@ if __name__ == '__main__':
                   # the label in front of '=' is the command suite label
                   # the entrypoint can point to any symbol of any name, as long it is
                   # valid datalad interface specification (see demo in this extensions
-                  'helloworld=datalad_helloworld:command_suite',
+                  'osf=datalad_osf:command_suite',
               ],
           },
     )

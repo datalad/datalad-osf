@@ -1,2 +1,2 @@
 include versioneer.py
-include datalad_helloworld/_version.py
+include datalad_osf/_version.py

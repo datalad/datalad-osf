@@ -24,13 +24,13 @@ command_suite = (
         # specification of a command, any number of commands can be defined
         (
             # importable module that contains the command implementation
-            'datalad_helloworld',
+            'datalad_osf',
             # name of the command class implementation in above module
-            'HelloWorld',
+            'OSFHelloWorld',
             # optional name of the command in the cmdline API
-            'hello-cmd',
+            'osf-cmd',
             # optional name of the command in the Python API
-            'hello_cmd'
+            'osf_cmd'
         ),
     ]
 )
@@ -39,7 +39,7 @@ command_suite = (
 # decoration auto-generates standard help
 @build_doc
 # all commands must be derived from Interface
-class HelloWorld(Interface):
+class OSFHelloWorld(Interface):
     # first docstring line is used a short description in the cmdline help
     # the rest is put in the verbose help and manpage
     """Short description of the command
@@ -62,7 +62,7 @@ class HelloWorld(Interface):
 
     @staticmethod
     # decorator binds the command to the Dataset class as a method
-    @datasetmethod(name='hello')
+    @datasetmethod(name='osf_cmd')
     # generic handling of command results (logging, rendering, filtering, ...)
     @eval_results
     # signature must match parameter list above

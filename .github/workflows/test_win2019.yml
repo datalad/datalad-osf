@@ -1,0 +1,47 @@
+name: win2019
+
+on: [push, pull_request]
+
+jobs:
+  test:
+
+    runs-on: windows-2019
+
+    steps:
+    - name: Configure windows system
+      run: |
+        # https://support.microsoft.com/en-us/help/121007/how-to-disable-8-3-file-name-creation-on-ntfs-partitions
+        fsutil.exe behavior set disable8dot3 1
+    - name: Set up environment
+      run: |
+        git config --global user.email "test@github.land"
+        git config --global user.name "GitHub Almighty"
+    - uses: actions/checkout@v1
+    # on windows it makes sense to aim for the latest, nothing comes with the system
+    # anyways
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Set up git-annex
+      run: |
+        # latest version
+        python -c "import urllib.request as r; r.urlretrieve('https://downloads.kitenet.net/git-annex/windows/current/git-annex-installer.exe', 'C:\\git-annex-installer.exe')"
+        # specific version mih uses to debug on real win10 box
+        7z x -o"C:\\Program Files\Git" C:\\git-annex-installer.exe
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-devel.txt
+        pip install colorama
+    - name: Installation
+      run: |
+        # package install
+        python -m pip install .
+    - name: Run tests
+      run: |
+        mkdir -p __testhome__
+        cd __testhome__
+        # give detailed info on actual test setup
+        datalad wtf
+        python -m nose -s -v --with-doctest --with-coverage --cover-package datalad_helloworld datalad_helloworld

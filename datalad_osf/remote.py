@@ -4,9 +4,18 @@ from annexremote import Master
 from annexremote import SpecialRemote
 from annexremote import RemoteError
 
-class MyRemote(SpecialRemote):
+class OSFRemote(SpecialRemote):
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.configs['repo'] = 'The OSF URL for the remote'
+        self.configs['subpath'] = 'A subpath (optional)'
+
     def initremote(self):
         ""
+        if self.annex.getconfig('repo') is None:
+            raise ValueError('Oh no')
+        if self.annex.getconfig('subpath') is None: # design-question: do we really need this?
+            self.annex.setconfig('subpath', '/')
         # initialize the remote, eg. create the folders
         # raise RemoteError if the remote couldn't be initialized
 
@@ -39,10 +48,9 @@ class MyRemote(SpecialRemote):
 
 
 
-
 def main():
     master = Master()
-    remote = MyRemote(master)
+    remote = OSFRemote(master)
     master.LinkRemote(remote)
     master.Listen()
 

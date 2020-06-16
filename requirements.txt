@@ -1,0 +1,1 @@
+osfclient@https://github.com/mih/osfclient.git

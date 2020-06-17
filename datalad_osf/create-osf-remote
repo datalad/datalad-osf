@@ -37,9 +37,9 @@ if __name__ == '__main__':
     else:
         objpath = "git-annex"
 
-    project_id = create_project(project_title)
-    print("Successfully create OSF project \"{}\" with ID {}"
-          .format(project_title, project_id))
+    project_id, project_url = create_project(project_title)
+    print("Successfully create OSF project \"{}\" at {}"
+          .format(project_title, project_url))
 
     initialize_osf_remote(remote=remote, project=project_id, objpath=objpath)
 

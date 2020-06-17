@@ -84,7 +84,7 @@ class CreateSiblingOSF(Interface):
         #   -> result_renderer
         #   -> needs to ne returned by create_project
 
-        proj_id = create_project(title=title)
+        proj_id, proj_url = create_project(title=title)
         init_opts = ["encryption=none",
                      "type=external",
                      "externaltype=osf",

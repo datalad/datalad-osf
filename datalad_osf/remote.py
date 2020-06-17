@@ -5,6 +5,7 @@ import posixpath # OSF uses posix paths!
 from urllib.parse import urlparse
 
 from osfclient import OSF
+from osfclient.exceptions import UnauthorizedException
 
 from annexremote import Master
 from annexremote import SpecialRemote
@@ -114,9 +115,27 @@ class OSFRemote(SpecialRemote):
             raise RemoteError(e)
 
     def transfer_retrieve(self, key, filename):
-        ""
-        # get the file identified by `key` and store it to `filename`
-        # raise RemoteError if the file couldn't be retrieved
+        """Get a key from OSF and store it to `filename`"""
+        # we have to discover the file handle
+        # TODO is there a way to address a file directly?
+        try:
+            # TODO limit to files that match the configured 'path'
+            fobj = [f for f in self.files if f.name == key]
+            if not fobj:
+                raise ValueError('could not find key: {}'.format(key))
+            elif len(fobj) > 1:
+                raise RuntimeError(
+                    'found multiple files with name: {}'.format(key))
+            fobj = fobj[0]
+            with open(filename, 'wb') as fp:
+                fobj.write_to(fp)
+        except Exception as e:
+            # e.g. if the file couldn't be retrieved
+            if isinstance(e, UnauthorizedException):
+                # UnauthorizedException doesn't give a meaningful str()
+                raise RemoteError('Unauthorized access')
+            else:
+                raise RemoteError(e)
 
     def checkpresent(self, key):
         "Report whether the OSF project has a particular key"

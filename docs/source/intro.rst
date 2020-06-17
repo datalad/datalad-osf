@@ -1,5 +1,5 @@
-Intro 
-=====
+Introduction
+************
 
 This is some introduction.
 

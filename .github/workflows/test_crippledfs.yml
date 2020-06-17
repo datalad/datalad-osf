@@ -35,8 +35,6 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements-devel.txt
-        # until a fixed osfclient is on pypi
-        pip install -r requirements.txt
         python -m pip install --upgrade pip
     - name: Installation
       run: |
@@ -54,4 +52,4 @@ jobs:
         echo "== mount >>"
         mount
         echo "<< mount =="
-        python -m nose -s -v --with-doctest --with-coverage --cover-package datalad_osf datalad_osf
+        python -m nose -s -v --with-doctest --with-coverage --cover-package datalad_osf datalad_osf.tests

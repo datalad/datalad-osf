@@ -19,7 +19,6 @@ The development of this tool started at [OHBM Brainhack 2020](https://github.com
 ## Install
 
 ```
-pip install -r requirements.txt # TODO merge into setup.py
 pip install [--user] .
 ```
 

@@ -15,8 +15,12 @@ from annexremote import RemoteError
 class OSFRemote(SpecialRemote):
     """git-annex special remote for the open science framework
 
-    The recommended way to use this is to create an OSF project or
-    subcomponent.
+    Any OSF project or component can be used as a remote, but the
+    recommended setup is to create a subcomponent of your project
+    for archiving your data. Mark it with the Data category so you
+    can find it quickly and take note of its URL. Each component
+    (or project) has a URL like https://osf.io/6zbyf/ which is
+    needed to connect to it.
 
     .. todo::
 

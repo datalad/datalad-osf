@@ -16,7 +16,7 @@ env:
     # will be used in the matrix, where neither other variable is used
     - BOTO_CONFIG=/tmp/nowhere
     - DATALAD_LOG_CMD_ENV=GIT_SSH_COMMAND
-    - TESTS_TO_PERFORM=datalad_osf
+    - TESTS_TO_PERFORM=datalad_osf.tests
     - NOSE_OPTS=-s
     # Special settings/helper for combined coverage from special remotes execution
     - COVERAGE=coverage
@@ -38,8 +38,6 @@ install:
   - git config --global user.name "Travis Almighty"
   - cd ..; pip install -q codecov; cd -
   - pip install -r requirements-devel.txt
-  # until a fixed osfclient is on pypi
-  - pip install -r requirements.txt
   #- pip install 'sphinx>=1.6.2'
   # So we could test under sudo -E with PATH pointing to installed location
   - sudo sed -i -e 's/^Defaults.*secure_path.*$//' /etc/sudoers

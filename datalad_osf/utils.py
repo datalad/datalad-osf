@@ -44,7 +44,14 @@ def create_project(title, category="project", tags=None):
 
     # TODO: This should eventually return an `Project` instance (see osfclient).
     #       Response contains all properties of the created project.
-    return response.json()['data']['id']
+    node_id = response.json()['data']['id']
+
+    # Note: Going for "html" URL here for reporting back to the user, since this
+    #       what they would need to go to in order to proceed manually.
+    #       There's also the flavor "self" instead, which is the node's
+    #       API endpoint.
+    proj_url = response.json()["data"]["links"]["html"]
+    return node_id, proj_url
 
 
 def initialize_osf_remote(remote, project, objpath="git-annex",

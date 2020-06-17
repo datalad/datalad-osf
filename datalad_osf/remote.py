@@ -120,13 +120,7 @@ class OSFRemote(SpecialRemote):
         # TODO is there a way to address a file directly?
         try:
             # TODO limit to files that match the configured 'path'
-            fobj = [f for f in self.files if f.name == key]
-            if not fobj:
-                raise ValueError('could not find key: {}'.format(key))
-            elif len(fobj) > 1:
-                raise RuntimeError(
-                    'found multiple files with name: {}'.format(key))
-            fobj = fobj[0]
+            fobj = self.files[key]
             with open(filename, 'wb') as fp:
                 fobj.write_to(fp)
         except Exception as e:
@@ -141,7 +135,7 @@ class OSFRemote(SpecialRemote):
         "Report whether the OSF project has a particular key"
         try:
             # TODO limit to files that match the configured 'path'
-            return key in (f.name for f in self.files)
+            return key in self.files
         except Exception as e:
             # e.g. if the presence of the key couldn't be determined, eg. in
             # case of connection error
@@ -176,7 +170,7 @@ class OSFRemote(SpecialRemote):
             # get all file info at once
             # per-request latency is substantial, presumably it is overall
             # faster to get all at once
-            self._files = list(self.storage.files)
+            self._files = {f.name: f for f in self.storage.files}
         return self._files
 
 

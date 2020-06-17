@@ -1,4 +1,4 @@
-from osfclient import OSF
+from datalad_osf.osfclient.osfclient import OSF
 from os import environ
 import json
 

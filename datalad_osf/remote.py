@@ -87,6 +87,10 @@ class OSFRemote(SpecialRemote):
         #osf.login() # errors???
         self.project = osf.project(project_id) # errors ??
 
+        # which storage to use, defaults to 'osfstorage'
+        # TODO a project could have more than one? Make parameter to select?
+        self.storage = self.project.storage()
+
         # cache (annex.getconfig() is an expensive operation)
         self.path = self.annex.getconfig('path')
 
@@ -99,11 +103,11 @@ class OSFRemote(SpecialRemote):
             # but you can create_file("a/b/c/d.bin"), and in fact you *cannot* create_folder("c").create_file("d.bin")
             # TODO: patch osfclient to be more intuitive.
 
-            self._osf_makedirs(self.project.storage(), self.path, exist_ok=True)
+            self._osf_makedirs(self.storage, self.path, exist_ok=True)
             # TODO: is this slow? does it do a roundtrip for each path?
 
             with open(filename, 'rb') as fp:
-                self.project.storage().create_file(posixpath.join(self.path, key), fp, update=True)
+                self.storage.create_file(posixpath.join(self.path, key), fp, update=True)
         except Exception as e:
             raise RemoteError(e)
 

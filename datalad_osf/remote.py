@@ -31,11 +31,10 @@ class OSFRemote(SpecialRemote):
 
     Authenticate (optionally):
 
-    The special remote is usable in a read-only form when configured like this,
-    which is perfectly good for most scientific applications.  But to upload a
-    dataset in the first place you need to supply a credential. Generate a login
-    token at https://osf.io/settings/tokens, giving it "osf.full_read" and
-    "osf.full_write" scopes.  Reconfigure the remote like so::
+    Public projects can be read when configured like this, but to upload a
+    dataset in the first place or to access private collaborations you need
+    to supply a credential. Generate a login token at https://osf.io/settings/tokens,
+    giving it "osf.full_read" and "osf.full_write" scopes.  Reconfigure the remote by::
 
        OSF_TOKEN='uo6g2MInjPRZ09P6Sl4qxX2TnwR3mFA1pMugZ9H1OMp6FtLefrbCxOTIvYn3gFmFOM2Fqx' \\
             git annex enableremote dolphinarchive

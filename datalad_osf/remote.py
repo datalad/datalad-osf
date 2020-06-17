@@ -136,6 +136,12 @@ class OSFRemote(SpecialRemote):
                     force=True, update=True)
         except Exception as e:
             raise RemoteError(e)
+        # we need to register the idea that this key is now present, but
+        # we also want to avoid (re)requesting file info
+        if self._files:
+            # assign None to indicate that we know this key, but
+            # have no info from OSF about it
+            self._files[key] = None
 
     def transfer_retrieve(self, key, filename):
         """Get a key from OSF and store it to `filename`"""
@@ -143,6 +149,10 @@ class OSFRemote(SpecialRemote):
         # TODO is there a way to address a file directly?
         try:
             fobj = self.files[key]
+            if fobj is None:
+                # we have no info about this particular key -> trigger request
+                self._files = None
+                fobj = self.files[key]
             with open(filename, 'wb') as fp:
                 fobj.write_to(fp)
         except Exception as e:
@@ -156,6 +166,14 @@ class OSFRemote(SpecialRemote):
     def checkpresent(self, key):
         "Report whether the OSF project has a particular key"
         try:
+            if key not in self.files:
+                # we don't know this key at all
+                return False
+            fobj = self.files.get(key, None)
+            if fobj is None:
+                # we knew the key, but never checked with OSF if it really
+                # has it -> trigger request
+                self._files = None
             return key in self.files
         except Exception as e:
             # e.g. if the presence of the key couldn't be determined, eg. in
@@ -169,9 +187,14 @@ class OSFRemote(SpecialRemote):
             # removing a not existing key isn't considered an error
             return
         try:
+            if f is None:
+                self._files = None
+                f = self.files[key]
             f.remove()
         except Exception as e:
             raise RemoteError(e)
+        # anticipate change in remote and discard obj
+        del self.files[key]
 
     def _osf_makedirs(self, folder, path, exist_ok=False):
         """

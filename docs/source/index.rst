@@ -19,6 +19,10 @@ Documentation
    :maxdepth: 2
 
    intro
+   settingup
+   running
+   example
+   contact
 
 
 API
@@ -41,6 +45,7 @@ Command line reference
    :maxdepth: 1
 
    generated/man/datalad-osf-cmd
+
 
 
 Git-annex utilities

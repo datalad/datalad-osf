@@ -21,7 +21,7 @@ def get_keywords():
     """Get the keywords needed to look up the version information."""
     # these strings will be replaced by git during git-archive.
     # setup.py/versioneer.py will grep for the variable names, so they must
-    # each be defined on a line of their own. _version.py will just call
+    # each will be defined on a line of their own. _version.py will just call
     # get_keywords().
     git_refnames = "$Format:%d$"
     git_full = "$Format:%H$"

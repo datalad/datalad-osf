@@ -8,6 +8,13 @@ that equips DataLad with additional functionality.
 API
 ===
 
+Introduction 
+
+.. toctree:: 
+   
+   intro
+
+
 High-level API commands
 -----------------------
 
@@ -25,6 +32,16 @@ Command line reference
    :maxdepth: 1
 
    generated/man/datalad-osf-cmd
+
+
+Git-annex utilities
+-------------------
+
+.. currentmodule:: datalad_osf
+.. autosummary::
+   :toctree: generated
+
+   remote.OSFRemote
 
 
 Indices and tables

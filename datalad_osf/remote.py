@@ -15,7 +15,8 @@ from annexremote import RemoteError
 class OSFRemote(SpecialRemote):
     """git-annex special remote for the open science framework
 
-    The recommended way to use this is to create an OSF project or subcomponent.
+    The recommended way to use this is to create an OSF project or
+    subcomponent.
 
     .. todo::
 
@@ -67,12 +68,17 @@ class OSFRemote(SpecialRemote):
     def __init__(self, *args):
         super().__init__(*args)
         self.configs['project'] = 'The OSF URL for the remote'
-        self.configs['objpath'] = 'A subpath within the OSF project to store git-annex blobs in (optional)'
+        self.configs['objpath'] = \
+            'A path within the OSF project to store git-annex keys in ' \
+            '(optional)'
 
         self.project = None
 
         # lazily evaluated cache of File objects
         self._files = None
+
+        # flag whether we made sure that the object tree folder exists
+        self._have_objpath = False
 
     def initremote(self):
         ""
@@ -81,11 +87,15 @@ class OSFRemote(SpecialRemote):
             # TODO: type-check the value; it must be https://osf.io/
 
     def prepare(self):
+        """"""
+        project_id = posixpath.basename(
+            urlparse(self.annex.getconfig('project')).path)
 
-        project_id = posixpath.basename(urlparse(self.annex.getconfig('project')).path)
-
-        osf = OSF(username=os.environ['OSF_USERNAME'], password=os.environ['OSF_PASSWORD']) # TODO: error checking etc
-        #osf.login() # errors???
+        osf = OSF(
+            username=os.environ['OSF_USERNAME'],
+            password=os.environ['OSF_PASSWORD'],
+        ) # TODO: error checking etc
+        # next one performs initial auth
         self.project = osf.project(project_id) # errors ??
 
         # which storage to use, defaults to 'osfstorage'
@@ -101,21 +111,28 @@ class OSFRemote(SpecialRemote):
         if not self.objpath.startswith(posixpath.sep):
             # ensure a normalized format
             self.objpath = posixpath.sep + self.objpath
-        self.annex.info(self.objpath)
 
     def transfer_store(self, key, filename):
         ""
         try:
-            # osfclient (or maybe OSF?) is a little weird:
-            # you cannot create_folder("a/b/c/"), even if "a/b" already exists;
-            # you need to instead do create_folder("a").create_folder("b").create_folder("c")
-            # but you can create_file("a/b/c/d.bin"), and in fact you *cannot* create_folder("c").create_file("d.bin")
-            # TODO: patch osfclient to be more intuitive.
-            self._osf_makedirs(self.storage, self.objpath, exist_ok=True)
-            # TODO: is this slow? does it do a roundtrip for each path?
+            # make sure we have the target folder, but only do it once
+            # in the lifetime of the special remote process, because
+            # it is relatively expensive
+            if not self._have_objpath:
+                # osfclient (or maybe OSF?) is a little weird:
+                # you cannot create_folder("a/b/c/"), even if "a/b" already
+                # exists; you need to instead do
+                # create_folder("a").create_folder("b").create_folder("c")
+                # but you can create_file("a/b/c/d.bin"), and in fact you
+                # *cannot* create_folder("c").create_file("d.bin")
+                # TODO: patch osfclient to be more intuitive.
+                self._osf_makedirs(self.storage, self.objpath, exist_ok=True)
+                # TODO: is this slow? does it do a roundtrip for each path?
+                self._have_objpath = True
 
             with open(filename, 'rb') as fp:
-                self.storage.create_file(posixpath.join(self.objpath, key), fp, update=True)
+                self.storage.create_file(
+                    posixpath.join(self.objpath, key), fp, update=True)
         except Exception as e:
             raise RemoteError(e)
 
@@ -164,10 +181,7 @@ class OSFRemote(SpecialRemote):
 
         Returns the final created folder object.
         """
-
         for name in path.strip(posixpath.sep).split(posixpath.sep):
-            self.annex.info('making')
-            self.annex.info(path)
             folder = folder.create_folder(name, exist_ok=exist_ok)
 
         return folder
@@ -193,6 +207,7 @@ def main():
     remote = OSFRemote(master)
     master.LinkRemote(remote)
     master.Listen()
+
 
 if __name__ == "__main__":
     main()

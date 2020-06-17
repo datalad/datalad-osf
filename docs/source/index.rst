@@ -8,11 +8,15 @@ that equips DataLad with additional functionality.
 API
 ===
 
-Introduction 
+Introduction
 
-.. toctree:: 
-   
+.. toctree::
+
    intro
+   settingup
+   running
+   example
+   contact
 
 
 High-level API commands
@@ -28,10 +32,7 @@ High-level API commands
 Command line reference
 ----------------------
 
-.. toctree::
-   :maxdepth: 1
 
-   generated/man/datalad-osf-cmd
 
 
 Git-annex utilities

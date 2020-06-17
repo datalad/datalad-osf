@@ -23,20 +23,21 @@ class OSFRemote(SpecialRemote):
        Write doc section on how to do that, and what URL should be used to
        configure the special remote.
 
+
     Initialize the special remote::
 
-        git annex initremote dolphinarchive type=external externaltype=osf \\
+       git annex initremote dolphinarchive type=external externaltype=osf \\
             encryption=none project=https://osf.io/<your-component-id>/
 
-    Authenticate (optionally)::
+    Authenticate (optionally):
 
     The special remote is usable in a read-only form when configured like this,
     which is perfectly good for most scientific applications.  But to upload a
     dataset in the first place you need to supply a credential. Generate a login
     token at https://osf.io/settings/tokens, giving it "osf.full_read" and
-    "osf.full_write" scopes.  Reconfigure the remote like so:
+    "osf.full_write" scopes.  Reconfigure the remote like so::
 
-        OSF_TOKEN='uo6g2MInjPRZ09P6Sl4qxX2TnwR3mFA1pMugZ9H1OMp6FtLefrbCxOTIvYn3gFmFOM2Fqx' \\
+       OSF_TOKEN='uo6g2MInjPRZ09P6Sl4qxX2TnwR3mFA1pMugZ9H1OMp6FtLefrbCxOTIvYn3gFmFOM2Fqx' \\
             git annex enableremote dolphinarchive
 
     You can also hand out read-only tokens to enable private read-only datasets. Create
@@ -47,12 +48,12 @@ class OSFRemote(SpecialRemote):
     writing down your central password somewhere it could be stolen. In fact, git-annex
     intentionally keeps credentials to itself during synchronization.
 
-    Usage::
+    Usage:
 
-    After initializing files can be transferred the usual way:
+    After initializing files can be transferred the usual way::
 
-        git annex copy . --to='dolphinarchive'
-        git annex copy . --from='dolphinarchive'
+       git annex copy . --to='dolphinarchive'
+       git annex copy . --from='dolphinarchive'
 
     Because this is a special remote, the uploaded data do not retain their
     folder structure.
@@ -60,11 +61,11 @@ class OSFRemote(SpecialRemote):
     You may reuse an existing project without overwhelming it with garbled
     filenames by setting a path where git-annex will store its data instead:
 
-        git annex initremote osf type=external externaltype=dolphinarchive \\
+       git annex initremote osf type=external externaltype=dolphinarchive \\
             encryption=none project=https://osf.io/<your-component-id>/ \\
             objpath=git-annex
 
-    Configuration::
+    Configuration:
 
     The following parameters can be given to `git-annex initremote`, or
     `git annex enableremote` to (re-)configure a special remote.

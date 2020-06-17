@@ -145,11 +145,15 @@ class OSFRemote(SpecialRemote):
             raise RemoteError(e)
 
     def remove(self, key):
-        ""
-        raise
-        # remove the key from the remote
-        # raise RemoteError if it couldn't be removed
-        # note that removing a not existing key isn't considered an error
+        """Remove a key from the remote"""
+        f = self.files.get(key, None)
+        if f is None:
+            # removing a not existing key isn't considered an error
+            return
+        try:
+            f.remove()
+        except Exception as e:
+            raise RemoteError(e)
 
     def _osf_makedirs(self, folder, path, exist_ok=False):
         """

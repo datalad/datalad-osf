@@ -10,25 +10,6 @@ from annexremote import Master
 from annexremote import SpecialRemote
 from annexremote import RemoteError
 
-annex = None
-def osf_makedirs(folder, path, exist_ok=False):
-    """
-    Create folder 'path' inside OSF folder object 'folder'.
-
-    'folder' may also be a osfclient.models.storage.Storage,
-      representing the root of a virtual OSF drive.
-
-    Returns the final created folder object.
-    """
-
-    annex.info('making')
-    annex.info(path)
-    annex.info(name)
-    for name in path.strip(posixpath.sep).split(posixpath.sep):
-        folder = folder.create_folder(name, exist_ok=exist_ok)
-
-    return folder
-
 
 class OSFRemote(SpecialRemote):
     """git-annex special remote for the open science framework
@@ -43,14 +24,14 @@ class OSFRemote(SpecialRemote):
     Initialize the special remote::
 
        git annex initremote osf type=external externaltype=osf \\
-            encryption=none repo='https://osf.io/<your-component-id>/'
+            encryption=none project=https://osf.io/<your-component-id>/
 
     However, you may reuse an existing project without overwhelming it with
     garbled filenames by setting a path where git-annex will store its data::
 
        git annex initremote osf type=external externaltype=osf \\
-            encryption=none repo='https://osf.io/<your-component-id>/' \\
-            path='git-annex/'
+            encryption=none project=https://osf.io/<your-component-id>/ \\
+            path=git-annex/
 
     To upload files you need to supply credentials.
 
@@ -118,7 +99,7 @@ class OSFRemote(SpecialRemote):
             # but you can create_file("a/b/c/d.bin"), and in fact you *cannot* create_folder("c").create_file("d.bin")
             # TODO: patch osfclient to be more intuitive.
 
-            osf_makedirs(self.project.storage(), self.path, exist_ok=True)
+            self._osf_makedirs(self.project.storage(), self.path, exist_ok=True)
             # TODO: is this slow? does it do a roundtrip for each path?
 
             with open(filename, 'rb') as fp:
@@ -143,6 +124,22 @@ class OSFRemote(SpecialRemote):
         # raise RemoteError if it couldn't be removed
         # note that removing a not existing key isn't considered an error
 
+    def _osf_makedirs(self, folder, path, exist_ok=False):
+        """
+        Create folder 'path' inside OSF folder object 'folder'.
+
+        'folder' may also be a osfclient.models.storage.Storage,
+          representing the root of a virtual OSF drive.
+
+        Returns the final created folder object.
+        """
+
+        self.annex.info('making')
+        self.annex.info(path)
+        for name in path.strip(posixpath.sep).split(posixpath.sep):
+            folder = folder.create_folder(name, exist_ok=exist_ok)
+
+        return folder
 
 
 def main():

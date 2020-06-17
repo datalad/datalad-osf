@@ -4,8 +4,8 @@ import os
 import posixpath # OSF uses posix paths!
 from urllib.parse import urlparse
 
-from osfclient import OSF
-from osfclient.exceptions import UnauthorizedException
+from datalad_osf.osfclient.osfclient import OSF
+from datalad_osf.osfclient.osfclient.exceptions import UnauthorizedException
 
 from annexremote import Master
 from annexremote import SpecialRemote

@@ -132,8 +132,8 @@ class OSFRemote(SpecialRemote):
 
             with open(filename, 'rb') as fp:
                 self.storage.create_file(
-                    posixpath.join(self.objpath, key), fp,
-                    force=True, update=True)
+                    posixpath.join(self.objpath, key),
+                    fp, update=True)
         except Exception as e:
             raise RemoteError(e)
         # we need to register the idea that this key is now present, but

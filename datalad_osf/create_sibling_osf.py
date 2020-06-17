@@ -69,10 +69,20 @@ class CreateSiblingOSF(Interface):
         # - publish-depends option?
         # - (try to) detect github/gitlab/bitbucket to suggest linking it on
         #   OSF and configure publish dependency
+        #   -> prob. overkill; just make it clear in the doc
         # - add --recursive option
-        #
+        #       - recursive won't work easily. Need to think that through.
+        #       - would need a naming scheme for subdatasets
+        #       - flat on OSF or a tree?
+        #       - how do we detect something is there already, so we can skip
+        #         rather than duplicate (with a new name)?
+        #         osf-type-special-remote sufficient to decide it's not needed?
         # - adapt to conclusions in issue #30
         #   -> create those subcomponents
+        # - results need to report URL for created projects suitable for datalad
+        #   output formatting!
+        #   -> result_renderer
+        #   -> needs to ne returned by create_project
 
         proj_id = create_project(title=title)
         init_opts = ["encryption=none",

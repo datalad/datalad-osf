@@ -121,14 +121,8 @@ class OSFRemote(SpecialRemote):
     def checkpresent(self, key):
         "Report whether the OSF project has a particular key"
         try:
-            # get all file info at once
-            # per-request latency is substantial, presumably it is overall
-            # faster to get all at once
-            if self._files is None:
-                self._files = list(self.storage.files)
-
             # TODO limit to files that match the configured 'path'
-            return key in (f.name for f in self._files)
+            return key in (f.name for f in self.files)
         except Exception as e:
             # e.g. if the presence of the key couldn't be determined, eg. in
             # case of connection error
@@ -156,6 +150,15 @@ class OSFRemote(SpecialRemote):
             folder = folder.create_folder(name, exist_ok=exist_ok)
 
         return folder
+
+    @property
+    def files(self):
+        if self._files is None:
+            # get all file info at once
+            # per-request latency is substantial, presumably it is overall
+            # faster to get all at once
+            self._files = list(self.storage.files)
+        return self._files
 
 
 def main():

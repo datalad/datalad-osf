@@ -32,13 +32,6 @@ class OSFRemote(SpecialRemote):
        git annex initremote osf type=external externaltype=osf \\
             encryption=none project=https://osf.io/<your-component-id>/
 
-    However, you may reuse an existing project without overwhelming it with
-    garbled filenames by setting a path where git-annex will store its data::
-
-       git annex initremote osf type=external externaltype=osf \\
-            encryption=none project=https://osf.io/<your-component-id>/ \\
-            objpath=git-annex
-
     To upload files you need to supply credentials.
 
     .. todo::

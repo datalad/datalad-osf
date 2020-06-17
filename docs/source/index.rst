@@ -1,19 +1,32 @@
-DataLad extension template
-**************************
+DataLad extension to interface with OSF
+***************************************
 
-This is a template for creating a `DataLad <http://datalad.org>`__ extension
-that equips DataLad with additional functionality.
+This extension allow DataLad to use the Open Science 
+Framework (OSF_) as a SpecialRemote using ``git-annex`` and the ``osfclient``. 
+So that code and DataLad datasets can live on a Remote, for example Github,
+while the data is stored on OSF.
+The extension was created during the OHBM Hackathon 2020.
+
+
+.. toctree::
+
+   acknowledgments
+
+Documentation
+=============
+
+.. toctree:: 
+   :maxdepth: 2
+
+   intro
+   settingup
+   running
+   example
+   contact
 
 
 API
 ===
-
-Introduction 
-
-.. toctree:: 
-   
-   intro
-
 
 High-level API commands
 -----------------------
@@ -34,6 +47,17 @@ Command line reference
    generated/man/datalad-osf-cmd
 
 
+
+Git-annex utilities
+-------------------
+
+.. currentmodule:: datalad_osf
+.. autosummary::
+   :toctree: generated
+
+   remote.OSFRemote
+
+
 Indices and tables
 ==================
 
@@ -42,3 +66,5 @@ Indices and tables
 * :ref:`search`
 
 .. |---| unicode:: U+02014 .. em dash
+
+.. _OSF: http://www.osf.io/

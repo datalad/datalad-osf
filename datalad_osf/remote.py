@@ -70,6 +70,8 @@ class OSFRemote(SpecialRemote):
 
         self.project = None
 
+        # lazily evaluated cache of File objects
+        self._files = None
 
     def initremote(self):
         ""
@@ -87,6 +89,10 @@ class OSFRemote(SpecialRemote):
         #osf.login() # errors???
         self.project = osf.project(project_id) # errors ??
 
+        # which storage to use, defaults to 'osfstorage'
+        # TODO a project could have more than one? Make parameter to select?
+        self.storage = self.project.storage()
+
         # cache (annex.getconfig() is an expensive operation)
         self.path = self.annex.getconfig('path')
 
@@ -99,11 +105,11 @@ class OSFRemote(SpecialRemote):
             # but you can create_file("a/b/c/d.bin"), and in fact you *cannot* create_folder("c").create_file("d.bin")
             # TODO: patch osfclient to be more intuitive.
 
-            self._osf_makedirs(self.project.storage(), self.path, exist_ok=True)
+            self._osf_makedirs(self.storage, self.path, exist_ok=True)
             # TODO: is this slow? does it do a roundtrip for each path?
 
             with open(filename, 'rb') as fp:
-                self.project.storage().create_file(posixpath.join(self.path, key), fp, update=True)
+                self.storage.create_file(posixpath.join(self.path, key), fp, update=True)
         except Exception as e:
             raise RemoteError(e)
 
@@ -113,11 +119,21 @@ class OSFRemote(SpecialRemote):
         # raise RemoteError if the file couldn't be retrieved
 
     def checkpresent(self, key):
-        ""
-        # return True if the key is present in the remote
-        # return False if the key is not present
-        # raise RemoteError if the presence of the key couldn't be determined, eg. in case of connection error
-        
+        "Report whether the OSF project has a particular key"
+        try:
+            # get all file info at once
+            # per-request latency is substantial, presumably it is overall
+            # faster to get all at once
+            if self._files is None:
+                self._files = list(self.storage.files)
+
+            # TODO limit to files that match the configured 'path'
+            return key in (f.name for f in self._files)
+        except Exception as e:
+            # e.g. if the presence of the key couldn't be determined, eg. in
+            # case of connection error
+            raise RemoteError(e)
+
     def remove(self, key):
         ""
         # remove the key from the remote

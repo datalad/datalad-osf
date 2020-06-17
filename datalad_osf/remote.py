@@ -102,7 +102,7 @@ class OSFRemote(SpecialRemote):
             raise RemoteError(e)
         # we need to register the idea that this key is now present, but
         # we also want to avoid (re)requesting file info
-        if self._files:
+        if self._files is not None:
             # assign None to indicate that we know this key, but
             # have no info from OSF about it
             self._files[key] = None

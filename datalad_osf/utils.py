@@ -54,6 +54,20 @@ def create_project(title, category="project", tags=None):
     return node_id, proj_url
 
 
+def delete_project(project):
+    """ Delete a project on OSF
+
+    Parameters
+    ----------
+    project: str
+        to be deleted node ID
+    """
+
+    url = osf.session.build_url('nodes', project)
+    response = osf.session.delete(url)
+    response.raise_for_status()
+
+
 def initialize_osf_remote(remote, project, objpath="git-annex",
                           encryption="none", autoenable="true"):
     """Initialize special remote with a given project

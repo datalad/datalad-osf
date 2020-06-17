@@ -35,9 +35,8 @@ def test_gitannex(osf_id, dspath):
     # add remote parameters here
     init_remote_opts = ["project={}".format(osf_id)]
 
-    import pdb; pdb.set_trace()
     # add special remote
-    init_opts = common_init_opts + []
+    init_opts = common_init_opts + init_remote_opts
     ds.repo.init_remote('osfproject', options=init_opts)
 
     # run git-annex-testremote
@@ -46,5 +45,5 @@ def test_gitannex(osf_id, dspath):
     WitlessRunner(
         cwd=dspath,
         env=GitRunner.get_git_environ_adjusted()).run(
-            ['git', 'annex', 'testremote', 'osfproject']
+            ['git', 'annex', 'testremote', 'osfproject', "--fast"]
     )

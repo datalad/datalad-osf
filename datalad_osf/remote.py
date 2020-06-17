@@ -25,27 +25,46 @@ class OSFRemote(SpecialRemote):
 
     Initialize the special remote::
 
-       git annex initremote osf type=external externaltype=osf \\
+        git annex initremote dolphinarchive type=external externaltype=osf \\
             encryption=none project=https://osf.io/<your-component-id>/
 
-    However, you may reuse an existing project without overwhelming it with
-    garbled filenames by setting a path where git-annex will store its data::
+    Authenticate (optionally)::
 
-       git annex initremote osf type=external externaltype=osf \\
+    The special remote is usable in a read-only form when configured like this,
+    which is perfectly good for most scientific applications.  But to upload a
+    dataset in the first place you need to supply a credential. Generate a login
+    token at https://osf.io/settings/tokens, giving it "osf.full_read" and
+    "osf.full_write" scopes.  Reconfigure the remote like so:
+
+        OSF_TOKEN='uo6g2MInjPRZ09P6Sl4qxX2TnwR3mFA1pMugZ9H1OMp6FtLefrbCxOTIvYn3gFmFOM2Fqx' \\
+            git annex enableremote dolphinarchive
+
+    You can also hand out read-only tokens to enable private read-only datasets. Create
+    tokens with only "osf.full_read" and give them to your collaborators.
+
+    It is a good idea to get in the habit of generating a new token for each computer you own,
+    so that they can be revoked individually when you break or lose a computer, and without
+    writing down your central password somewhere it could be stolen. In fact, git-annex
+    intentionally keeps credentials to itself during synchronization.
+
+    Usage::
+
+    After initializing files can be transferred the usual way:
+
+        git annex copy . --to='dolphinarchive'
+        git annex copy . --from='dolphinarchive'
+
+    Because this is a special remote, the uploaded data do not retain their
+    folder structure.
+
+    You may reuse an existing project without overwhelming it with garbled
+    filenames by setting a path where git-annex will store its data instead:
+
+        git annex initremote osf type=external externaltype=dolphinarchive \\
             encryption=none project=https://osf.io/<your-component-id>/ \\
             objpath=git-annex
 
-    To upload files you need to supply credentials.
-
-    .. todo::
-
-       Outline how this can be done
-
-       OSF_USERNAME, OSF_PASSWORD - credentials, OR
-       OSF_TOKEN   # TODO: untested, possibly currently broken in osfclient.
-
-    Because this is a special remote, the uploaded data do not retain the
-    git folder structure.
+    Configuration::
 
     The following parameters can be given to `git-annex initremote`, or
     `git annex enableremote` to (re-)configure a special remote.
@@ -55,6 +74,9 @@ class OSFRemote(SpecialRemote):
 
     `path`
        a subpath with (default: /)
+
+     `OSF_TOKEN` (as an environment variable)
+       a login token from https://osf.io/settings/tokens/
 
     .. seealso::
 
@@ -81,36 +103,45 @@ class OSFRemote(SpecialRemote):
         self._have_objpath = False
 
     def initremote(self):
-        ""
         if self.annex.getconfig('project') is None:
             raise ValueError('project url must be specified')
             # TODO: type-check the value; it must be https://osf.io/
+
+        if "OSF_TOKEN" in os.environ:
+            self.annex.setcreds("osf", "token", os.environ["OSF_TOKEN"])
 
     def prepare(self):
         """"""
         project_id = posixpath.basename(
             urlparse(self.annex.getconfig('project')).path.strip(posixpath.sep))
 
-        osf = OSF(
-            username=os.environ['OSF_USERNAME'],
-            password=os.environ['OSF_PASSWORD'],
-        ) # TODO: error checking etc
-        # next one performs initial auth
-        self.project = osf.project(project_id) # errors ??
+        token = self.annex.getcreds("osf")
+        if token.get('user', None) != 'token':
+            raise ValueError()
+        token = token['password'] or None # cast "" -> None because osfclient doesn't handle "" as 'no token'.
 
-        # which storage to use, defaults to 'osfstorage'
-        # TODO a project could have more than one? Make parameter to select?
-        self.storage = self.project.storage()
+        try:
+            osf = OSF(token=token)
+            # next one performs initial auth
+            self.project = osf.project(project_id)
 
-        # get a potential path configuration indicating which folder to put
-        # the annex object tree at
-        self.objpath = self.annex.getconfig('objpath')
-        if not self.objpath:
-            # use a sensible default, avoid putting keys into the root
-            self.objpath = '/git-annex'
-        if not self.objpath.startswith(posixpath.sep):
-            # ensure a normalized format
-            self.objpath = posixpath.sep + self.objpath
+            # which storage to use, defaults to 'osfstorage'
+            # TODO a project could have more than one? Make parameter to select?
+            # https://github.com/datalad/datalad-osf/issues/30#issuecomment-645339882
+            self.storage = self.project.storage()
+
+            # get a potential path configuration indicating which folder to put
+            # the annex object tree at
+            self.objpath = self.annex.getconfig('objpath')
+            if not self.objpath:
+                # use a sensible default, avoid putting keys into the root
+                self.objpath = '/git-annex'
+            if not self.objpath.startswith(posixpath.sep):
+                # ensure a normalized format
+                self.objpath = posixpath.sep + self.objpath
+        except Exception as e:
+            self.annex.info(repr(e))
+            raise RemoteError(repr(e))
 
     def transfer_store(self, key, filename):
         ""

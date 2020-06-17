@@ -89,7 +89,7 @@ class OSFRemote(SpecialRemote):
     def prepare(self):
         """"""
         project_id = posixpath.basename(
-            urlparse(self.annex.getconfig('project')).path)
+            urlparse(self.annex.getconfig('project')).path.strip(posixpath.sep))
 
         osf = OSF(
             username=os.environ['OSF_USERNAME'],

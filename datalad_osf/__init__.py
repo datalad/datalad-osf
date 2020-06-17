@@ -15,7 +15,7 @@ from datalad.support.constraints import EnsureChoice
 from datalad.interface.results import get_status_dict
 
 # defines a datalad command suite
-# this symbold must be indentified as a setuptools entrypoint
+# this symbol must be identified as a setuptools entrypoint
 # to be found by datalad
 command_suite = (
     # description of the command suite, displayed in cmdline help

@@ -9,6 +9,7 @@ The extension was created during the OHBM Hackathon 2020.
 
 
 .. toctree::
+
    acknowledgments
 
 Documentation
@@ -40,6 +41,10 @@ High-level API commands
 Command line reference
 ----------------------
 
+.. toctree::
+   :maxdepth: 1
+
+   generated/man/datalad-osf-cmd
 
 
 

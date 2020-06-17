@@ -27,7 +27,7 @@
         "projectManagement",
         "ideas",
         "userTesting"
-        ]
+      ]
     },
     {
       "login": "TheDragon246",
@@ -36,6 +36,20 @@
       "profile": "https://github.com/TheDragon246",
       "contributions": [
         "doc",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "SRSteinkamp",
+      "name": "Simon Steinkamp",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/17494653?v=4",
+      "profile": "https://github.com/SRSteinkamp",
+      "contributions": [
+        "test",
+        "doc",
+        "projectManagement",
+        "ideas",
+        "userTesting",
         "maintenance"
       ]
     }

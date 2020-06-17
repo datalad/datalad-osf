@@ -23,7 +23,7 @@ Installation
 ^^^^^^^^^^^^
 For installation checkout the installation page of the documentation.  
 
-..toctree::
+.. toctree::
 
     settingup.rst
 

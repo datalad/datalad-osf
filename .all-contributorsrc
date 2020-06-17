@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "mih",
+      "name": "Michael Hanke",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/136479?v=4",
+      "profile": "http://psychoinformatics.de",
+      "contributions": [
+        "maintenance",
+        "code",
+        "bug",
+        "ideas"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "datalad-osf",
+  "projectOwner": "datalad",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}

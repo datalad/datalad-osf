@@ -4,7 +4,7 @@ import json
 
 from datalad.utils import (
     optional_args,
-    better_wraps
+    wraps
 )
 
 
@@ -105,11 +105,10 @@ def initialize_osf_remote(remote, project,
 
 
 @optional_args
-def osf_project(f, title, category="project"):
+def with_project(f, title=None, category="project"):
 
-    @better_wraps(f)
+    @wraps(f)
     def new_func(*args, **kwargs):
-
         proj_id, proj_url = create_project(title, category=category)
         try:
             return f(*(args + (proj_id,)), **kwargs)

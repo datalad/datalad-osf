@@ -13,17 +13,18 @@ from datalad.api import (
 )
 from datalad.utils import Path
 from datalad.tests.utils import (
-    with_tempfile
+    with_tempfile,
 )
-from datalad_osf.utils import osf_project
+from datalad_osf.utils import with_project
 
 common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
                     "autoenable=true"]
 
 
-@osf_project(title="CI osf-special-remote")
+@with_project(title="CI osf-special-remote")
 @with_tempfile
 def test_gitannex(osf_id, dspath):
+
     from datalad.cmd import (
         GitRunner,
         WitlessRunner

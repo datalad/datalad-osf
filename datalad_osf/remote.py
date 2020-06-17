@@ -70,6 +70,8 @@ class OSFRemote(SpecialRemote):
 
         self.project = None
 
+        # lazily evaluated cache of File objects
+        self._files = None
 
     def initremote(self):
         ""
@@ -117,11 +119,21 @@ class OSFRemote(SpecialRemote):
         # raise RemoteError if the file couldn't be retrieved
 
     def checkpresent(self, key):
-        ""
-        # return True if the key is present in the remote
-        # return False if the key is not present
-        # raise RemoteError if the presence of the key couldn't be determined, eg. in case of connection error
-        
+        "Report whether the OSF project has a particular key"
+        try:
+            # get all file info at once
+            # per-request latency is substantial, presumably it is overall
+            # faster to get all at once
+            if self._files is None:
+                self._files = list(self.storage.files)
+
+            # TODO limit to files that match the configured 'path'
+            return key in (f.name for f in self._files)
+        except Exception as e:
+            # e.g. if the presence of the key couldn't be determined, eg. in
+            # case of connection error
+            raise RemoteError(e)
+
     def remove(self, key):
         ""
         # remove the key from the remote

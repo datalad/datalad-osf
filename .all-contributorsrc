@@ -16,6 +16,16 @@
         "bug",
         "ideas"
       ]
+    },
+    {
+      "login": "TheDragon246",
+      "name": "Ashish Sahoo",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/63247401?v=4",
+      "profile": "https://github.com/TheDragon246",
+      "contributions": [
+        "doc",
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,

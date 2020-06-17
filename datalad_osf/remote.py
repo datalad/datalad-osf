@@ -31,36 +31,56 @@ def osf_makedirs(folder, path, exist_ok=False):
 
 
 class OSFRemote(SpecialRemote):
-    """
-    A git-annex [special remote](https://git-annex.branchable.com/special_remotes/)
-    for [OSF](https://osf.io), a science-focused filesharing and archiving site.
+    """git-annex special remote for the open science framework
 
-    The recommended way to use this is to create a [OSF subcomponent]( .. TODO ..)
-    for your project by [ Clicking .. then clicking .. then clicking ... ], finding its URL, and then running
+    The recommended way to use this is to create an OSF project or subcomponent.
 
-    ```
-    git annex initremote osf type=external externaltype=osf encryption=none repo='https://osf.io/<your-component-id>/'
-    ```
+    .. todo::
 
-    However, you may reuse an existing project without overwhelming it with garbled filenames by running
+       Write doc section on how to do that, and what URL should be used to
+       configure the special remote.
 
-    ```
-    git annex initremote osf type=external externaltype=osf encryption=none repo='https://osf.io/<your-component-id>/' path='git-annex/'
-    ```
+    Initialize the special remote::
+
+       git annex initremote osf type=external externaltype=osf \\
+            encryption=none repo='https://osf.io/<your-component-id>/'
+
+    However, you may reuse an existing project without overwhelming it with
+    garbled filenames by setting a path where git-annex will store its data::
+
+       git annex initremote osf type=external externaltype=osf \\
+            encryption=none repo='https://osf.io/<your-component-id>/' \\
+            path='git-annex/'
 
     To upload files you need to supply credentials.
 
-    Because this is a special remote, the uploaded projects do not retain the git folder structure.
+    .. todo::
 
-    Configurations:
-      project - the OSF URL of the file store
-      path    - a subpath with (default: /)
+       Outline how this can be done
 
-    Environment variables:
-      Optionally:
-        OSF_USERNAME, OSF_PASSWORD - credentials, OR
-        OSF_TOKEN   # TODO: untested, possibly currently broken in osfclient.
+       OSF_USERNAME, OSF_PASSWORD - credentials, OR
+       OSF_TOKEN   # TODO: untested, possibly currently broken in osfclient.
 
+    Because this is a special remote, the uploaded data do not retain the
+    git folder structure.
+
+    The following parameters can be given to `git-annex initremote`, or
+    `git annex enableremote` to (re-)configure a special remote.
+
+    `project`
+       the OSF URL of the file store
+
+    `path`
+       a subpath with (default: /)
+
+    .. seealso::
+
+        https://git-annex.branchable.com/special_remotes
+          Documentation on git-annex special remotes
+
+        https://osf.io
+          Open Science Framework, a science-focused filesharing and archiving
+          site.
     """
     def __init__(self, *args):
         super().__init__(*args)

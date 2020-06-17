@@ -64,6 +64,18 @@
         "code",
         "maintenance"
       ]
+    },
+    {
+      "login": "kousu",
+      "name": "Nick",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/987487?v=4",
+      "profile": "https://gitlab.com/kousu",
+      "contributions": [
+        "projectManagement",
+        "ideas",
+        "code",
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,

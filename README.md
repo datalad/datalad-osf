@@ -1,4 +1,7 @@
 # DataLad extension for working with the Open Science Framework
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Travis tests status](https://secure.travis-ci.org/datalad/datalad-osf.png?branch=master)](https://travis-ci.org/datalad/datalad-osf) [![codecov.io](https://codecov.io/github/datalad/datalad-osf/coverage.svg?branch=master)](https://codecov.io/github/datalad/datalad-osf?branch=master) [![crippled-filesystems](https://github.com/datalad/datalad-osf/workflows/crippled-filesystems/badge.svg)](https://github.com/datalad/datalad-osf/actions?query=workflow%3Acrippled-filesystems) [![win2019](https://github.com/datalad/datalad-osf/workflows/win2019/badge.svg)](https://github.com/datalad/datalad-osf/actions?query=workflow%3Awin2019)  [![docs](https://github.com/datalad/datalad-osf/workflows/docs/badge.svg)](https://github.com/datalad/datalad-osf/actions?query=workflow%3Adocs)
 
@@ -30,6 +33,18 @@ You are very welcome to help out developing this tool further. You can contribut
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="http://psychoinformatics.de"><img src="https://avatars1.githubusercontent.com/u/136479?v=4" width="100px;" alt=""/><br /><sub><b>Michael Hanke</b></sub></a><br /><a href="#maintenance-mih" title="Maintenance">🚧</a> <a href="https://github.com/datalad/datalad-osf/commits?author=mih" title="Code">💻</a> <a href="https://github.com/datalad/datalad-osf/issues?q=author%3Amih" title="Bug reports">🐛</a> <a href="#ideas-mih" title="Ideas, Planning, & Feedback">🤔</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->

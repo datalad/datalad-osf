@@ -65,17 +65,11 @@ class OSFRemote(SpecialRemote):
     def __init__(self, *args):
         super().__init__(*args)
         self.configs['project'] = 'The OSF URL for the remote'
-        self.configs['objpath'] = \
-            'A path within the OSF project to store git-annex keys in ' \
-            '(optional)'
 
         self.project = None
 
         # lazily evaluated cache of File objects
         self._files = None
-
-        # flag whether we made sure that the object tree folder exists
-        self._have_objpath = False
 
     def initremote(self):
         ""
@@ -99,38 +93,11 @@ class OSFRemote(SpecialRemote):
         # TODO a project could have more than one? Make parameter to select?
         self.storage = self.project.storage()
 
-        # get a potential path configuration indicating which folder to put
-        # the annex object tree at
-        self.objpath = self.annex.getconfig('objpath')
-        if not self.objpath:
-            # use a sensible default, avoid putting keys into the root
-            self.objpath = '/git-annex'
-        if not self.objpath.startswith(posixpath.sep):
-            # ensure a normalized format
-            self.objpath = posixpath.sep + self.objpath
-
     def transfer_store(self, key, filename):
         ""
         try:
-            # make sure we have the target folder, but only do it once
-            # in the lifetime of the special remote process, because
-            # it is relatively expensive
-            if not self._have_objpath:
-                # osfclient (or maybe OSF?) is a little weird:
-                # you cannot create_folder("a/b/c/"), even if "a/b" already
-                # exists; you need to instead do
-                # create_folder("a").create_folder("b").create_folder("c")
-                # but you can create_file("a/b/c/d.bin"), and in fact you
-                # *cannot* create_folder("c").create_file("d.bin")
-                # TODO: patch osfclient to be more intuitive.
-                self._osf_makedirs(self.storage, self.objpath, exist_ok=True)
-                # TODO: is this slow? does it do a roundtrip for each path?
-                self._have_objpath = True
-
             with open(filename, 'rb') as fp:
-                self.storage.create_file(
-                    posixpath.join(self.objpath, key), fp,
-                    force=True, update=True)
+                self.storage.create_file(key, fp, force=True, update=True)
         except Exception as e:
             raise RemoteError(e)
         # we need to register the idea that this key is now present, but
@@ -216,9 +183,6 @@ class OSFRemote(SpecialRemote):
             self._files = {
                 f.name: f
                 for f in self.storage.files
-                # only consider files that are stored in the configured
-                # object tree folder
-                if f.path.startswith(self.objpath + posixpath.sep)
             }
         return self._files
 

@@ -34,6 +34,16 @@ Command line reference
    generated/man/datalad-osf-cmd
 
 
+Git-annex utilities
+-------------------
+
+.. currentmodule:: datalad_osf
+.. autosummary::
+   :toctree: generated
+
+   remote
+
+
 Indices and tables
 ==================
 

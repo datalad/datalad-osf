@@ -79,8 +79,6 @@ class OSFRemote(SpecialRemote):
         if self.annex.getconfig('project') is None:
             raise ValueError('project url must be specified')
             # TODO: type-check the value; it must be https://osf.io/
-        if self.annex.getconfig('path') is None: # design-question: do we really need this?
-            self.annex.setconfig('path', '/')
 
     def prepare(self):
 
@@ -94,8 +92,16 @@ class OSFRemote(SpecialRemote):
         # TODO a project could have more than one? Make parameter to select?
         self.storage = self.project.storage()
 
-        # cache (annex.getconfig() is an expensive operation)
+        # get a potential path configuration indicating which folder to put
+        # the annex object tree at
         self.path = self.annex.getconfig('path')
+        if not self.path:
+            # use a sensible default, avoid putting keys into the root
+            self.path = '/git-annex'
+        if not self.path.startswith(posixpath.sep):
+            # ensure a normalized format
+            self.path = posixpath.sep + self.path
+        self.annex.info(self.path)
 
     def transfer_store(self, key, filename):
         ""
@@ -119,7 +125,6 @@ class OSFRemote(SpecialRemote):
         # we have to discover the file handle
         # TODO is there a way to address a file directly?
         try:
-            # TODO limit to files that match the configured 'path'
             fobj = self.files[key]
             with open(filename, 'wb') as fp:
                 fobj.write_to(fp)
@@ -134,7 +139,6 @@ class OSFRemote(SpecialRemote):
     def checkpresent(self, key):
         "Report whether the OSF project has a particular key"
         try:
-            # TODO limit to files that match the configured 'path'
             return key in self.files
         except Exception as e:
             # e.g. if the presence of the key couldn't be determined, eg. in
@@ -143,6 +147,7 @@ class OSFRemote(SpecialRemote):
 
     def remove(self, key):
         ""
+        raise
         # remove the key from the remote
         # raise RemoteError if it couldn't be removed
         # note that removing a not existing key isn't considered an error
@@ -157,9 +162,9 @@ class OSFRemote(SpecialRemote):
         Returns the final created folder object.
         """
 
-        self.annex.info('making')
-        self.annex.info(path)
         for name in path.strip(posixpath.sep).split(posixpath.sep):
+            self.annex.info('making')
+            self.annex.info(path)
             folder = folder.create_folder(name, exist_ok=exist_ok)
 
         return folder
@@ -170,7 +175,13 @@ class OSFRemote(SpecialRemote):
             # get all file info at once
             # per-request latency is substantial, presumably it is overall
             # faster to get all at once
-            self._files = {f.name: f for f in self.storage.files}
+            self._files = {
+                f.name: f
+                for f in self.storage.files
+                # only consider files that are stored in the configured
+                # object tree folder
+                if f.path.startswith(self.path + posixpath.sep)
+            }
         return self._files
 
 

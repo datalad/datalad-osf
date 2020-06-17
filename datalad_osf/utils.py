@@ -68,7 +68,7 @@ def delete_project(project):
     response.raise_for_status()
 
 
-def initialize_osf_remote(remote, project, objpath="git-annex",
+def initialize_osf_remote(remote, project,
                           encryption="none", autoenable="true"):
     """Initialize special remote with a given project
 
@@ -80,9 +80,6 @@ def initialize_osf_remote(remote, project, objpath="git-annex",
         name for the special remote
     project: str
         ID of the project/component to use
-    objpath: str
-        path in the project's storage to be used for
-        annex objects
     encryption: str
         see git-annex-initremote; mandatory option;
     autoenable: str
@@ -94,8 +91,7 @@ def initialize_osf_remote(remote, project, objpath="git-annex",
                  "externaltype=osf",
                  "encryption={}".format(encryption),
                  "autoenable={}".format(autoenable),
-                 "project={}".format(project),
-                 "objpath={}".format(objpath)]
+                 "project={}".format(project)]
 
     import subprocess
     subprocess.run(["git", "annex", "initremote", remote] + init_opts)

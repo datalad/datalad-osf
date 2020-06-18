@@ -82,9 +82,12 @@ class OSFRemote(SpecialRemote):
         project_id = posixpath.basename(
             urlparse(self.annex.getconfig('project')).path.strip(posixpath.sep))
 
+        # supply both auth credentials, so osfclient can fall back on user/pass
+        # if needed
         osf = OSF(
-            username=os.environ['OSF_USERNAME'],
-            password=os.environ['OSF_PASSWORD'],
+            username=os.environ.get('OSF_USERNAME', None),
+            password=os.environ.get('OSF_PASSWORD', None),
+            token=os.environ.get('OSF_TOKEN', None),
         ) # TODO: error checking etc
         # next one performs initial auth
         self.project = osf.project(project_id) # errors ??

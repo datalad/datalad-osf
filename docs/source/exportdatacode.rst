@@ -1,3 +1,4 @@
+
 Export version-controlled data to OSF and code to Github
 ********************************************************
 
@@ -37,7 +38,7 @@ copying it will prevent your code from execution.
     $ datalad create collab_osf
 
 After having created the dataset we want to populate it with some content (just
-like in the Handbook).
+like in the Handbook). Importantly we don't want to upload this file on Github, only on OSF.
 
 .. code-block:: bash
 
@@ -47,14 +48,13 @@ like in the Handbook).
     -m "add beginners guide on bash" \
     -O books/bash_guide.pdf
 
-And we also want to add a text file, which will be saved on Github_. 
+And we also want to add a text file, which will be saved on Github_ - in your case this could be the code you are using.
 
 .. code-block:: bash
 
-    $ cat << EOT > example.txt
-    This is just an example file just to show the different ways of saving data 
-    in a DataLad Dataset. EOT
-
+    $ mkdir code
+    $ cd code
+    $ echo "This is just an example file just to show the different ways of saving data in a DataLad Dataset." > example.txt
     $ datalad save --to-git -m "created an example.txt"
 
 We now have a Dataset with one file that can be worked on using Github and one 
@@ -63,12 +63,14 @@ that should be tracked using `git-annex`.
 Setting up Github Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-We can set-up a Github Remote with the same name basically using 
+We can set-up a Github Remote with the same name using
 
 .. code-block:: bash
 
     $ datalad create-sibling-github REPRONAME --github-login GITHUB_NAME
-    $ git annex copy code/ --to github
+    $ datalad publish --to github
+
+This will only publish example.txt in code/ to Github, letting OSF handle your data.
 
 Setting up the OSF Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -86,12 +88,13 @@ We are now going to use datalad to create a sibling dataset on OSF - this will c
 
     $ datalad create-sibling-osf OSF_PROJECT_NAME YOUR_OSF_REMOTE_NAME
 
-And finally we are going to copy all files to this new OSF project.
+And finally we are going to copy your data to this new OSF project - collaborators can now clone your OSF repo with versioned data and at the same time there exists a browsable repo containing your code on Github.
 
 .. code-block:: bash
 
-    $ git annex copy books/* --to YOUR_OSF_REMOTE_NAME
+    $ git annex copy . --to YOUR_OSF_REMOTE_NAME
 
 
 .. _OSF: https://www.osf.io/
 .. _Github: https://www.github.com/
+

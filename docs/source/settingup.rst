@@ -1,22 +1,16 @@
 Setting up
 ==========
 
-Before being able to use the extension, you need to have the following software installed:
-- (mini)anaconda runnning on python
-- git
-- datalad
+Requirements:
 
-If you don't have these installed, please use the instructions below to get there
+- DataLad
 
-For Mac
------------------------
+Before being able to use the extension, you need to have DataLad installed, which relies on git-annex, git and python. If you don't have DataLad installed yet, please follow the instructions `here <http://handbook.datalad.org/en/latest/intro/installation.html>`_.
 
+- An account on the OSF
 
-For Linux
+You need an OSF account to be able to interact with it. If you don't have an account yet, `register here <https://osf.io/register>`_.
 
------------------------
+- An account on Github
 
-
-
-For Windows
------------------------
+You need an account on Github to be able to interact with it and use git. If you don't have an account yet, `register here <https://github.com/join?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F&source=header-home>`_.

@@ -1,8 +1,5 @@
-Use cases
-*********
-
-Use Case 1: Collaborating on OSF
-================================
+Export version-controlled data to OSF and code to Github
+********************************************************
 
 Imagine you are a PhD student and want to collaborate on a fun little side 
 project with a student at another institute. It is quite obvious for the two of
@@ -65,12 +62,35 @@ that should be tracked using `git-annex`.
 
 Setting up Github Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
 We can set-up a Github Remote with the same name basically using 
 
 .. code-block:: bash
 
-    datalad create-sibling-github REPRONAME --github-login GITHUB_NAME --github-passwd PASSWORD
-    datalad publish --to github
+    datalad create-sibling-github REPRONAME --github-login GITHUB_NAME
+    git annex copy code/ --to github
+
+Setting up the OSF Remote
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use OSF as a storage, you need to provide either your OSF credentials or an OSF access token.
+You can create such a token in your account settings, make sure to create a `full_write` token to be able to create OSF projects and upload data to OSF. 
+
+.. code-block:: bash
+
+    export OSF_TOKEN=YOUR_TOKEN_FROM_OSF.IO
+
+We are now going to use datalad to create a sibling dataset on OSF - this will create a new dataset called `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
+
+.. code-block:: bash
+
+    datalad create-sibling-osf OSF_PROJECT_NAME YOUR_OSF_REMOTE_NAME
+
+And finally we are going to copy all files to this new OSF project.
+
+.. code-block:: bash
+
+    git annex copy books/* --to YOUR_OSF_REMOTE_NAME
 
 
 .. _OSF: https://www.osf.io/

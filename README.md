@@ -1,6 +1,6 @@
 # DataLad extension for working with the Open Science Framework
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Travis tests status](https://secure.travis-ci.org/datalad/datalad-osf.png?branch=master)](https://travis-ci.org/datalad/datalad-osf) [![codecov.io](https://codecov.io/github/datalad/datalad-osf/coverage.svg?branch=master)](https://codecov.io/github/datalad/datalad-osf?branch=master) [![crippled-filesystems](https://github.com/datalad/datalad-osf/workflows/crippled-filesystems/badge.svg)](https://github.com/datalad/datalad-osf/actions?query=workflow%3Acrippled-filesystems) [![win2019](https://github.com/datalad/datalad-osf/workflows/win2019/badge.svg)](https://github.com/datalad/datalad-osf/actions?query=workflow%3Awin2019)  [![docs](https://github.com/datalad/datalad-osf/workflows/docs/badge.svg)](https://github.com/datalad/datalad-osf/actions?query=workflow%3Adocs)
@@ -44,6 +44,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/bpoldrack"><img src="https://avatars2.githubusercontent.com/u/10498301?v=4" width="100px;" alt=""/><br /><sub><b>Benjamin Poldrack</b></sub></a><br /><a href="#projectManagement-bpoldrack" title="Project Management">📆</a> <a href="#ideas-bpoldrack" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/datalad/datalad-osf/commits?author=bpoldrack" title="Code">💻</a> <a href="#maintenance-bpoldrack" title="Maintenance">🚧</a></td>
     <td align="center"><a href="https://gitlab.com/kousu"><img src="https://avatars2.githubusercontent.com/u/987487?v=4" width="100px;" alt=""/><br /><sub><b>Nick</b></sub></a><br /><a href="#projectManagement-kousu" title="Project Management">📆</a> <a href="#ideas-kousu" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/datalad/datalad-osf/commits?author=kousu" title="Code">💻</a> <a href="#maintenance-kousu" title="Maintenance">🚧</a></td>
     <td align="center"><a href="https://github.com/nbeliy"><img src="https://avatars0.githubusercontent.com/u/44231332?v=4" width="100px;" alt=""/><br /><sub><b>Nikita Beliy</b></sub></a><br /><a href="#ideas-nbeliy" title="Ideas, Planning, & Feedback">🤔</a> <a href="#userTesting-nbeliy" title="User Testing">📓</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/mjboos"><img src="https://avatars0.githubusercontent.com/u/7125006?v=4" width="100px;" alt=""/><br /><sub><b>Moritz J. Boos</b></sub></a><br /><a href="https://github.com/datalad/datalad-osf/commits?author=mjboos" title="Code">💻</a> <a href="#userTesting-mjboos" title="User Testing">📓</a> <a href="#ideas-mjboos" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-mjboos" title="Maintenance">🚧</a></td>
   </tr>
 </table>
 

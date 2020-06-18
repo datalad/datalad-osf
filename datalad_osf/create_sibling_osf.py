@@ -1,3 +1,4 @@
+from os import environ
 from datalad.interface.base import Interface
 from datalad.interface.base import build_doc
 from datalad.support.annexrepo import AnnexRepo
@@ -13,7 +14,20 @@ from datalad.support.constraints import (
     EnsureStr,
 )
 from datalad.interface.results import get_status_dict
+from datalad_osf.osfclient.osfclient import OSF
 from datalad_osf.utils import create_project
+
+
+def _get_credentials():
+    """helper to read credentials
+
+    for now go w/ env vars. can be refactored
+    to read from datalad configs, credential store, etc.
+    """
+    token = environ.get("OSF_TOKEN")
+    username = environ.get("OSF_USERNAME")
+    password = environ.get("OSF_PASSWORD")
+    return dict(token=token, username=username, password=password)
 
 
 @build_doc
@@ -39,17 +53,12 @@ class CreateSiblingOSF(Interface):
             doc="""""",
             constraints=EnsureStr()
         ),
-        path=Parameter(
-            args=("--path",),
-            doc="""""",
-            constraints=EnsureStr() | EnsureNone()
-        ),
     )
 
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
-    def __call__(title, sibling, path=None, dataset=None):
+    def __call__(title, sibling, dataset=None):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)
@@ -84,7 +93,9 @@ class CreateSiblingOSF(Interface):
 
         # - option: Make public!
 
-        proj_id, proj_url = create_project(title=title)
+        cred = _get_credentials()
+        osf = OSF(**cred)
+        proj_id, proj_url = create_project(osf_session=osf.session, title=title)
         yield get_status_dict(action="create-project-osf",
                               type="dataset",
                               url=proj_url,
@@ -97,9 +108,6 @@ class CreateSiblingOSF(Interface):
                      "externaltype=osf",
                      "autoenable=true",
                      "project={}".format(proj_id)]
-
-        if path:
-            init_opts += ["objpath={}".format(path)]
 
         ds.repo.init_remote(sibling, options=init_opts)
         # TODO: add special remote name to result?

@@ -39,6 +39,10 @@ jobs:
         # package install
         python -m pip install .
     - name: Run tests
+      env:
+        OSF_USERNAME: ${{ secrets.OSF_USERNAME }}
+        OSF_TOKEN: ${{ secrets.OSF_TOKEN }}
+        OSF_PASSWORD: ${{ secrets.OSF_PASSWORD }}
       run: |
         mkdir -p __testhome__
         cd __testhome__

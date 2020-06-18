@@ -71,6 +71,17 @@ def _get_credentials():
 @build_doc
 class CreateSiblingOSF(Interface):
     """Create a dataset representation at OSF
+
+    This will create a project on OSF and initialize
+    an osf special remote to point to it. There are two modes
+    this can operate in: 'annexstore' and 'exporttree'.
+    The former uses the OSF project as a key-value store, that
+    can be used to by git-annex to copy data to and retrieve
+    data from (potentially by any clone of the original dataset).
+    The latter allows to use 'git annex export' to publish a
+    snapshot of a particular version of the dataset. Such an OSF
+    project will - in opposition to the 'annexstore' - be
+    human-readable.
     """
 
     result_renderer = 'tailored'
@@ -85,12 +96,12 @@ class CreateSiblingOSF(Interface):
         ),
         title=Parameter(
             args=("title",),
-            doc="""  """,
+            doc="""Title of the to-be created OSF project.""",
             constraints=EnsureStr()
         ),
         sibling=Parameter(
-            args=("sibling",),
-            doc="""""",
+            args=("-s", "--name",),
+            doc="""name of the to-be initialized osf-special-remote""",
             constraints=EnsureStr()
         ),
         mode=Parameter(
@@ -103,7 +114,7 @@ class CreateSiblingOSF(Interface):
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
-    def __call__(title, sibling, dataset=None, mode="annexstore"):
+    def __call__(title, sibling="osf", dataset=None, mode="annexstore"):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)

@@ -1,6 +1,7 @@
 from os import environ
 from datalad.interface.base import Interface
 from datalad.interface.base import build_doc
+from datalad.interface.utils import ac
 from datalad.support.annexrepo import AnnexRepo
 from datalad.support.param import Parameter
 from datalad.distribution.dataset import (
@@ -34,6 +35,8 @@ def _get_credentials():
 class CreateSiblingOSF(Interface):
     """Create a dataset representation at OSF
     """
+
+    result_renderer = 'tailored'
 
     _params_ = dict(
         dataset=Parameter(
@@ -116,3 +119,22 @@ class CreateSiblingOSF(Interface):
                               type="dataset",
                               status="ok"
                               )
+
+    @staticmethod
+    def custom_result_renderer(res, **kwargs):
+        from datalad.ui import ui
+        status_str = "{action}({status}): "
+        if res['action'] == "create-project-osf":
+            ui.message("{action}({status}): {url}".format(
+                action=ac.color_word(res['action'], ac.BOLD),
+                status=ac.color_status(res['status']),
+                url=res['url'])
+            )
+        elif res['action'] == "add-sibling-osf":
+            ui.message("{action}({status})".format(
+                action=ac.color_word(res['action'], ac.BOLD),
+                status=ac.color_status(res['status']))
+            )
+        else:
+            from datalad.interface.utils import default_result_renderer
+            default_result_renderer(res, **kwargs)

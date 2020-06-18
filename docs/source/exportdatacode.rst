@@ -63,14 +63,14 @@ that should be tracked using `git-annex`.
 Setting up Github Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-We can set-up a Github Remote with name `github` (the default).
+We can set-up a Github Remote with name `github`.
 
 .. code-block:: bash
 
-    $ datalad create-sibling-github REPRONAME --github-login GITHUB_NAME
+    $ datalad create-sibling-github REPRONAME -s github --github-login GITHUB_NAME
     $ datalad publish --to github
 
-This will only publish example.txt in code/ to Github, letting OSF handle your data.
+This will publish example.txt in code/ to Github and only add the folder structure and symbolic links for all other file; this way you can let OSF handle your data and Github your code.
 
 Setting up the OSF Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -82,11 +82,11 @@ You can create such a token in your account settings (`Personal access token` an
 
     $ export OSF_TOKEN=YOUR_TOKEN_FROM_OSF.IO
 
-We are now going to use datalad to create a sibling dataset on OSF with name `osf` (the default) - this will create a new dataset called `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
+We are now going to use datalad to create a sibling dataset on OSF with name `osf` - this will create a new dataset called `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
 
 .. code-block:: bash
 
-    $ datalad create-sibling-osf OSF_PROJECT_NAME
+    $ datalad create-sibling-osf -s osf OSF_PROJECT_NAME
 
 And finally we are going to copy your data to this new OSF project - collaborators can now clone your OSF repo with versioned data and at the same time there exists a browsable repo containing your code on Github.
 

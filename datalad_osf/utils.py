@@ -2,11 +2,6 @@ from datalad_osf.osfclient.osfclient import OSF
 from os import environ
 import json
 
-from datalad.utils import (
-    optional_args,
-    wraps
-)
-
 
 # TODO: token auth!
 osf = OSF(username=environ['OSF_USERNAME'],
@@ -102,17 +97,3 @@ def initialize_osf_remote(remote, project,
 
     import subprocess
     subprocess.run(["git", "annex", "initremote", remote] + init_opts)
-
-
-@optional_args
-def with_project(f, title=None, category="project"):
-
-    @wraps(f)
-    def new_func(*args, **kwargs):
-        proj_id, proj_url = create_project(title, category=category)
-        try:
-            return f(*(args + (proj_id,)), **kwargs)
-        finally:
-            delete_project(proj_id)
-
-    return new_func

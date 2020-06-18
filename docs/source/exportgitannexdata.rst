@@ -50,34 +50,27 @@ like in the Handbook):
     -m "add beginners guide on bash" \
     -O books/bash_guide.pdf
 
-And we also want to add a text file, which will be saved on Github_. 
-
-.. code-block:: bash
-
-    $ cat << EOT > example.txt
-    This is just an example file just to show the different ways of saving data 
-    in a DataLad Dataset. EOT
-
-    $ datalad save --to-git -m "created an example.txt"
-
-We now have a Dataset with one file that can be worked on using Git and one 
-that should be tracked using `git-annex`.
-
 Setting up the OSF Remote
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-We can set-up an OSF Remote with the same name basically using 
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To use OSF as a storage, you need to provide either your OSF credentials or an OSF access token.
+You can create such a token in your account settings, make sure to create a `full_write` token to be able to create OSF projects and upload data to OSF. 
 
 .. code-block:: bash
 
     export OSF_TOKEN=YOUR_TOKEN_FROM_OSF.IO
 
-Copying the git-annex dataset to OSF
+Now we set up an OSF remote called `YOUR_OST_REMOTE_NAME` that points to the osf.io URL `YOUR_OSF_PROJECT_URL`.
 
 .. code-block:: bash
 
-datalad create-sibling-osf OSF_PROJECT_NAME YOUR_OSF_REMOTE_NAME
-git annex copy . --to YOUR_OSF_REMOTE_NAME
+    git annex initremote YOUR_OSF_REMOTE_NAME type=external externaltype=osf encryption=none project=YOUR_OSF_PROJECT_URL exporttree=yes
 
+After that we can export the current state (the `HEAD`) of our dataset in human readable form to OSF:
+
+.. code-block:: bash
+
+    git annex export HEAD --to YOUR_OSF_REMOTE_NAME
 
 .. _OSF: https://www.osf.io/
 .. _Github: https://www.github.com/

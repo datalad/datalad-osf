@@ -38,7 +38,7 @@ copying it will prevent your code from execution.
     $ datalad create collab_osf
 
 After having created the dataset we want to populate it with some content (just
-like in the Handbook). Importantly we don't want to upload this file on Github, only on OSF.
+like in the Handbook). Importantly we don't want to upload this file on Github, only on OSF - in the real world this could be your data that is too large to upload to Github.
 
 .. code-block:: bash
 

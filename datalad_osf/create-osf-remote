@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+#
+#  simple demo for a standalone convenience script
+#  creating an OSF project and appropriately call
+#  git-annex-initremote
+#
+#  Expects to be called fom within annex repository
+#
+#  arg 1: project title
+#  arg 2: remote name
+#  arg 3: (optional) path to be used within that project to store
+#         annex objects under
+
+import sys
+from datalad_osf.utils import (
+    create_project,
+    initialize_osf_remote
+)
+
+
+if __name__ == '__main__':
+
+    if sys.argv[1] == "-h" or len(sys.argv) > 4 or len(sys.argv) < 3:
+        print("Usage: create_project <project title> <remote-name> "
+              "[<path-within-project>]")
+        sys.exit(0)
+
+    project_title = sys.argv[1]
+    if not project_title:
+        raise ValueError("OSF project title required")
+    remote = sys.argv[2]
+    if not remote:
+        raise ValueError("a remote name is required")
+    if len(sys.argv) == 4:
+        objpath = sys.argv[3]
+    else:
+        objpath = "git-annex"
+
+    project_id, project_url = create_project(project_title)
+    print("Successfully create OSF project \"{}\" at {}"
+          .format(project_title, project_url))
+
+    initialize_osf_remote(remote=remote, project=project_id, objpath=objpath)
+
+    # Note: Hints on how to proceed or what else to do could be guided by
+    #       investigating the local repo's config (i.e. remote with URL
+    #       containing "github.com" -> more specific suggestion what and how to
+    #       link)
+    print("Done. Note, that you can link a repository to the project on OSF"
+          "by enabling the respective addon for GitHub/GitLab/BitBucket/etc.")

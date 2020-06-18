@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import json
+from os.path import (
+    dirname,
+    basename,
+)
 import posixpath # OSF uses posix paths!
 from urllib.parse import urlparse
 
@@ -8,11 +13,11 @@ from datalad_osf.osfclient.osfclient import OSF
 from datalad_osf.osfclient.osfclient.exceptions import UnauthorizedException
 
 from annexremote import Master
-from annexremote import SpecialRemote
+from annexremote import ExportRemote
 from annexremote import RemoteError
 
 
-class OSFRemote(SpecialRemote):
+class OSFRemote(ExportRemote):
     """git-annex special remote for the open science framework
 
     Any OSF project or component can be used as a remote, but the
@@ -110,10 +115,13 @@ class OSFRemote(SpecialRemote):
             # have no info from OSF about it
             self._files[key] = None
 
+    def transferexport_store(self, key, local_file, remote_file):
+        "Store the file located at `local_file` to `remote_file` on the remote"
+        return self.transfer_store(remote_file, local_file)
+
     def transfer_retrieve(self, key, filename):
         """Get a key from OSF and store it to `filename`"""
         # we have to discover the file handle
-        # TODO is there a way to address a file directly?
         try:
             fobj = self.files[key]
             if fobj is None:
@@ -129,6 +137,13 @@ class OSFRemote(SpecialRemote):
                 raise RemoteError('Unauthorized access')
             else:
                 raise RemoteError(e)
+
+    def transferexport_retrieve(self, key, local_file, remote_file):
+        """Get the file located at `remote_file` from the remote
+
+        and store it to `local_file`
+        """
+        return self.transfer_retrieve(remote_file, local_file)
 
     def checkpresent(self, key):
         "Report whether the OSF project has a particular key"
@@ -147,6 +162,10 @@ class OSFRemote(SpecialRemote):
             # case of connection error
             raise RemoteError(e)
 
+    def checkpresentexport(self, key, remote_file):
+        """Return  if the file `remote_file` is present in the remote"""
+        return self.checkpresent(remote_file)
+
     def remove(self, key):
         """Remove a key from the remote"""
         f = self.files.get(key, None)
@@ -162,6 +181,10 @@ class OSFRemote(SpecialRemote):
             raise RemoteError(e)
         # anticipate change in remote and discard obj
         del self.files[key]
+
+    def removeexport(self, key, remote_file):
+        """Remove the file in `remote_file` from the remote"""
+        return self.remove(remote_file)
 
     def _osf_makedirs(self, folder, path, exist_ok=False):
         """
@@ -184,10 +207,56 @@ class OSFRemote(SpecialRemote):
             # per-request latency is substantial, presumably it is overall
             # faster to get all at once
             self._files = {
-                f.name: f
+                # strip leading prefix to be directly indexable with ani
+                # annex key
+                f.path.lstrip(posixpath.sep): f
                 for f in self.storage.files
             }
         return self._files
+
+    def removeexportdirectory(self, remote_directory):
+        """Remove the directory `remote_directory` from the remote"""
+        try:
+            folder = [f for f in self.storage.folders
+                      if '{sep}{path}{sep}'.format(
+                          sep=posixpath.sep,
+                          path=remote_directory)]
+            if not folder:
+                # note that removing a not existing directory isn't
+                # considered an error
+                return
+            elif len(folder) > 1:
+                raise RuntimeError("More than matching folder found")
+            folder = folder[0]
+            # osfclient has no way to do this with the public API
+            # going through the backdoor...
+            folder._delete(folder._delete_url)
+            # TODO delete all matching records from self._files
+        except Exception as e:
+            raise RemoteError(e)
+
+    def renameexport(self, key, filename, new_filename):
+        """Move the remote file in `name` to `new_name`"""
+        try:
+            fobj = self.files[filename]
+            if fobj is None:
+                # we have no info about this particular key -> trigger request
+                self._files = None
+                fobj = self.files[filename]
+            response = self.storage.session.post(
+                fobj._move_url,
+                data=json.dumps(
+                    dict(action='move',
+                         path='/{}'.format(dirname(new_filename)),
+                         rename=basename(new_filename))
+                ),
+            )
+            if response.status_code != 201:
+                raise RuntimeError('{}: {}'.format(response, response.text))
+            del self._files[filename]
+            self._files[new_filename] = None
+        except Exception as e:
+            raise RemoteError(repr(e))
 
 
 def main():

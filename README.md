@@ -1,6 +1,6 @@
 # DataLad extension for working with the Open Science Framework
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![Travis tests status](https://secure.travis-ci.org/datalad/datalad-osf.png?branch=master)](https://travis-ci.org/datalad/datalad-osf) [![codecov.io](https://codecov.io/github/datalad/datalad-osf/coverage.svg?branch=master)](https://codecov.io/github/datalad/datalad-osf?branch=master) [![crippled-filesystems](https://github.com/datalad/datalad-osf/workflows/crippled-filesystems/badge.svg)](https://github.com/datalad/datalad-osf/actions?query=workflow%3Acrippled-filesystems) [![win2019](https://github.com/datalad/datalad-osf/workflows/win2019/badge.svg)](https://github.com/datalad/datalad-osf/actions?query=workflow%3Awin2019)  [![docs](https://github.com/datalad/datalad-osf/workflows/docs/badge.svg)](https://github.com/datalad/datalad-osf/actions?query=workflow%3Adocs)
@@ -47,6 +47,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/mjboos"><img src="https://avatars0.githubusercontent.com/u/7125006?v=4" width="100px;" alt=""/><br /><sub><b>Moritz J. Boos</b></sub></a><br /><a href="https://github.com/datalad/datalad-osf/commits?author=mjboos" title="Code">💻</a> <a href="#userTesting-mjboos" title="User Testing">📓</a> <a href="#ideas-mjboos" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-mjboos" title="Maintenance">🚧</a></td>
+    <td align="center"><a href="http://www.adina-wagner.com"><img src="https://avatars1.githubusercontent.com/u/29738718?v=4" width="100px;" alt=""/><br /><sub><b>Adina Wagner</b></sub></a><br /><a href="#projectManagement-adswa" title="Project Management">📆</a> <a href="#ideas-adswa" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/datalad/datalad-osf/commits?author=adswa" title="Code">💻</a> <a href="https://github.com/datalad/datalad-osf/commits?author=adswa" title="Documentation">📖</a> <a href="#maintenance-adswa" title="Maintenance">🚧</a></td>
   </tr>
 </table>
 

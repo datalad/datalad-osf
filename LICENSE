@@ -25,7 +25,7 @@ documentation is covered by the MIT license.
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 
-See CONTRIBUTORS and .zenodo.jsob files for a full list of contributors.
+See CONTRIBUTORS and .zenodo.json files for a full list of contributors.
 
 
 The sources include a full copy of osfclient from

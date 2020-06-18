@@ -8,8 +8,6 @@ The extension was created during the OHBM Hackathon 2020.
 
 .. toctree::
 
-   acknowledgments
-
 Documentation
 =============
 

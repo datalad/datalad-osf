@@ -9,13 +9,14 @@ You are very welcome to help out developing this tool further. You can contribut
 - Making a pull request for any changes suggested by yourself
 - Testing out the software and communicating your feedback to us
 
-## File organization
+**Note**: we have a public OSF repository on which you can test the software yourself if you do not have an OSF account: https://osf.io/zhcqw/
 
 ## How to contribute
 The preferred way to contribute to this repository is
 to fork the [master branch of this repository](https://github.com/datalad/datalad-osf/tree/master) on GitHub.  
-Here we outline the workflow used by the developers:
+Note that you can test the software on our [Testing repository on Open Science Framework](https://osf.io/zhcqw/).
 
+Here we outline the workflow used by the developers:
 
 0. Have a clone of our main [project repository][gh-datalad] as `origin`
    remote in your git:

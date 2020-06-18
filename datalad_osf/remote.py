@@ -4,8 +4,8 @@ import os
 import posixpath # OSF uses posix paths!
 from urllib.parse import urlparse
 
-from osfclient import OSF
-from osfclient.exceptions import UnauthorizedException
+from datalad_osf.osfclient.osfclient import OSF
+from datalad_osf.osfclient.osfclient.exceptions import UnauthorizedException
 
 from annexremote import Master
 from annexremote import SpecialRemote
@@ -15,8 +15,12 @@ from annexremote import RemoteError
 class OSFRemote(SpecialRemote):
     """git-annex special remote for the open science framework
 
-    The recommended way to use this is to create an OSF project or
-    subcomponent.
+    Any OSF project or component can be used as a remote, but the
+    recommended setup is to create a subcomponent of your project
+    for archiving your data. Mark it with the Data category so you
+    can find it quickly and take note of its URL. Each component
+    (or project) has a URL like https://osf.io/6zbyf/ which is
+    needed to connect to it.
 
     .. todo::
 
@@ -27,13 +31,6 @@ class OSFRemote(SpecialRemote):
 
        git annex initremote osf type=external externaltype=osf \\
             encryption=none project=https://osf.io/<your-component-id>/
-
-    However, you may reuse an existing project without overwhelming it with
-    garbled filenames by setting a path where git-annex will store its data::
-
-       git annex initremote osf type=external externaltype=osf \\
-            encryption=none project=https://osf.io/<your-component-id>/ \\
-            objpath=git-annex
 
     To upload files you need to supply credentials.
 
@@ -68,17 +65,11 @@ class OSFRemote(SpecialRemote):
     def __init__(self, *args):
         super().__init__(*args)
         self.configs['project'] = 'The OSF URL for the remote'
-        self.configs['objpath'] = \
-            'A path within the OSF project to store git-annex keys in ' \
-            '(optional)'
 
         self.project = None
 
         # lazily evaluated cache of File objects
         self._files = None
-
-        # flag whether we made sure that the object tree folder exists
-        self._have_objpath = False
 
     def initremote(self):
         ""
@@ -91,9 +82,12 @@ class OSFRemote(SpecialRemote):
         project_id = posixpath.basename(
             urlparse(self.annex.getconfig('project')).path.strip(posixpath.sep))
 
+        # supply both auth credentials, so osfclient can fall back on user/pass
+        # if needed
         osf = OSF(
-            username=os.environ['OSF_USERNAME'],
-            password=os.environ['OSF_PASSWORD'],
+            username=os.environ.get('OSF_USERNAME', None),
+            password=os.environ.get('OSF_PASSWORD', None),
+            token=os.environ.get('OSF_TOKEN', None),
         ) # TODO: error checking etc
         # next one performs initial auth
         self.project = osf.project(project_id) # errors ??
@@ -102,43 +96,16 @@ class OSFRemote(SpecialRemote):
         # TODO a project could have more than one? Make parameter to select?
         self.storage = self.project.storage()
 
-        # get a potential path configuration indicating which folder to put
-        # the annex object tree at
-        self.objpath = self.annex.getconfig('objpath')
-        if not self.objpath:
-            # use a sensible default, avoid putting keys into the root
-            self.objpath = '/git-annex'
-        if not self.objpath.startswith(posixpath.sep):
-            # ensure a normalized format
-            self.objpath = posixpath.sep + self.objpath
-
     def transfer_store(self, key, filename):
         ""
         try:
-            # make sure we have the target folder, but only do it once
-            # in the lifetime of the special remote process, because
-            # it is relatively expensive
-            if not self._have_objpath:
-                # osfclient (or maybe OSF?) is a little weird:
-                # you cannot create_folder("a/b/c/"), even if "a/b" already
-                # exists; you need to instead do
-                # create_folder("a").create_folder("b").create_folder("c")
-                # but you can create_file("a/b/c/d.bin"), and in fact you
-                # *cannot* create_folder("c").create_file("d.bin")
-                # TODO: patch osfclient to be more intuitive.
-                self._osf_makedirs(self.storage, self.objpath, exist_ok=True)
-                # TODO: is this slow? does it do a roundtrip for each path?
-                self._have_objpath = True
-
             with open(filename, 'rb') as fp:
-                self.storage.create_file(
-                    posixpath.join(self.objpath, key), fp,
-                    force=True, update=True)
+                self.storage.create_file(key, fp, force=True, update=True)
         except Exception as e:
             raise RemoteError(e)
         # we need to register the idea that this key is now present, but
         # we also want to avoid (re)requesting file info
-        if self._files:
+        if self._files is not None:
             # assign None to indicate that we know this key, but
             # have no info from OSF about it
             self._files[key] = None
@@ -219,9 +186,6 @@ class OSFRemote(SpecialRemote):
             self._files = {
                 f.name: f
                 for f in self.storage.files
-                # only consider files that are stored in the configured
-                # object tree folder
-                if f.path.startswith(self.objpath + posixpath.sep)
             }
         return self._files
 

@@ -33,17 +33,19 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements-devel.txt
-        # until a fixed osfclient is on pypi
-        pip install -r requirements.txt
         pip install colorama
     - name: Installation
       run: |
         # package install
         python -m pip install .
     - name: Run tests
+      env:
+        OSF_USERNAME: ${{ secrets.OSF_USERNAME }}
+        OSF_TOKEN: ${{ secrets.OSF_TOKEN }}
+        OSF_PASSWORD: ${{ secrets.OSF_PASSWORD }}
       run: |
         mkdir -p __testhome__
         cd __testhome__
         # give detailed info on actual test setup
         datalad wtf
-        python -m nose -s -v --with-doctest --with-coverage --cover-package datalad_osf datalad_osf
+        python -m nose -s -v --with-doctest --with-coverage --cover-package datalad_osf datalad_osf.tests

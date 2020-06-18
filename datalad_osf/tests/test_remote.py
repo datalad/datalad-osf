@@ -13,16 +13,18 @@ from datalad.api import (
 )
 from datalad.utils import Path
 from datalad.tests.utils import (
-    with_tempfile
+    with_tempfile,
 )
+from datalad_osf.tests.utils import with_project
 
 common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
                     "autoenable=true"]
 
 
+@with_project(title="CI osf-special-remote")
 @with_tempfile
-@with_tempfile
-def test_gitannex(store, dspath):
+def test_gitannex(osf_id, dspath):
+
     from datalad.cmd import (
         GitRunner,
         WitlessRunner
@@ -32,10 +34,10 @@ def test_gitannex(store, dspath):
     ds = Dataset(dspath).create()
 
     # add remote parameters here
-    init_remote_opts = []
+    init_remote_opts = ["project={}".format(osf_id)]
 
     # add special remote
-    init_opts = common_init_opts + []
+    init_opts = common_init_opts + init_remote_opts
     ds.repo.init_remote('osfproject', options=init_opts)
 
     # run git-annex-testremote
@@ -44,5 +46,5 @@ def test_gitannex(store, dspath):
     WitlessRunner(
         cwd=dspath,
         env=GitRunner.get_git_environ_adjusted()).run(
-            ['git', 'annex', 'testremote', 'osfproject']
+            ['git', 'annex', 'testremote', 'osfproject', "--fast"]
     )

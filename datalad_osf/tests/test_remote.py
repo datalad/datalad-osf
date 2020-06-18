@@ -15,8 +15,12 @@ from datalad.utils import Path
 from datalad.tests.utils import (
     with_tempfile,
     skip_if_on_windows,
+    skip_if,
 )
-from datalad_osf.tests.utils import with_project
+from datalad_osf.tests.utils import (
+    with_project,
+    setup_credentials,
+)
 
 common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
                     "autoenable=true"]
@@ -26,6 +30,7 @@ common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
 # remote. It might just be that the SHA256 key paths get too long
 # https://github.com/datalad/datalad-osf/issues/71
 @skip_if_on_windows
+@skip_if(cond=not any(setup_credentials().values()), msg='no OSF credentials')
 @with_project(title="CI osf-special-remote")
 @with_tempfile
 def test_gitannex(osf_id, dspath):

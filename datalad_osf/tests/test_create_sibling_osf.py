@@ -6,6 +6,7 @@ from datalad.tests.utils import (
     assert_in,
     assert_not_in,
     assert_result_count,
+    skip_if,
     SkipTest,
     with_tree
 )
@@ -13,6 +14,9 @@ from datalad.utils import Path
 from datalad_osf.utils import delete_project
 from datalad_osf.create_sibling_osf import _get_credentials
 from datalad_osf.osfclient.osfclient import OSF
+from datalad_osf.tests.utils import (
+    setup_credentials,
+)
 
 
 minimal_repo = {'ds': {'file1.txt': 'content',
@@ -30,6 +34,7 @@ def test_invalid_calls(path):
     raise SkipTest("TODO")
 
 
+@skip_if(cond=not any(setup_credentials().values()), msg='no OSF credentials')
 @with_tree(tree=minimal_repo)
 def test_create_osf_simple(path):
 
@@ -78,6 +83,7 @@ def test_create_osf_simple(path):
         delete_project(osf.session, create_results[0]['id'])
 
 
+@skip_if(cond=not any(setup_credentials().values()), msg='no OSF credentials')
 @with_tree(tree=minimal_repo)
 def test_create_osf_export(path):
 
@@ -104,6 +110,7 @@ def test_create_osf_export(path):
         delete_project(osf.session, create_results[0]['id'])
 
 
+@skip_if(cond=not any(setup_credentials().values()), msg='no OSF credentials')
 def test_create_osf_existing():
 
     raise SkipTest("TODO")

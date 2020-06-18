@@ -18,6 +18,10 @@ from datalad.support.constraints import (
 from datalad.interface.results import get_status_dict
 from datalad_osf.osfclient.osfclient import OSF
 from datalad_osf.utils import create_project
+from datalad.downloaders.credentials import (
+    Token,
+    UserPassword,
+)
 
 
 def _get_credentials():
@@ -26,9 +30,41 @@ def _get_credentials():
     for now go w/ env vars. can be refactored
     to read from datalad configs, credential store, etc.
     """
-    token = environ.get("OSF_TOKEN")
-    username = environ.get("OSF_USERNAME")
-    password = environ.get("OSF_PASSWORD")
+    # check if anything need to be done still
+    if 'OSF_TOKEN' in environ or all(
+            k in environ for k in ('OSF_USERNAME', 'OSF_PASSWORD')):
+        return dict(
+            token=environ.get('OSF_TOKEN', None),
+            username=environ.get('OSF_USERNAME', None),
+            password=environ.get('OSF_USERNAME', None),
+        )
+
+    token_auth = Token(name='https://osf.io', url=None)
+    up_auth = UserPassword(name='https://osf.io', url=None)
+
+    # get auth token, form environment, or from datalad credential store
+    # if known-- we do not support first-time entry during a test run
+    token = environ.get(
+        'OSF_TOKEN',
+        token_auth().get('token', None) if token_auth.is_known else None)
+    username = None
+    password = None
+    if not token:
+        # now same for user/password if there was no token
+        username = environ.get(
+            'OSF_USERNAME',
+            up_auth().get('user', None) if up_auth.is_known else None)
+        password = environ.get(
+            'OSF_PASSWORD',
+            up_auth().get('password', None) if up_auth.is_known else None)
+
+    # place into environment, for now this is the only way the special remote
+    # can be supplied with credentials
+    for k, v in (('OSF_TOKEN', token),
+                 ('OSF_USERNAME', username),
+                 ('OSF_PASSWORD', password)):
+        if v:
+            environ[k] = v
     return dict(token=token, username=username, password=password)
 
 

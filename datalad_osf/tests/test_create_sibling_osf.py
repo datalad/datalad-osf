@@ -78,6 +78,32 @@ def test_create_osf_simple(path):
         delete_project(osf.session, create_results[0]['id'])
 
 
+@with_tree(tree=minimal_repo)
+def test_create_osf_export(path):
+
+    ds = Dataset(path).create(force=True)
+    ds.save()
+
+    create_results = ds.create_sibling_osf(title="CI dl-create",
+                                           sibling="osf-storage",
+                                           mode="exporttree")
+
+    assert_result_count(create_results, 2, status='ok', type='dataset')
+
+    # if we got here, we created something at OSF;
+    # make sure, we clean up afterwards
+    try:
+
+        # for now just run an export and make sure it doesn't fail
+        ds.repo.call_git(['annex', 'export', 'HEAD', '--to', 'osf-storage'])
+
+    finally:
+        # clean remote end:
+        cred = _get_credentials()
+        osf = OSF(**cred)
+        delete_project(osf.session, create_results[0]['id'])
+
+
 def test_create_osf_existing():
 
     raise SkipTest("TODO")

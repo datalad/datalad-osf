@@ -63,7 +63,7 @@ that should be tracked using `git-annex`.
 Setting up Github Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-We can set-up a Github Remote with the same name using
+We can set-up a Github Remote with name `github` (the default).
 
 .. code-block:: bash
 
@@ -76,23 +76,23 @@ Setting up the OSF Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To use OSF as a storage, you need to provide either your OSF credentials or an OSF access token.
-You can create such a token in your account settings (`Personal access token` and then `Create token`), make sure to create a `full_write` token to be able to create OSF projects and upload data to OSF. 
+You can create such a token in your account settings (`Personal access token` and then `Create token`), make sure to create a `full_write` token to be able to create OSF projects and upload data to OSF.
 
 .. code-block:: bash
 
     $ export OSF_TOKEN=YOUR_TOKEN_FROM_OSF.IO
 
-We are now going to use datalad to create a sibling dataset on OSF - this will create a new dataset called `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
+We are now going to use datalad to create a sibling dataset on OSF with name `osf` (the default) - this will create a new dataset called `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
 
 .. code-block:: bash
 
-    $ datalad create-sibling-osf OSF_PROJECT_NAME YOUR_OSF_REMOTE_NAME
+    $ datalad create-sibling-osf OSF_PROJECT_NAME
 
 And finally we are going to copy your data to this new OSF project - collaborators can now clone your OSF repo with versioned data and at the same time there exists a browsable repo containing your code on Github.
 
 .. code-block:: bash
 
-    $ git annex copy . --to YOUR_OSF_REMOTE_NAME
+    $ git annex copy . --to osf
 
 
 .. _OSF: https://www.osf.io/

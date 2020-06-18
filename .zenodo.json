@@ -1,14 +1,39 @@
 {
   "creators": [
     {
-      "affiliation": "Edit me!",
-      "name": "Edit me!",
-      "orcid": "Edit me!"
+      "affiliation": "Institute of Neuroscience and Medicine, Brain & Behaviour (INM-7), Research Centre Jülich, Jülich, Germany and Institute of Systems Neuroscience, Medical Faculty, Heinrich Heine University Düsseldorf, Düsseldorf, Germany",
+      "name": "Hanke, Michael",
+      "orcid": "0000-0001-6398-6370"
     },
     {
-      "affiliation": "Edit me!",
-      "name": "Edit me!",
-      "orcid": "Edit me!"
+      "affiliation": "Institute of Neuroscience and Medicine, Brain & Behaviour (INM-7), Research Centre Jülich, Jülich, Germany",
+      "name": "Poldrack, Benjamin",
+      "orcid": "0000-0001-7628-0801"
+    },
+    {
+      "affiliation": "Psychoinformatics Lab, INM-7, Research Centre Juelich",
+      "name": "Wagner, Adina S.",
+      "orcid": "0000-0003-2917-3450"
+    },
+    {
+      "affiliation": "Erasmus School of Social and Behavioral Sciences, Erasmus University Rotterdam",
+      "name": "Huijser, Dorien",
+      "orcid": "0000-0003-3282-8083"
+    },
+    {
+      "affiliation": "NISER, Bhubaneswar",
+      "name": "Sahoo, Ashish K.",
+      "orcid": "0000-0003-1815-6655"
+    },
+    {
+      "affiliation": "Carl von Ossietzky Universität Oldenburg",
+      "name": "Boos, Moritz",
+      "orcid": "0000-0002-1219-4901"
+    },
+    {
+      "affiliation": "Cognitive Neuroscience, Institute of Neuroscience & Medicine (INM‐3), Research Centre Juelich, Juelich, Germany",
+      "name": "Steinkamp, Simon R.",
+      "orcid": "0000-0002-6437-0700"
     }
   ],
   "keywords": [
@@ -18,6 +43,6 @@
     "version control"
   ],
   "access_right": "open",
-  "license": "Edit me!",
+  "license": "MIT License",
   "upload_type": "software"
 }

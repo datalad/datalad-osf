@@ -19,7 +19,6 @@ Documentation
    intro
    settingup
    exporthumandata
-   exportgitannexdata
    exportdatacode
    cloneosfdata
 

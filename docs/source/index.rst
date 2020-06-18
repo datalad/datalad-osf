@@ -23,6 +23,8 @@ Documentation
    exportdatacode
    cloneosfdata
    contact
+   example_osf_and_github
+   example_osf_export
 
 
 API

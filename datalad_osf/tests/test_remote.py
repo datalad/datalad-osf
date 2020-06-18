@@ -15,7 +15,7 @@ from datalad.utils import Path
 from datalad.tests.utils import (
     with_tempfile,
 )
-from datalad_osf.utils import with_project
+from datalad_osf.tests.utils import with_project
 
 common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
                     "autoenable=true"]

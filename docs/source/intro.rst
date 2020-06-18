@@ -10,7 +10,7 @@ This extension aims to allow DataLad to work with the Open Science Framework (OS
 What can I use this extension for?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You  can use this extension to use the OSF as a special remote to store data in the annex  of a dataset. With this, you can `datalad publish` a dataset to GitHub or similar services and the data to the OSF (via a publication dependency).
+You can use this extension to use the OSF as a special remote to store data in the annex  of a dataset. With this, you can `datalad publish` a dataset to GitHub or similar services and the data to the OSF (via a publication dependency).
 The extension is most beneficial for easy access to data stored on OSF via Github. If you are sharing your dataset via OSF and code via Github, this will allow smooth integration of both along with unified version management provided by DataLad.
 
 What can I **not** use this extension for?

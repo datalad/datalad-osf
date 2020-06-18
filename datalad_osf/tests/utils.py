@@ -14,8 +14,16 @@ from datalad.downloaders.credentials import (
 from datalad_osf.osfclient.osfclient import OSF
 
 
-@optional_args
-def with_project(f, osf_session=None, title=None, category="project"):
+def setup_credentials():
+    # check if anything need to be done still
+    if 'OSF_TOKEN' in environ or all(
+            k in environ for k in ('OSF_USERNAME', 'OSF_PASSWORD')):
+        return dict(
+            token=environ.get('OSF_TOKEN', None),
+            username=environ.get('OSF_USERNAME', None),
+            password=environ.get('OSF_USERNAME', None),
+        )
+
     token_auth = Token(name='https://osf.io', url=None)
     up_auth = UserPassword(name='https://osf.io', url=None)
 
@@ -42,9 +50,15 @@ def with_project(f, osf_session=None, title=None, category="project"):
                  ('OSF_PASSWORD', password)):
         if v:
             environ[k] = v
-    # supply both auth credentials, so osfclient can fall back on user/pass
+    return dict(token=token, username=username, password=password)
+
+
+@optional_args
+def with_project(f, osf_session=None, title=None, category="project"):
+    creds = setup_credentials()
+    # supply all credentials, so osfclient can fall back on user/pass
     # if needed
-    osf = OSF(username=username, password=password, token=token)
+    osf = OSF(**creds)
 
     @wraps(f)
     def new_func(*args, **kwargs):

@@ -51,12 +51,11 @@ You can create such a token in your account settings (`Personal access token` an
 
     export OSF_TOKEN=YOUR_TOKEN_FROM_OSF.IO
 
-Now we set up an OSF remote called `YOUR_OSF_REMOTE_NAME` that points to the osf.io URL `YOUR_OSF_PROJECT_URL`. If you instead put a name here, the OSF project will automatically 
-be created. 
+We are now going to use datalad to create a sibling dataset on OSF with name `osf` - this will create a new project called `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
 
 .. code-block:: bash
 
-     $ datalad create-sibling-osf YOUR_OSF_PROJECT_URL YOUR_OSF_REMOTE_NAME --mode exporttree             
+     $ datalad create-sibling-osf -s osf OSF_PROJECT_NAME --mode exporttree             
 
 After that we can export the current state (the `HEAD`) of our dataset in human readable form to OSF:
 

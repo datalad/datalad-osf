@@ -1,10 +1,8 @@
 DataLad extension to interface with OSF
 ***************************************
 
-This extension allow DataLad to use the Open Science 
-Framework (OSF_) as a SpecialRemote using ``git-annex`` and the ``osfclient``. 
-So that code and DataLad datasets can live on a Remote, for example Github,
-while the data is stored on OSF.
+This extension enables DataLad to work with the Open Science Framework (OSF). Use it to publish your dataset's data to an OSF project to utilize the OSF for dataset data storage and easy dataset sharing.
+
 The extension was created during the OHBM Hackathon 2020.
 
 
@@ -20,8 +18,10 @@ Documentation
 
    intro
    settingup
-   running
-   example
+   exporthumandata
+   exportgitannexdata
+   exportdatacode
+   cloneosfdata
    contact
 
 

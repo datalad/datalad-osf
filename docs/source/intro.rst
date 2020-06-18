@@ -1,17 +1,19 @@
 Introduction
 ------------
 
-Goal of the tool
-^^^^^^^^^^^^^^^^
 
-Allow DataLad to work with the Open Science Framework (OSF). This allows for direct access to the OSF via a `git-annex <https://git-annex.branchable.com/>`_ `special remote <https://git-annex.branchable.com/special_remotes/>`_.
+Goal of the extension
+^^^^^^^^^^^^^^^^^^^^^
 
-What can I use this tool for
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This extension aims to allow DataLad to work with the Open Science Framework (OSF). This is done by transforming storage on the Open Science Framework (OSF) into a `git-annex <https://git-annex.branchable.com/>`_  repository. 
 
-The tool is most beneficial for easy access to data stored on OSF via Github. If you are sharing your dataset via OSF and code via Github, this will allow smooth integration of both along with unified version management provided by Datalab.
+What can I use this extension for?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-What can I **not** use this tool for
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You can use this extension to use the OSF as a special remote to store data in the annex  of a dataset. With this, you can `datalad publish` a dataset to GitHub or similar services and the data to the OSF (via a publication dependency).
+The extension is most beneficial for easy access to data stored on OSF via Github. If you are sharing your dataset via OSF and code via Github, this will allow smooth integration of both along with unified version management provided by DataLad.
 
-If your data is stored in a storage service other than OSF. Please refer `here <https://git-annex.branchable.com/special_remotes/>`_ for a list of supported data storage services via git-annex special remote framework.
+What can I **not** use this extension for?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This tool does not work for data that is stored in a storage service other than OSF. Please refer `here <https://git-annex.branchable.com/special_remotes/>`_ for a list of supported data storage services via git-annex special remote framework.

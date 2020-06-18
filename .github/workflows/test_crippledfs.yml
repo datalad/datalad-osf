@@ -44,9 +44,10 @@ jobs:
       env:
         # forces all test repos/paths into the VFAT FS
         TMPDIR: /crippledfs
-        OSF_USERNAME: ${{ secrets.OSF_USERNAME }}
+        # Token authentication should suffice, disabling the other secrets
+        #OSF_USERNAME: ${{ secrets.OSF_USERNAME }}
+        #OSF_PASSWORD: ${{ secrets.OSF_PASSWORD }}
         OSF_TOKEN: ${{ secrets.OSF_TOKEN }}
-        OSF_PASSWORD: ${{ secrets.OSF_PASSWORD }}
       run: |
         mkdir -p __testhome__
         cd __testhome__

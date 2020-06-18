@@ -1,2 +1,3 @@
 include versioneer.py
 include datalad_osf/_version.py
+include datalad_osf/osfclient/VERSION

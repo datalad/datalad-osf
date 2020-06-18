@@ -1,0 +1,97 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "mih",
+      "name": "Michael Hanke",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/136479?v=4",
+      "profile": "http://psychoinformatics.de",
+      "contributions": [
+        "maintenance",
+        "code",
+        "bug",
+        "ideas"
+      ]
+    },
+    {
+      "login": "DorienHuijser",
+      "name": "Dorien Huijser",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/58177697?v=4",
+      "profile": "https://github.com/DorienHuijser",
+      "contributions": [
+        "doc",
+        "projectManagement",
+        "ideas",
+        "userTesting"
+      ]
+    },
+    {
+      "login": "TheDragon246",
+      "name": "Ashish Sahoo",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/63247401?v=4",
+      "profile": "https://github.com/TheDragon246",
+      "contributions": [
+        "doc",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "SRSteinkamp",
+      "name": "Simon Steinkamp",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/17494653?v=4",
+      "profile": "https://github.com/SRSteinkamp",
+      "contributions": [
+        "test",
+        "doc",
+        "projectManagement",
+        "ideas",
+        "userTesting",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "bpoldrack",
+      "name": "Benjamin Poldrack",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/10498301?v=4",
+      "profile": "https://github.com/bpoldrack",
+      "contributions": [
+        "projectManagement",
+        "ideas",
+        "code",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "kousu",
+      "name": "Nick",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/987487?v=4",
+      "profile": "https://gitlab.com/kousu",
+      "contributions": [
+        "projectManagement",
+        "ideas",
+        "code",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "nbeliy",
+      "name": "Nikita Beliy",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/44231332?v=4",
+      "profile": "https://github.com/nbeliy",
+      "contributions": [
+        "ideas",
+        "userTesting"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "datalad-osf",
+  "projectOwner": "datalad",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}

@@ -1,0 +1,17 @@
+*~
+*egg-info
+*.pyc
+__pycache__/
+.cache/
+.coverage
+coverage.xml
+.osfcli.config
+.idea
+
+#tests
+.pytest_cache/
+# docs build output
+docs/_build
+
+#venv
+venv/

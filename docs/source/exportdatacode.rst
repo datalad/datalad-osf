@@ -84,7 +84,7 @@ We can set-up a Github Remote with name `github` and include a publish dependenc
 .. code-block:: bash
 
     $ datalad create-sibling-github REPRONAME -s github --github-login GITHUB_NAME --publish-depends osf
-    $ datalad publish --to github
+    $ datalad publish . --to github --transfer-data all
 
 This will publish example.txt in code/ to Github and only add the folder structure and symbolic links for all other file; at the same time it will upload the data to OSF - this way you can let OSF handle your data and Github your code.
 

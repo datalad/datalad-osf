@@ -114,7 +114,7 @@ class CreateSiblingOSF(Interface):
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
-    def __call__(title, sibling, dataset=None, mode="annexstore"):
+    def __call__(title, sibling="osf", dataset=None, mode="annexstore"):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)

@@ -64,8 +64,6 @@ class CreateSiblingOSF(Interface):
         # NOTES:
         # - we prob. should check osf-special-remote availability upfront to
         #   fail early
-        # - create project on OSF first
-        # - initremote second
         # - publish-depends option?
         # - (try to) detect github/gitlab/bitbucket to suggest linking it on
         #   OSF and configure publish dependency
@@ -84,13 +82,29 @@ class CreateSiblingOSF(Interface):
         #   -> result_renderer
         #   -> needs to ne returned by create_project
 
+        # - option: Make public!
+
         proj_id, proj_url = create_project(title=title)
+        yield get_status_dict(action="create-project-osf",
+                              type="dataset",
+                              url=proj_url,
+                              id=proj_id,
+                              status="ok"
+                              )
+
         init_opts = ["encryption=none",
                      "type=external",
                      "externaltype=osf",
                      "autoenable=true",
                      "project={}".format(proj_id)]
+
         if path:
             init_opts += ["objpath={}".format(path)]
 
         ds.repo.init_remote(sibling, options=init_opts)
+        # TODO: add special remote name to result?
+        #       need to check w/ datalad-siblings conventions
+        yield get_status_dict(action="add-sibling-osf",
+                              type="dataset",
+                              status="ok"
+                              )

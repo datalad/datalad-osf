@@ -1,15 +1,8 @@
-from datalad_osf.osfclient.osfclient import OSF
-from os import environ
 import json
 
 
-# TODO: token auth!
-osf = OSF(username=environ['OSF_USERNAME'],
-          password=environ['OSF_PASSWORD'])
-
-
 # Note: This should ultimately go into osfclient
-def create_project(title, category="project", tags=None):
+def create_project(osf_session, title, category="project", tags=None):
     """ Create a project on OSF
 
     Parameters
@@ -27,7 +20,7 @@ def create_project(title, category="project", tags=None):
         ID of the created project
     """
 
-    url = osf.session.build_url('nodes')
+    url = osf_session.build_url('nodes')
     post_data = {"data":
                      {"type": "nodes",
                       "attributes":
@@ -39,7 +32,7 @@ def create_project(title, category="project", tags=None):
     if tags:
         post_data["data"]["attributes"]["tags"] = tags
 
-    response = osf.session.post(url, data=json.dumps(post_data))
+    response = osf_session.post(url, data=json.dumps(post_data))
     # TODO: figure what errors to better deal with /
     #       create a better message from
     response.raise_for_status()
@@ -56,7 +49,7 @@ def create_project(title, category="project", tags=None):
     return node_id, proj_url
 
 
-def delete_project(project):
+def delete_project(osf_session, project):
     """ Delete a project on OSF
 
     Parameters
@@ -65,8 +58,8 @@ def delete_project(project):
         to be deleted node ID
     """
 
-    url = osf.session.build_url('nodes', project)
-    response = osf.session.delete(url)
+    url = osf_session.build_url('nodes', project)
+    response = osf_session.delete(url)
     response.raise_for_status()
 
 

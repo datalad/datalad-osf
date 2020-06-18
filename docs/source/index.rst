@@ -35,7 +35,7 @@ High-level API commands
 .. autosummary::
    :toctree: generated
 
-   osf_cmd
+   create_sibling_osf
 
 
 Command line reference
@@ -44,7 +44,7 @@ Command line reference
 .. toctree::
    :maxdepth: 1
 
-   generated/man/datalad-osf-cmd
+   generated/man/datalad-create-sibling-osf
 
 
 

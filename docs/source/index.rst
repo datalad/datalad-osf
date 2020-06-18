@@ -5,6 +5,8 @@ This extension enables DataLad to work with the Open Science Framework (OSF). Us
 
 The extension was created during the OHBM Hackathon 2020.
 
+If you have any questions, comments, bug fixes or improvement suggestions, feel free to contact us via our `Github page <https://github.com/datalad/datalad-osf>`_. Before contributing, be sure to read the contributing guidelines. 
+
 
 .. toctree::
 
@@ -20,7 +22,6 @@ Documentation
    exportgitannexdata
    exportdatacode
    cloneosfdata
-   contact
 
 
 API

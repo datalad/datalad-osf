@@ -11,6 +11,7 @@ from datalad.distribution.dataset import (
 )
 from datalad.interface.utils import eval_results
 from datalad.support.constraints import (
+    EnsureChoice,
     EnsureNone,
     EnsureStr,
 )
@@ -56,12 +57,17 @@ class CreateSiblingOSF(Interface):
             doc="""""",
             constraints=EnsureStr()
         ),
+        mode=Parameter(
+            args=("--mode",),
+            doc=""" """,
+            constraints=EnsureChoice("annexstore", "exporttree")
+        )
     )
 
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
-    def __call__(title, sibling, dataset=None):
+    def __call__(title, sibling, dataset=None, mode="annexstore"):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)
@@ -111,6 +117,9 @@ class CreateSiblingOSF(Interface):
                      "externaltype=osf",
                      "autoenable=true",
                      "project={}".format(proj_id)]
+
+        if mode == "exporttree":
+            init_opts += ["exporttree=yes"]
 
         ds.repo.init_remote(sibling, options=init_opts)
         # TODO: add special remote name to result?

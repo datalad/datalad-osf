@@ -60,18 +60,6 @@ And we also want to add a text file, which will be saved on Github_ - in your ca
 We now have a Dataset with one file that can be worked on using Github and one 
 that should be tracked using `git-annex`. 
 
-Setting up Github Remote
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-We can set-up a Github Remote with name `github`.
-
-.. code-block:: bash
-
-    $ datalad create-sibling-github REPRONAME -s github --github-login GITHUB_NAME
-    $ datalad publish --to github
-
-This will publish example.txt in code/ to Github and only add the folder structure and symbolic links for all other file; this way you can let OSF handle your data and Github your code.
-
 Setting up the OSF Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -88,11 +76,18 @@ We are now going to use datalad to create a sibling dataset on OSF with name `os
 
     $ datalad create-sibling-osf -s osf OSF_PROJECT_NAME
 
-And finally we are going to copy your data to this new OSF project - collaborators can now clone your OSF repo with versioned data and at the same time there exists a browsable repo containing your code on Github.
+Setting up Github Remote
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+We can set-up a Github Remote with name `github` and include a publish dependency with OSF - that way, when we publish our dataset to Github, the data files get automatically uploaded to OSF.
 
 .. code-block:: bash
 
-    $ git annex copy . --to osf
+    $ datalad create-sibling-github REPRONAME -s github --github-login GITHUB_NAME --publish-depends osf
+    $ datalad publish --to github
+
+This will publish example.txt in code/ to Github and only add the folder structure and symbolic links for all other file; at the same time it will upload the data to OSF - this way you can let OSF handle your data and Github your code.
+
 
 
 .. _OSF: https://www.osf.io/

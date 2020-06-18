@@ -53,11 +53,13 @@ You can create such a token in your account settings, make sure to create a `ful
 Now we set up an OSF remote called `YOUR_OST_REMOTE_NAME` that points to the osf.io URL `YOUR_OSF_PROJECT_URL`.
 
 .. code-block:: bash
+
     git annex initremote YOUR_OSF_REMOTE_NAME type=external externaltype=osf encryption=none project=YOUR_OSF_PROJECT_URL exporttree=yes
 
 After that we can export the current state (the `HEAD`) of our dataset in human readable form to OSF:
 
 .. code-block:: bash
+
     git annex export HEAD --to YOUR_OSF_REMOTE_NAME
 
 .. _OSF: https://www.osf.io/

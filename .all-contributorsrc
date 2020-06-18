@@ -86,6 +86,31 @@
         "ideas",
         "userTesting"
       ]
+    },
+    {
+      "login": "mjboos",
+      "name": "Moritz J. Boos",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/7125006?v=4",
+      "profile": "https://github.com/mjboos",
+      "contributions": [
+        "code",
+        "userTesting",
+        "ideas",
+        "maintenance"
+      ]
+    },
+    {
+      "login": "adswa",
+      "name": "Adina Wagner",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/29738718?v=4",
+      "profile": "http://www.adina-wagner.com",
+      "contributions": [
+        "projectManagement",
+        "ideas",
+        "code",
+        "doc",
+        "maintenance"
+      ]
     }
   ],
   "contributorsPerLine": 7,

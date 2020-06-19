@@ -63,7 +63,9 @@ def with_project(f, osf_session=None, title=None, category="project"):
     @wraps(f)
     def new_func(*args, **kwargs):
         proj_id, proj_url = create_project(
-            osf.session, title, category=category)
+            osf.session,
+            'Temporary DataLad CI project: {}'.format(title),
+            category=category)
         try:
             return f(*(args + (proj_id,)), **kwargs)
         finally:

@@ -99,7 +99,7 @@ class CreateSiblingOSF(Interface):
             doc="""Title of the to-be created OSF project.""",
             constraints=EnsureStr()
         ),
-        sibling=Parameter(
+        name=Parameter(
             args=("-s", "--name",),
             doc="""name of the to-be initialized osf-special-remote""",
             constraints=EnsureStr()
@@ -114,7 +114,7 @@ class CreateSiblingOSF(Interface):
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
-    def __call__(title, sibling="osf", dataset=None, mode="annexstore"):
+    def __call__(title, name="osf", dataset=None, mode="annexstore"):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)
@@ -168,7 +168,7 @@ class CreateSiblingOSF(Interface):
         if mode == "exporttree":
             init_opts += ["exporttree=yes"]
 
-        ds.repo.init_remote(sibling, options=init_opts)
+        ds.repo.init_remote(name, options=init_opts)
         # TODO: add special remote name to result?
         #       need to check w/ datalad-siblings conventions
         yield get_status_dict(action="add-sibling-osf",

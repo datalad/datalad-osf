@@ -55,7 +55,7 @@ We are now going to use datalad to create a sibling dataset on OSF with name `os
 
 .. code-block:: bash
 
-     $ datalad create-sibling-osf -s osf OSF_PROJECT_NAME --mode exporttree             
+     $ datalad create-sibling-osf -s osf OSF_PROJECT_NAME --mode export
 
 After that we can export the current state (the `HEAD`) of our dataset in human readable form to OSF:
 

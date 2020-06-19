@@ -74,13 +74,13 @@ class CreateSiblingOSF(Interface):
 
     This will create a project on OSF and initialize
     an osf special remote to point to it. There are two modes
-    this can operate in: 'annexstore' and 'exporttree'.
+    this can operate in: 'annex' and 'export'.
     The former uses the OSF project as a key-value store, that
     can be used to by git-annex to copy data to and retrieve
     data from (potentially by any clone of the original dataset).
     The latter allows to use 'git annex export' to publish a
     snapshot of a particular version of the dataset. Such an OSF
-    project will - in opposition to the 'annexstore' - be
+    project will - in opposition to the 'annex' - be
     human-readable.
     """
 
@@ -107,14 +107,14 @@ class CreateSiblingOSF(Interface):
         mode=Parameter(
             args=("--mode",),
             doc=""" """,
-            constraints=EnsureChoice("annexstore", "exporttree")
+            constraints=EnsureChoice("annex", "export")
         )
     )
 
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
-    def __call__(title, name="osf", dataset=None, mode="annexstore"):
+    def __call__(title, name="osf", dataset=None, mode="annex"):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)
@@ -165,7 +165,7 @@ class CreateSiblingOSF(Interface):
                      "autoenable=true",
                      "project={}".format(proj_id)]
 
-        if mode == "exporttree":
+        if mode == "export":
             init_opts += ["exporttree=yes"]
 
         ds.repo.init_remote(name, options=init_opts)

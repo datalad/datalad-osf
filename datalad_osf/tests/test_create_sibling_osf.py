@@ -92,7 +92,7 @@ def test_create_osf_export(path):
 
     create_results = ds.create_sibling_osf(title="CI dl-create",
                                            name="osf-storage",
-                                           mode="exporttree")
+                                           mode="export")
 
     assert_result_count(create_results, 2, status='ok', type='dataset')
 

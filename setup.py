@@ -40,9 +40,6 @@ if __name__ == '__main__':
                   # valid datalad interface specification (see demo in this extensions
                   'osf=datalad_osf:command_suite',
               ],
-              'console_scripts': [
-                  'git-annex-remote-osf=datalad_osf.remote:main',
-              ],
           },
     )
 

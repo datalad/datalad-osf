@@ -45,17 +45,6 @@ Command line reference
    generated/man/datalad-create-sibling-osf
 
 
-
-Git-annex utilities
--------------------
-
-.. currentmodule:: datalad_osf
-.. autosummary::
-   :toctree: generated
-
-   remote.OSFRemote
-
-
 Indices and tables
 ==================
 

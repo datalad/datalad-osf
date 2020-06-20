@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+# emacs: -*- mode: python; py-indent-offset: 4; tab-width: 4; indent-tabs-mode: nil -*-
+# ex: set sts=4 ts=4 sw=4 noet:
+# ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
+#
+#   See LICENSE file distributed along with the datalad_osf package for the
+#   copyright and license terms.
+#
+# ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
+
 #
 # datalad_metalad documentation build configuration file, created by
 # sphinx-quickstart on Tue Oct 13 08:41:19 2015.

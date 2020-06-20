@@ -7,7 +7,7 @@
 #
 # ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
 
-"""DataLad demo extension"""
+"""DataLad extension for data exchange on the Open Science Framework"""
 
 __docformat__ = 'restructuredtext'
 

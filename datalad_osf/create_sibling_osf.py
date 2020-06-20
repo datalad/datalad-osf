@@ -1,7 +1,17 @@
+# emacs: -*- mode: python; py-indent-offset: 4; tab-width: 4; indent-tabs-mode: nil -*-
+# ex: set sts=4 ts=4 sw=4 noet:
+# ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
+#
+#   See LICENSE file distributed along with the datalad_osf package for the
+#   copyright and license terms.
+#
+# ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
+
 from os import environ
-from datalad.interface.base import Interface
-from datalad.interface.base import build_doc
-from datalad.interface.utils import ac
+from datalad.interface.base import (
+    Interface,
+    build_doc,
+)
 from datalad.support.annexrepo import AnnexRepo
 from datalad.support.param import Parameter
 from datalad.distribution.dataset import (
@@ -9,7 +19,10 @@ from datalad.distribution.dataset import (
     EnsureDataset,
     require_dataset
 )
-from datalad.interface.utils import eval_results
+from datalad.interface.utils import (
+    ac,
+    eval_results,
+)
 from datalad.support.constraints import (
     EnsureChoice,
     EnsureNone,

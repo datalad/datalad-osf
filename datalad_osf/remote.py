@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+# emacs: -*- mode: python; py-indent-offset: 4; tab-width: 4; indent-tabs-mode: nil -*-
+# ex: set sts=4 ts=4 sw=4 noet:
+# ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
+#
+#   See LICENSE file distributed along with the datalad_osf package for the
+#   copyright and license terms.
+#
+# ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
+
 
 import os
 import json
@@ -12,9 +21,11 @@ from urllib.parse import urlparse
 from datalad_osf.osfclient.osfclient import OSF
 from datalad_osf.osfclient.osfclient.exceptions import UnauthorizedException
 
-from annexremote import Master
-from annexremote import ExportRemote
-from annexremote import RemoteError
+from annexremote import (
+    Master,
+    ExportRemote,
+    RemoteError,
+)
 
 
 class OSFRemote(ExportRemote):

@@ -8,9 +8,10 @@
 # ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
 
 from os import environ
-from datalad.interface.base import Interface
-from datalad.interface.base import build_doc
-from datalad.interface.utils import ac
+from datalad.interface.base import (
+    Interface,
+    build_doc,
+)
 from datalad.support.annexrepo import AnnexRepo
 from datalad.support.param import Parameter
 from datalad.distribution.dataset import (
@@ -18,7 +19,10 @@ from datalad.distribution.dataset import (
     EnsureDataset,
     require_dataset
 )
-from datalad.interface.utils import eval_results
+from datalad.interface.utils import (
+    ac,
+    eval_results,
+)
 from datalad.support.constraints import (
     EnsureChoice,
     EnsureNone,

@@ -98,16 +98,38 @@ class OSFRemote(ExportRemote):
         project_id = posixpath.basename(
             urlparse(self.annex.getconfig('project')).path.strip(posixpath.sep))
 
+        try:
+            # make use of DataLad's credential manager for a more convenient
+            # out-of-the-box behavior
+            from datalad_osf.utils import get_credentials
+            # we must stay non-interactive, because this is running inside
+            # git-annex's special remote protocal
+            creds = get_credentials(allow_interactive=False)
+        except ImportError as e:
+            # whenever anything goes wrong here, stay clam and fall back
+            # on envvars.
+            # we want this special remote to be fully functional without
+            # datalad
+            creds = dict(
+                username=os.environ.get('OSF_USERNAME', None),
+                password=os.environ.get('OSF_PASSWORD', None),
+                token=os.environ.get('OSF_TOKEN', None),
+            )
+        # next one just sets up the stage, no requests performed yet, hence
+        # no error checking needed
         # supply both auth credentials, so osfclient can fall back on user/pass
         # if needed
-        osf = OSF(
-            username=os.environ.get('OSF_USERNAME', None),
-            password=os.environ.get('OSF_PASSWORD', None),
-            token=os.environ.get('OSF_TOKEN', None),
-        ) # TODO: error checking etc
+        osf = OSF(**creds)
         # next one performs initial auth
-        self.project = osf.project(project_id) # errors ??
-
+        try:
+            self.project = osf.project(project_id)
+        except Exception as e:
+            # we need to raise RemoteError() such that PREPARE-FAILURE
+            # is reported, sadly that doesn't give users any clue
+            # TODO support datalad logging here
+            raise RemoteError(
+                'Failed to obtain OSF project handle: {}'.format(e)
+            )
         # which storage to use, defaults to 'osfstorage'
         # TODO a project could have more than one? Make parameter to select?
         self.storage = self.project.storage()

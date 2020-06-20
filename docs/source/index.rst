@@ -53,7 +53,7 @@ Git-annex utilities
 .. autosummary::
    :toctree: generated
 
-   remote.OSFRemote
+   remote.OSFSpecialRemote
 
 
 Indices and tables

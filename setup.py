@@ -41,7 +41,7 @@ if __name__ == '__main__':
                   'osf=datalad_osf:command_suite',
               ],
               'console_scripts': [
-                  'git-annex-remote-osf=datalad_osf.remote:main',
+                  'git-annex-remote-osf=datalad_osf.annex_remote:main',
               ],
           },
     )

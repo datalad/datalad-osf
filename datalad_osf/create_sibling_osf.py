@@ -49,6 +49,12 @@ class CreateSiblingOSF(Interface):
     snapshot of a particular version of the dataset. Such an OSF
     project will - in opposition to the 'annex' - be
     human-readable.
+
+    For authentification with OSF, you can define environment variables: Either
+    'OSF_TOKEN', or both 'OSF_USERNAME' and 'OSF_PASSWORD'. If neither of these
+    is defined, the tool will fall back to the datalad credential manager and
+    inquire for credentials interactively.
+
     """
 
     result_renderer = 'tailored'
@@ -68,7 +74,7 @@ class CreateSiblingOSF(Interface):
         ),
         name=Parameter(
             args=("-s", "--name",),
-            doc="""name of the to-be initialized osf-special-remote""",
+            doc="""Name of the to-be initialized osf-special-remote""",
             constraints=EnsureStr()
         ),
         mode=Parameter(

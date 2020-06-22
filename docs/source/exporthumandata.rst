@@ -21,7 +21,7 @@ For installation checkout the installation page of the documentation.
 
 Creating an Example Dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-We will create a small example DataLad Dataset to show the functionality.
+We will create a small example DataLad dataset to show the functionality.
 
 .. code-block:: bash
 
@@ -31,7 +31,7 @@ We will create a small example DataLad Dataset to show the functionality.
     # Copying the $ will prevent your code from execution.
 
 After having created the dataset we want to populate it with some content (just
-like in the Handbook):
+like in the Datalad Handbook):
 
 .. code-block:: bash
 
@@ -66,16 +66,15 @@ This will create a new project called `OSF_PROJECT_NAME` on the OSF account asso
 
 Note that the ``-s NAME_OF_REMOTE>`` flag is used to specify how ``git`` internally refers to your OSF project with the name `OSF_PROJECT_NAME`.
 It would be completely fine to use `OSF_PROJECT_NAME` also as a value for the ``-s`` flag.
-In this example, we are using ``osf`` as the name of our remote.
 
 You can later on list your remotes from the command line using the ``git remote -v`` command.
 
 .. code-block:: bash
 
-     $ datalad create-sibling-osf -s osf OSF_PROJECT_NAME --mode export
+     $ datalad create-sibling-osf -s NAME_OF_REMOTE OSF_PROJECT_NAME --mode export
 
 After that we can export the current state (the `HEAD`) of our dataset in human readable form to OSF:
 
 .. code-block:: bash
 
-    git annex export HEAD --to osf
+    git annex export HEAD --to NAME_OF_REMOTE

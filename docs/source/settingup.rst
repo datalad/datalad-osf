@@ -17,7 +17,7 @@ You need an OSF account to be able to interact with it. If you don't have an acc
 
 - An account on a git repository hosting site
 
-You should consider having an account on one or more repository hosting sites such as `GitHub <https://github.com/join>`_ , `GitLab <https://gitlab.com/users/sign_up>`_, `Bitbucket <https://bitbucket.org/account/signup/>`_ or similar"
+You should consider having an account on one or more repository hosting sites such as `GitHub <https://github.com/join>`__ , `GitLab <https://gitlab.com/users/sign_up>`_, `Bitbucket <https://bitbucket.org/account/signup/>`_ or similar"
 
 Installation
 ------------

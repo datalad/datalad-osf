@@ -17,3 +17,4 @@
 .. _OSF: https://www.osf.io/
 .. _Python: https://www.python.org/
 .. _Special Remote: https://git-annex.branchable.com/special_remotes/
+.. _Special Remotes: https://git-annex.branchable.com/special_remotes/

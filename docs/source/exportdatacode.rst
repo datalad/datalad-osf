@@ -1,3 +1,4 @@
+.. include:: ./links.inc
 
 Export version-controlled data to OSF and code to GitHub
 ********************************************************
@@ -5,12 +6,12 @@ Export version-controlled data to OSF and code to GitHub
 Imagine you are a PhD student and want to collaborate on a fun little side
 project with a student at another institute. It is quite obvious for the two of
 you that your code will be hosted on GitHub_. And you also know enough about
-DataLad, that using it for the whole project will be really beneficial.
+DataLad_, that using it for the whole project will be really beneficial.
 
 But what about the data you are collecting?
-The Dropbox is already full (`DataLad third party providers <http://handbook.datalad.org/en/latest/basics/101-138-sharethirdparty.html>`_). And Amazon services don't seem to be
-your best alternative.
-Suddenly you remember, that you got an OSF_ account recently, and that there is this nice `Datalad extension <https://github.com/datalad/datalad-osf/>`_ to set up a SpecialRemote on OSF_.
+The Dropbox is already full (`DataLad third party providers <http://handbook.datalad.org/en/latest/basics/101-138-sharethirdparty.html>`_).
+And Amazon services don't seem to be your best alternative.
+Suddenly you remember, that you got an OSF_ account recently, and that there is this nice `Datalad extension <https://github.com/datalad/datalad-osf/>`_ to set up a `Special Remote`_ on OSF_.
 
 Walk through
 ------------
@@ -27,7 +28,7 @@ For installation checkout the installation page of the documentation.
 Creating an Example Dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As a very first step you want to set up a DataLad Dataset. For this you should
+As a very first step you want to set up a DataLad dataset. For this you should
 run. In all examples a `$` in front indicates a new line in the Bash-Shell,
 copying it will prevent your code from execution.
 
@@ -35,8 +36,8 @@ copying it will prevent your code from execution.
 
     $ datalad create collab_osf
 
-After having created the dataset we want to populate it with some content (just
-like in the Handbook). Importantly we don't want to upload this file on GitHub, only on OSF - in the real world this could be your data that is too large to upload to GitHub.
+After having created the dataset we want to populate it with some content (just like in the `DataLad Handbook`_).
+Importantly we don't want to upload this file on GitHub, only on OSF - in the real world this could be your data that is too large to upload to GitHub.
 
 .. code-block:: bash
 
@@ -52,11 +53,10 @@ And we also want to add a text file, which will be saved on GitHub_ - in your ca
 
     $ mkdir code
     $ cd code
-    $ echo "This is just an example file just to show the different ways of saving data in a DataLad Dataset." > example.txt
+    $ echo "This is just an example file just to show the different ways of saving data in a DataLad dataset." > example.txt
     $ datalad save --to-git -m "created an example.txt"
 
-We now have a Dataset with one file that can be worked on using GitHub and one
-that should be tracked using `git-annex`.
+We now have a dataset with one file that can be worked on using GitHub and one that should be tracked using `git-annex`.
 
 Setting up the OSF Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -85,8 +85,3 @@ We can set-up a GitHub Remote with name `github` and include a publish dependenc
     $ datalad publish . --to github --transfer-data all
 
 This will publish example.txt in code/ to GitHub and only add the folder structure and symbolic links for all other file; at the same time it will upload the data to OSF - this way you can let OSF handle your data and GitHub your code.
-
-
-
-.. _OSF: https://www.osf.io/
-.. _GitHub: https://www.github.com/

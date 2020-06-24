@@ -1,7 +1,9 @@
+.. include:: ./links.inc
+
 Export a human-readable dataset to OSF
 **************************************
 
-Imagine you have been creating a reproducible workflow using DataLad from the
+Imagine you have been creating a reproducible workflow using DataLad_ from the
 get go. Everything is finished now, code, data, and paper are ready. Last thing
 to do: Publish your data.
 
@@ -31,7 +33,7 @@ We will create a small example DataLad dataset to show the functionality.
     # Copying the $ will prevent your code from execution.
 
 After having created the dataset we want to populate it with some content (just
-like in the Datalad Handbook):
+like in the `Datalad Handbook`_):
 
 .. code-block:: bash
 

@@ -1,3 +1,5 @@
+.. include:: ./links.inc
+
 Setting up
 ==========
 
@@ -6,7 +8,7 @@ Requirements
 
 - DataLad
 
-Before being able to use the extension, you need to have DataLad installed, which relies on `git-annex <git-annex.branchable.com/>`_, `git <git-scm.com/>`_ and `Python <https://www.python.org/>`_.
+Before being able to use the extension, you need to have DataLad installed, which relies on `git-annex`_, `git`_ and `Python`_.
 If you don't have DataLad installed yet, please follow the instructions from `the datalad handbook <http://handbook.datalad.org/en/latest/intro/installation.html>`_.
 
 - An account on the OSF

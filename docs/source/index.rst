@@ -34,6 +34,7 @@ High-level API commands
    :toctree: generated
 
    create_sibling_osf
+   osf_credentials
 
 
 Command line reference
@@ -43,6 +44,7 @@ Command line reference
    :maxdepth: 1
 
    generated/man/datalad-create-sibling-osf
+   generated/man/datalad-osf-credentials
 
 
 

@@ -113,7 +113,7 @@ def get_credentials(allow_interactive=True):
         return dict(
             token=environ.get('OSF_TOKEN', None),
             username=environ.get('OSF_USERNAME', None),
-            password=environ.get('OSF_USERNAME', None),
+            password=environ.get('OSF_PASSWORD', None),
         )
 
     # fall back on DataLad credential manager

@@ -33,6 +33,7 @@ from datalad_osf.utils import (
     create_project,
     get_credentials,
 )
+from datalad.utils import ensure_list
 
 
 @build_doc
@@ -84,13 +85,24 @@ class CreateSiblingOSF(Interface):
             args=("--mode",),
             doc=""" """,
             constraints=EnsureChoice("annex", "export")
-        )
+        ),
+        tags=Parameter(
+            args=('--tag',),
+            dest='tags',
+            metavar='TAG',
+            doc="""specific one or more tags for the to-be-create OSF project.
+            A tag 'DataLad dataset' and the dataset ID (if there is any)
+            will be automatically added as additional tags.
+            [CMD: This option can be given more than once CMD].""",
+            action='append',
+        ),
     )
 
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
-    def __call__(title=None, name="osf", dataset=None, mode="annex"):
+    def __call__(title=None, name="osf", dataset=None, mode="annex",
+                 tags=None):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)
@@ -135,9 +147,19 @@ class CreateSiblingOSF(Interface):
                 id=' [DataLad::{}]'.format(ds.id) if ds.id else '',
             )
 
+        tags = ensure_list(tags)
+        if 'DataLad dataset' not in tags:
+            tags.append('DataLad dataset')
+        if ds.id and ds.id not in tags:
+            tags.append(ds.id)
+
         cred = get_credentials(allow_interactive=True)
         osf = OSF(**cred)
-        proj_id, proj_url = create_project(osf_session=osf.session, title=title)
+        proj_id, proj_url = create_project(
+            osf_session=osf.session,
+            title=title,
+            tags=tags if tags else None,
+        )
         yield get_status_dict(action="create-project-osf",
                               type="dataset",
                               url=proj_url,

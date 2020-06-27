@@ -269,6 +269,7 @@ class CreateSiblingOSF(Interface):
             fetch=False,
             publish_depends=storage_name,
             recursive=False,
+            result_renderer=None,
         )
 
     @staticmethod

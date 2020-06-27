@@ -28,7 +28,7 @@ from annexremote import (
 )
 
 
-class OSFRemote(ExportRemote):
+class OSFSpecialRemote(ExportRemote):
     """git-annex special remote for the open science framework
 
     Any OSF node can be used as a remote, but the
@@ -294,7 +294,7 @@ class OSFRemote(ExportRemote):
 
 def main():
     master = Master()
-    remote = OSFRemote(master)
+    remote = OSFSpecialRemote(master)
     master.LinkRemote(remote)
     master.Listen()
 

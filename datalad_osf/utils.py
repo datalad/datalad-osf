@@ -16,7 +16,8 @@ from datalad.downloaders.credentials import (
 
 
 # Note: This should ultimately go into osfclient
-def create_project(osf_session, title, category="project", tags=None):
+def create_project(osf_session, title, category="project", tags=None,
+                   public=False):
     """ Create a project on OSF
 
     Parameters
@@ -27,6 +28,8 @@ def create_project(osf_session, title, category="project", tags=None):
         categorization changes how the project is displayed
         on OSF, but doesn't appear to have a "real" function
     tags: list of str
+    public: bool
+        whether to make the new project public
 
     Returns
     -------
@@ -39,7 +42,8 @@ def create_project(osf_session, title, category="project", tags=None):
                      {"type": "nodes",
                       "attributes":
                           {"title": title,
-                           "category": category
+                           "category": category,
+                           "public": public,
                            }
                       }
                  }

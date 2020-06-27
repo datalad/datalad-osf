@@ -26,6 +26,7 @@ from datalad.support.constraints import (
     EnsureChoice,
     EnsureNone,
     EnsureStr,
+    EnsureBool,
 )
 from datalad.interface.results import get_status_dict
 from datalad_osf.osfclient.osfclient import OSF
@@ -95,13 +96,18 @@ class CreateSiblingOSF(Interface):
             [CMD: This option can be given more than once CMD].""",
             action='append',
         ),
+        public=Parameter(
+            args=("--public",),
+            doc="""make OSF project public""",
+            action='store_true',
+        ),
     )
 
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
     def __call__(title=None, name="osf", dataset=None, mode="annex",
-                 tags=None):
+                 tags=None, public=False):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)
@@ -152,6 +158,7 @@ class CreateSiblingOSF(Interface):
             osf_session=osf.session,
             title=title,
             tags=tags if tags else None,
+            public=EnsureBool()(public),
         )
         yield get_status_dict(action="create-project-osf",
                               type="dataset",

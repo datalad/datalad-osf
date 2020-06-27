@@ -123,4 +123,6 @@ class OSFCredentials(Interface):
                 if attrs.get('email', None)
                 else ''),
             path=None,
+            # report effective credentials
+            **cred,
         )

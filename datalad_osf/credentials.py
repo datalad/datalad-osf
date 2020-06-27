@@ -34,7 +34,7 @@ from datalad_osf.osfclient.osfclient.exceptions import UnauthorizedException
 
 @build_doc
 class OSFCredentials(Interface):
-    """Provide OSF credentials for subsequent non-interactive use
+    """Gather OSF credentials for subsequent non-interactive use
 
     This command enables (re-)entry of OSF credentials for storage in
     a credential manager. Once credentials are known, they will be

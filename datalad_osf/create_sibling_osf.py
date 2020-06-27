@@ -68,9 +68,12 @@ class CreateSiblingOSF(Interface):
             constraints=EnsureDataset() | EnsureNone()
         ),
         title=Parameter(
-            args=("title",),
-            doc="""Title of the to-be created OSF project.""",
-            constraints=EnsureStr()
+            args=("--title",),
+            doc="""title of the to-be created OSF project that is displayed
+            on the OSF website. Defaults to '<name> [DataLad::<id>]',
+            where <name> is the basename of the root directory of the local
+            dataset and <id> is the DataLad dataset ID.""",
+            constraints=EnsureStr() | EnsureNone(),
         ),
         name=Parameter(
             args=("-s", "--name",),
@@ -87,7 +90,7 @@ class CreateSiblingOSF(Interface):
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
-    def __call__(title, name="osf", dataset=None, mode="annex"):
+    def __call__(title=None, name="osf", dataset=None, mode="annex"):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)
@@ -121,6 +124,16 @@ class CreateSiblingOSF(Interface):
         #   -> needs to ne returned by create_project
 
         # - option: Make public!
+
+        if title is None:
+            # build a default title that is somewhat human-readable
+            # (include root directory name), but also useful for
+            # machine discovery (includes unique dataset ID)
+            title = '{name}{id}'.format(
+                # TODO query for metadata for a name, eventually
+                name=ds.pathobj.name,
+                id=' [DataLad::{}]'.format(ds.id) if ds.id else '',
+            )
 
         cred = get_credentials(allow_interactive=True)
         osf = OSF(**cred)

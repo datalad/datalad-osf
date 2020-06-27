@@ -51,8 +51,7 @@ def test_create_osf_simple(path):
 
     file1 = Path('ds') / "file1.txt"
 
-    create_results = ds.create_sibling_osf(title="CI dl-create",
-                                           name="osf-storage")
+    create_results = ds.create_sibling_osf(name="osf-storage")
 
     assert_result_count(create_results, 2, status='ok', type='dataset')
 

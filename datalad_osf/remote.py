@@ -31,7 +31,7 @@ from annexremote import (
 class OSFRemote(ExportRemote):
     """git-annex special remote for the open science framework
 
-    Any OSF project or component can be used as a remote, but the
+    Any OSF node can be used as a remote, but the
     recommended setup is to create a subcomponent of your project
     for archiving your data. Mark it with the Data category so you
     can find it quickly and take note of its URL. Each component
@@ -46,7 +46,7 @@ class OSFRemote(ExportRemote):
     Initialize the special remote::
 
        git annex initremote osf type=external externaltype=osf \\
-            encryption=none project=https://osf.io/<your-component-id>/
+            encryption=none node=https://osf.io/<your-component-id>/
 
     To upload files you need to supply credentials.
 
@@ -63,7 +63,7 @@ class OSFRemote(ExportRemote):
     The following parameters can be given to `git-annex initremote`, or
     `git annex enableremote` to (re-)configure a special remote.
 
-    `project`
+    `node`
        the OSF URL of the file store
 
     `path`
@@ -80,23 +80,23 @@ class OSFRemote(ExportRemote):
     """
     def __init__(self, *args):
         super().__init__(*args)
-        self.configs['project'] = 'The OSF URL for the remote'
+        self.configs['node'] = 'The OSF URL for the remote'
 
-        self.project = None
+        self.node = None
 
         # lazily evaluated cache of File objects
         self._files = None
 
     def initremote(self):
         ""
-        if self.annex.getconfig('project') is None:
-            raise ValueError('project url must be specified')
+        if self.annex.getconfig('node') is None:
+            raise ValueError('node URL or ID must be specified')
             # TODO: type-check the value; it must be https://osf.io/
 
     def prepare(self):
         """"""
-        project_id = posixpath.basename(
-            urlparse(self.annex.getconfig('project')).path.strip(posixpath.sep))
+        node_id = posixpath.basename(
+            urlparse(self.annex.getconfig('node')).path.strip(posixpath.sep))
 
         try:
             # make use of DataLad's credential manager for a more convenient
@@ -122,16 +122,16 @@ class OSFRemote(ExportRemote):
         osf = OSF(**creds)
         # next one performs initial auth
         try:
-            self.project = osf.project(project_id)
+            self.node = osf.project(node_id)
         except Exception as e:
             # we need to raise RemoteError() such that PREPARE-FAILURE
             # is reported, sadly that doesn't give users any clue
             # TODO support datalad logging here
             raise RemoteError(
-                'Failed to obtain OSF project handle: {}'.format(e)
+                'Failed to obtain OSF node handle: {}'.format(e)
             )
         # which storage to use, defaults to 'osfstorage'
-        # TODO a project could have more than one? Make parameter to select?
+        # TODO a node could have more than one? Make parameter to select?
         self.storage = self.project.storage()
 
     def transfer_store(self, key, filename):
@@ -179,7 +179,7 @@ class OSFRemote(ExportRemote):
         return self.transfer_retrieve(remote_file, local_file)
 
     def checkpresent(self, key):
-        "Report whether the OSF project has a particular key"
+        "Report whether the OSF node has a particular key"
         try:
             if key not in self.files:
                 # we don't know this key at all

@@ -31,7 +31,7 @@ from datalad.support.constraints import (
 from datalad.interface.results import get_status_dict
 from datalad_osf.osfclient.osfclient import OSF
 from datalad_osf.utils import (
-    create_project,
+    create_node,
     get_credentials,
 )
 from datalad.utils import ensure_list
@@ -41,15 +41,15 @@ from datalad.utils import ensure_list
 class CreateSiblingOSF(Interface):
     """Create a dataset representation at OSF.
 
-    This will create a project on OSF and initialize
+    This will create a node on OSF and initialize
     an osf special remote to point to it. There are two modes
     this can operate in: 'annex' and 'export'.
-    The former uses the OSF project as a key-value store, that
+    The former uses the OSF node as a key-value store, that
     can be used by git-annex to copy data to and retrieve
     data from (potentially by any clone of the original dataset).
     The latter allows to use 'git annex export' to publish a
     snapshot of a particular version of the dataset. Such an OSF
-    project will - in opposition to the 'annex' - be
+    node will - in opposition to the 'annex' - be
     human-readable.
 
     For authentification with OSF, you can define environment variables: Either
@@ -71,7 +71,7 @@ class CreateSiblingOSF(Interface):
         ),
         title=Parameter(
             args=("--title",),
-            doc="""title of the to-be created OSF project that is displayed
+            doc="""title of the to-be created OSF node that is displayed
             on the OSF website. Defaults to the basename of the root directory
             of the local dataset.""",
             constraints=EnsureStr() | EnsureNone(),
@@ -90,7 +90,7 @@ class CreateSiblingOSF(Interface):
             args=('--tag',),
             dest='tags',
             metavar='TAG',
-            doc="""specific one or more tags for the to-be-create OSF project.
+            doc="""specific one or more tags for the to-be-create OSF node.
             A tag 'DataLad dataset' and the dataset ID (if there is any)
             will be automatically added as additional tags.
             [CMD: This option can be given more than once CMD].""",
@@ -98,13 +98,13 @@ class CreateSiblingOSF(Interface):
         ),
         public=Parameter(
             args=("--public",),
-            doc="""make OSF project public""",
+            doc="""make OSF node public""",
             action='store_true',
         ),
         category=Parameter(
             args=("--category",),
             doc="""specific the OSF node category to be used for the
-            project. The categorization determines what icon is displayed
+            node. The categorization determines what icon is displayed
             with the node on the OSF, and helps with search organization""",
             # all presently supported categories
             constraints=EnsureChoice(
@@ -149,7 +149,7 @@ class CreateSiblingOSF(Interface):
         # - results need to report URL for created projects suitable for datalad
         #   output formatting!
         #   -> result_renderer
-        #   -> needs to ne returned by create_project
+        #   -> needs to ne returned by create_node
 
         # - option: Make public!
 
@@ -165,14 +165,14 @@ class CreateSiblingOSF(Interface):
 
         cred = get_credentials(allow_interactive=True)
         osf = OSF(**cred)
-        proj_id, proj_url = create_project(
+        proj_id, proj_url = create_node(
             osf_session=osf.session,
             title=title,
             category=category,
             tags=tags if tags else None,
             public=EnsureBool()(public),
         )
-        yield get_status_dict(action="create-project-osf",
+        yield get_status_dict(action="create-node-osf",
                               type="dataset",
                               url=proj_url,
                               id=proj_id,
@@ -183,7 +183,7 @@ class CreateSiblingOSF(Interface):
                      "type=external",
                      "externaltype=osf",
                      "autoenable=true",
-                     "project={}".format(proj_id)]
+                     "node={}".format(proj_id)]
 
         if mode == "export":
             init_opts += ["exporttree=yes"]
@@ -200,7 +200,7 @@ class CreateSiblingOSF(Interface):
     def custom_result_renderer(res, **kwargs):
         from datalad.ui import ui
         status_str = "{action}({status}): "
-        if res['action'] == "create-project-osf":
+        if res['action'] == "create-node-osf":
             ui.message("{action}({status}): {url}".format(
                 action=ac.color_word(res['action'], ac.BOLD),
                 status=ac.color_status(res['status']),

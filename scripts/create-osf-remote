@@ -14,7 +14,7 @@
 
 import sys
 from datalad_osf.utils import (
-    create_project,
+    create_node,
     initialize_osf_remote
 )
 
@@ -37,11 +37,11 @@ if __name__ == '__main__':
     else:
         objpath = "git-annex"
 
-    project_id, project_url = create_project(project_title)
+    project_id, project_url = create_node(project_title)
     print("Successfully create OSF project \"{}\" at {}"
           .format(project_title, project_url))
 
-    initialize_osf_remote(remote=remote, project=project_id, objpath=objpath)
+    initialize_osf_remote(remote=remote, node=project_id, objpath=objpath)
 
     # Note: Hints on how to proceed or what else to do could be guided by
     #       investigating the local repo's config (i.e. remote with URL

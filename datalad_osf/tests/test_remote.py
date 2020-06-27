@@ -17,7 +17,7 @@ from datalad.tests.utils import (
     skip_if,
 )
 from datalad_osf.tests.utils import (
-    with_project,
+    with_node,
 )
 from datalad_osf.utils import (
     get_credentials,
@@ -32,7 +32,7 @@ common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
 # https://github.com/datalad/datalad-osf/issues/71
 @skip_if_on_windows
 @skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
-@with_project(title="CI osf-special-remote")
+@with_node(title="CI osf-special-remote")
 @with_tempfile
 def test_gitannex(osf_id, dspath):
     from datalad.cmd import (
@@ -44,7 +44,7 @@ def test_gitannex(osf_id, dspath):
     ds = Dataset(dspath).create()
 
     # add remote parameters here
-    init_remote_opts = ["project={}".format(osf_id)]
+    init_remote_opts = ["node={}".format(osf_id)]
 
     # add special remote
     init_opts = common_init_opts + init_remote_opts

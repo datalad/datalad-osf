@@ -21,7 +21,7 @@ from datalad.tests.utils import (
 )
 from datalad.utils import Path
 from datalad_osf.utils import (
-    delete_project,
+    delete_node,
     get_credentials,
 )
 from datalad_osf.osfclient.osfclient import OSF
@@ -61,7 +61,7 @@ def test_create_osf_simple(path):
         # special remote is configured:
         remote_log = ds.repo.call_git(['cat-file', 'blob',
                                        'git-annex:remote.log'])
-        assert_in("project={}".format(create_results[0]['id']), remote_log)
+        assert_in("node={}".format(create_results[0]['id']), remote_log)
 
         # copy files over
         ds.repo.copy_to('.', "osf-storage")
@@ -87,7 +87,7 @@ def test_create_osf_simple(path):
         # clean remote end:
         cred = get_credentials(allow_interactive=False)
         osf = OSF(**cred)
-        delete_project(osf.session, create_results[0]['id'])
+        delete_node(osf.session, create_results[0]['id'])
 
 
 @skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
@@ -114,7 +114,7 @@ def test_create_osf_export(path):
         # clean remote end:
         cred = get_credentials(allow_interactive=False)
         osf = OSF(**cred)
-        delete_project(osf.session, create_results[0]['id'])
+        delete_node(osf.session, create_results[0]['id'])
 
 
 @skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')

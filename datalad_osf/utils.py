@@ -16,27 +16,27 @@ from datalad.downloaders.credentials import (
 
 
 # Note: This should ultimately go into osfclient
-def create_project(osf_session, title, category="project", tags=None,
-                   public=False, parent=None):
-    """ Create a project on OSF
+def create_node(osf_session, title, category="data", tags=None,
+                public=False, parent=None):
+    """ Create a node on OSF
 
     Parameters
     ----------
     title: str
-        Title of the project
+        Title of the node
     category: str
-        categorization changes how the project is displayed
+        categorization changes how the node is displayed
         on OSF, but doesn't appear to have a "real" function
     tags: list of str
     public: bool
-        whether to make the new project public
+        whether to make the new node public
     parent: str, optional
         ID of an OSF parent node to create a child node for
 
     Returns
     -------
     str
-        ID of the created project
+        ID of the created node
     """
 
     if parent:
@@ -61,8 +61,8 @@ def create_project(osf_session, title, category="project", tags=None,
     #       create a better message from
     response.raise_for_status()
 
-    # TODO: This should eventually return an `Project` instance (see osfclient).
-    #       Response contains all properties of the created project.
+    # TODO: This should eventually return an `node` instance (see osfclient).
+    #       Response contains all properties of the created node.
     node_id = response.json()['data']['id']
 
     # Note: Going for "html" URL here for reporting back to the user, since this
@@ -73,23 +73,23 @@ def create_project(osf_session, title, category="project", tags=None,
     return node_id, proj_url
 
 
-def delete_project(osf_session, project):
-    """ Delete a project on OSF
+def delete_node(osf_session, id_):
+    """ Delete a node on OSF
 
     Parameters
     ----------
-    project: str
+    id_: str
         to be deleted node ID
     """
 
-    url = osf_session.build_url('nodes', project)
+    url = osf_session.build_url('nodes', id_)
     response = osf_session.delete(url)
     response.raise_for_status()
 
 
-def initialize_osf_remote(remote, project,
+def initialize_osf_remote(remote, node,
                           encryption="none", autoenable="true"):
-    """Initialize special remote with a given project
+    """Initialize special remote with a given node
 
     convenience wrapper for git-annex-initremote w/o datalad
 
@@ -97,8 +97,8 @@ def initialize_osf_remote(remote, project,
     ----------
     remote: str
         name for the special remote
-    project: str
-        ID of the project/component to use
+    node: str
+        ID of the node/component to use
     encryption: str
         see git-annex-initremote; mandatory option;
     autoenable: str
@@ -110,7 +110,7 @@ def initialize_osf_remote(remote, project,
                  "externaltype=osf",
                  "encryption={}".format(encryption),
                  "autoenable={}".format(autoenable),
-                 "project={}".format(project)]
+                 "node={}".format(node)]
 
     import subprocess
     subprocess.run(["git", "annex", "initremote", remote] + init_opts)

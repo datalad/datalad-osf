@@ -33,7 +33,7 @@ if __name__ == '__main__':
     else:
         objpath = "git-annex"
 
-    initialize_osf_remote(remote=remote, project=project, objpath=objpath)
+    initialize_osf_remote(remote=remote, node=project, objpath=objpath)
 
 
 #!/usr/bin/env python

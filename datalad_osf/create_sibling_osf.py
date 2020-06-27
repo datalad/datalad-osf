@@ -101,13 +101,24 @@ class CreateSiblingOSF(Interface):
             doc="""make OSF project public""",
             action='store_true',
         ),
+        category=Parameter(
+            args=("--category",),
+            doc="""specific the OSF node category to be used for the
+            project. The categorization determines what icon is displayed
+            with the node on the OSF, and helps with search organization""",
+            # all presently supported categories
+            constraints=EnsureChoice(
+                "analysis", "communication", "data", "hypothesis",
+                "instrumentation", "methods and measures", "procedure",
+                "project", "software", "other")
+        ),
     )
 
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
     def __call__(title=None, name="osf", dataset=None, mode="annex",
-                 tags=None, public=False):
+                 tags=None, public=False, category='data'):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)
@@ -157,6 +168,7 @@ class CreateSiblingOSF(Interface):
         proj_id, proj_url = create_project(
             osf_session=osf.session,
             title=title,
+            category=category,
             tags=tags if tags else None,
             public=EnsureBool()(public),
         )

@@ -71,9 +71,8 @@ class CreateSiblingOSF(Interface):
         title=Parameter(
             args=("--title",),
             doc="""title of the to-be created OSF project that is displayed
-            on the OSF website. Defaults to '<name> [DataLad::<id>]',
-            where <name> is the basename of the root directory of the local
-            dataset and <id> is the DataLad dataset ID.""",
+            on the OSF website. Defaults to the basename of the root directory
+            of the local dataset.""",
             constraints=EnsureStr() | EnsureNone(),
         ),
         name=Parameter(
@@ -138,14 +137,8 @@ class CreateSiblingOSF(Interface):
         # - option: Make public!
 
         if title is None:
-            # build a default title that is somewhat human-readable
-            # (include root directory name), but also useful for
-            # machine discovery (includes unique dataset ID)
-            title = '{name}{id}'.format(
-                # TODO query for metadata for a name, eventually
-                name=ds.pathobj.name,
-                id=' [DataLad::{}]'.format(ds.id) if ds.id else '',
-            )
+            # use dataset root basename
+            title = ds.pathobj.name
 
         tags = ensure_list(tags)
         if 'DataLad dataset' not in tags:

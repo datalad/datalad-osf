@@ -37,18 +37,24 @@ from datalad_osf.utils import (
 
 @build_doc
 class CreateSiblingOSF(Interface):
-    """Create a dataset representation at OSF
+    """Create a dataset representation at OSF.
 
     This will create a project on OSF and initialize
     an osf special remote to point to it. There are two modes
     this can operate in: 'annex' and 'export'.
     The former uses the OSF project as a key-value store, that
-    can be used to by git-annex to copy data to and retrieve
+    can be used by git-annex to copy data to and retrieve
     data from (potentially by any clone of the original dataset).
     The latter allows to use 'git annex export' to publish a
     snapshot of a particular version of the dataset. Such an OSF
     project will - in opposition to the 'annex' - be
     human-readable.
+
+    For authentification with OSF, you can define environment variables: Either
+    'OSF_TOKEN', or both 'OSF_USERNAME' and 'OSF_PASSWORD'. If neither of these
+    is defined, the tool will fall back to the datalad credential manager and
+    inquire for credentials interactively.
+
     """
 
     result_renderer = 'tailored'
@@ -68,7 +74,7 @@ class CreateSiblingOSF(Interface):
         ),
         name=Parameter(
             args=("-s", "--name",),
-            doc="""name of the to-be initialized osf-special-remote""",
+            doc="""Name of the to-be initialized osf-special-remote""",
             constraints=EnsureStr()
         ),
         mode=Parameter(

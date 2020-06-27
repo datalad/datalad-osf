@@ -132,7 +132,7 @@ class OSFRemote(ExportRemote):
             )
         # which storage to use, defaults to 'osfstorage'
         # TODO a node could have more than one? Make parameter to select?
-        self.storage = self.project.storage()
+        self.storage = self.node.storage()
 
     def transfer_store(self, key, filename):
         ""

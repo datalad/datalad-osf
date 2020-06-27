@@ -7,6 +7,7 @@
 #
 # ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
 
+import logging
 from datalad.interface.base import (
     Interface,
     build_doc,
@@ -35,6 +36,9 @@ from datalad_osf.utils import (
     get_credentials,
 )
 from datalad.utils import ensure_list
+from datalad.log import log_progress
+
+lgr = logging.getLogger('datalad.osf.create_sibling_osf')
 
 
 @build_doc
@@ -81,10 +85,34 @@ class CreateSiblingOSF(Interface):
             doc="""Name of the to-be initialized osf-special-remote""",
             constraints=EnsureStr()
         ),
+        storage_name=Parameter(
+            args=("--storage-name",),
+            metavar="NAME",
+            doc="""Name of the storage sibling (git-annex special remote).
+            Must not be identical to the sibling name. If not specified,
+            defaults to the sibling name plus '-storage' suffix.""",
+            constraints=EnsureStr() | EnsureNone()),
+        existing=Parameter(
+            args=("--existing",),
+            constraints=EnsureChoice(
+                'skip', 'error') | EnsureNone(),
+            metavar='MODE',
+            doc="""Action to perform, if a (storage) sibling is already
+            configured under the given name and/or a target already exists.
+            In this case, a dataset can be skipped ('skip'), or the command
+            be instructed to fail ('error').""", ),
+        trust_level=Parameter(
+            args=("--trust-level",),
+            metavar="TRUST-LEVEL",
+            constraints=EnsureChoice(
+                'trust', 'semitrust', 'untrust') | EnsureNone(),
+            doc="""specify a trust level for the storage sibling. If not
+            specified, the default git-annex trust level is used.""",),
         mode=Parameter(
             args=("--mode",),
             doc=""" """,
-            constraints=EnsureChoice("annex", "export")
+            constraints=EnsureChoice(
+                "annex", "export", "exportonly", "gitonly")
         ),
         tags=Parameter(
             args=('--tag',),
@@ -117,26 +145,37 @@ class CreateSiblingOSF(Interface):
     @staticmethod
     @datasetmethod(name='create_sibling_osf')
     @eval_results
-    def __call__(title=None, name="osf", dataset=None, mode="annex",
-                 tags=None, public=False, category='data'):
+    def __call__(title=None,
+                 name="osf",
+                 storage_name=None,
+                 dataset=None,
+                 mode="annex",
+                 existing='error',
+                 trust_level=None,
+                 tags=None,
+                 public=False,
+                 category='data'
+                 ):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
                              check_installed=True)
+        res_kwargs = dict(
+            ds=ds,
+            action="create-sibling-osf",
+            logger=lgr,
+        )
         # we need an annex
         if not isinstance(ds.repo, AnnexRepo):
-            yield get_status_dict(action="create-sibling-osf",
-                                  type="dataset",
-                                  status="impossible",
-                                  message="dataset has no annex")
+            yield get_status_dict(
+                type="dataset",
+                status="impossible",
+                message="dataset has no annex",
+                **res_kwargs)
             return
 
         # NOTES:
         # - we prob. should check osf-special-remote availability upfront to
         #   fail early
-        # - publish-depends option?
-        # - (try to) detect github/gitlab/bitbucket to suggest linking it on
-        #   OSF and configure publish dependency
-        #   -> prob. overkill; just make it clear in the doc
         # - add --recursive option
         #       - recursive won't work easily. Need to think that through.
         #       - would need a naming scheme for subdatasets
@@ -151,7 +190,27 @@ class CreateSiblingOSF(Interface):
         #   -> result_renderer
         #   -> needs to ne returned by create_node
 
-        # - option: Make public!
+        if not storage_name:
+            storage_name = "{}-storage".format(name)
+
+        sibling_conflicts = sibling_exists(
+            ds, [name, storage_name],
+            # TODO pass through
+            recursive=False, recursion_limit=None,
+            # fail fast, if error is desired
+            exhaustive=existing == 'error',
+        )
+        if existing == 'error' and sibling_conflicts:
+            # we only asked for one
+            conflict = sibling_conflicts[0]
+            yield get_status_dict(
+                status='error',
+                message=(
+                    "a sibling '%s' is already configured in dataset %s",
+                    conflict[1], conflict[0]),
+                **res_kwargs,
+            )
+            return
 
         if title is None:
             # use dataset root basename
@@ -165,46 +224,66 @@ class CreateSiblingOSF(Interface):
 
         cred = get_credentials(allow_interactive=True)
         osf = OSF(**cred)
-        proj_id, proj_url = create_node(
+        node_id, node_url = create_node(
             osf_session=osf.session,
             title=title,
             category=category,
             tags=tags if tags else None,
             public=EnsureBool()(public),
         )
-        yield get_status_dict(action="create-node-osf",
-                              type="dataset",
-                              url=proj_url,
-                              id=proj_id,
-                              status="ok"
-                              )
+        if mode != 'gitonly':
+            init_opts = ["encryption=none",
+                         "type=external",
+                         "externaltype=osf",
+                         "autoenable=true",
+                         "node={}".format(node_id)]
 
-        init_opts = ["encryption=none",
-                     "type=external",
-                     "externaltype=osf",
-                     "autoenable=true",
-                     "node={}".format(proj_id)]
+            if mode in ("export", "exportonly"):
+                init_opts += ["exporttree=yes"]
 
-        if mode == "export":
-            init_opts += ["exporttree=yes"]
+            ds.repo.init_remote(storage_name, options=init_opts)
+            if trust_level:
+                ds.repo.call_git(['annex', trust_level, storage_name])
 
-        ds.repo.init_remote(name, options=init_opts)
-        # TODO: add special remote name to result?
-        #       need to check w/ datalad-siblings conventions
-        yield get_status_dict(action="add-sibling-osf",
-                              type="dataset",
-                              status="ok"
-                              )
+            yield get_status_dict(
+                type="dataset",
+                url=node_url,
+                id=node_id,
+                name=storage_name,
+                status="ok",
+                **res_kwargs
+            )
+
+        if mode == 'exportonly':
+            return
+
+        ds.config.set(
+            'remote.{}.annex-ignore'.format(name), 'true',
+            where='local')
+        yield from ds.siblings(
+            # use configure, not add, to not trip over the config that
+            # we just made
+            action='configure',
+            name=name,
+            url='osf://{}'.format(node_id),
+            fetch=False,
+            publish_depends=storage_name,
+            recursive=False,
+        )
 
     @staticmethod
     def custom_result_renderer(res, **kwargs):
         from datalad.ui import ui
-        status_str = "{action}({status}): "
-        if res['action'] == "create-node-osf":
-            ui.message("{action}({status}): {url}".format(
+        if res['action'] == "create-sibling-osf":
+            msg = res.get('message', None)
+            ui.message("{action}({status}): {url}{msg}".format(
                 action=ac.color_word(res['action'], ac.BOLD),
                 status=ac.color_status(res['status']),
-                url=res['url'])
+                url=res.get('url', ''),
+                msg=' [{}]'.format(msg[0] % msg[1:]
+                                   if isinstance(msg, tuple)
+                                   else res['message'])
+                if msg else '')
             )
         elif res['action'] == "add-sibling-osf":
             ui.message("{action}({status})".format(
@@ -213,4 +292,47 @@ class CreateSiblingOSF(Interface):
             )
         else:
             from datalad.interface.utils import default_result_renderer
-            default_result_renderer(res, **kwargs)
+            default_result_renderer(res)
+
+
+# TODO this could was originally taken from create_sibling_ria() and
+# subsequently turned into a standalone function to facilitate re-use by other
+# `create_sibling()` implementations
+def sibling_exists(ds, names, recursive=False,
+                   recursion_limit=None, exhaustive=False):
+    # in recursive mode this check could take a substantial amount of
+    # time: employ a progress bar (or rather a counter, because we don't
+    # know the total in advance
+    pbar_id = 'sibling-exists-{}'.format(id(ds))
+    if recursive:
+        log_progress(
+            lgr.info, pbar_id,
+            'Start checking pre-existing sibling configuration %s', ds,
+            label='Query siblings',
+            unit=' Siblings',
+        )
+    conflicts = []
+    for r in ds.siblings(result_renderer=None,
+                         recursive=recursive,
+                         recursion_limit=recursion_limit):
+        if recursive:
+            log_progress(
+                lgr.info, pbar_id,
+                'Discovered sibling %s in dataset at %s',
+                r['name'], r['path'],
+                update=1,
+                increment=True)
+        if not r['type'] == 'sibling' or r['status'] != 'ok':
+            # this is an internal status query that has no consequences
+            continue
+        for name in names:
+            if r['name'] == name:
+                conflicts.append((r['path'], name))
+                if not exhaustive:
+                    return conflicts
+    if recursive:
+        log_progress(
+            lgr.info, pbar_id,
+            'Finished checking pre-existing sibling configuration %s', ds,
+        )
+    return conflicts

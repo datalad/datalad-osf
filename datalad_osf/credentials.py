@@ -88,8 +88,7 @@ class OSFCredentials(Interface):
         osf = OSF(**cred)
         try:
             req = osf.session.get('https://api.osf.io/v2/users/me/')
-            if req.status_code != 200:
-                raise RuntimeError('Request status != 200')
+            req.raise_for_status()
         except UnauthorizedException:
             auth.delete()
             yield dict(

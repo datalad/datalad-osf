@@ -117,10 +117,16 @@ def get_credentials(allow_interactive=True):
         )
 
     # fall back on DataLad credential manager
-    token_auth = Token(name='https://osf.io', url=None)
-    up_auth = UserPassword(name='https://osf.io', url=None)
+    token_auth = Token(
+        name='https://osf.io',
+        url='https://osf.io/settings/tokens',
+    )
+    up_auth = UserPassword(
+        name='https://osf.io',
+        url='https://osf.io/settings/account',
+    )
 
-    # get auth token, form environment, or from datalad credential store
+    # get auth token, from environment, or from datalad credential store
     # if known-- we do not support first-time entry during a test run
     token = environ.get(
         'OSF_TOKEN',

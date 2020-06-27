@@ -20,6 +20,8 @@ command_suite = (
     # description of the command suite, displayed in cmdline help
     "DataLad extension for OSF support",
     [
+        ('datalad_osf.credentials', 'OSFCredentials',
+            'osf-credentials', 'osf_credentials'),
         # specification of a command, any number of commands can be defined
         (
             # importable module that contains the command implementation

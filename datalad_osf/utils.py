@@ -17,7 +17,7 @@ from datalad.downloaders.credentials import (
 
 # Note: This should ultimately go into osfclient
 def create_project(osf_session, title, category="project", tags=None,
-                   public=False):
+                   public=False, parent=None):
     """ Create a project on OSF
 
     Parameters
@@ -30,6 +30,8 @@ def create_project(osf_session, title, category="project", tags=None,
     tags: list of str
     public: bool
         whether to make the new project public
+    parent: str, optional
+        ID of an OSF parent node to create a child node for
 
     Returns
     -------
@@ -37,7 +39,11 @@ def create_project(osf_session, title, category="project", tags=None,
         ID of the created project
     """
 
-    url = osf_session.build_url('nodes')
+    if parent:
+        # we have a parent, use its URL to create children
+        url = osf_session.build_url('nodes', parent, 'children')
+    else:
+        url = osf_session.build_url('nodes')
     post_data = {"data":
                      {"type": "nodes",
                       "attributes":

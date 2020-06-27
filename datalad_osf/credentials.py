@@ -105,6 +105,7 @@ class OSFCredentials(Interface):
                 message='Could not verify credentials, '
                         'please try again: {}'.format(
                             exc_str(e)),
+                # needed to pacify DataLad 0.13.0 and earlier
                 path=None,
             )
             return
@@ -122,6 +123,7 @@ class OSFCredentials(Interface):
                 ' <{}>'.format(attrs['email'])
                 if attrs.get('email', None)
                 else ''),
+            # needed to pacify DataLad 0.13.0 and earlier
             path=None,
             # report effective credentials
             **cred,

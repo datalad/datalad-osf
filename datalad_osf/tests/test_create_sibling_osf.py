@@ -51,9 +51,15 @@ def test_create_osf_simple(path):
 
     file1 = Path('ds') / "file1.txt"
 
-    create_results = ds.create_sibling_osf(name="osf-storage")
+    create_results = ds.create_sibling_osf(name="osf")
 
-    assert_result_count(create_results, 2, status='ok', type='dataset')
+    assert_result_count(create_results, 2, status='ok')
+    assert_result_count(
+        create_results, 1,
+        status='ok', type='dataset', name="osf-storage", path=ds.path)
+    assert_result_count(
+        create_results, 1,
+        status='ok', type='sibling', name="osf", path=ds.path)
 
     # if we got here, we created something at OSF;
     # make sure, we clean up afterwards
@@ -97,11 +103,14 @@ def test_create_osf_export(path):
     ds = Dataset(path).create(force=True)
     ds.save()
 
-    create_results = ds.create_sibling_osf(title="CI dl-create",
-                                           name="osf-storage",
-                                           mode="export")
+    create_results = ds.create_sibling_osf(
+        title="CI dl-create",
+        # do not create a git-remote
+        mode="exportonly")
 
-    assert_result_count(create_results, 2, status='ok', type='dataset')
+    assert_result_count(
+        create_results, 1,
+        status='ok', type='dataset', name='osf-storage', path=ds.path)
 
     # if we got here, we created something at OSF;
     # make sure, we clean up afterwards

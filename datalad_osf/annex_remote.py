@@ -95,8 +95,16 @@ class OSFSpecialRemote(ExportRemote):
 
     def prepare(self):
         """"""
-        node_id = posixpath.basename(
-            urlparse(self.annex.getconfig('node')).path.strip(posixpath.sep))
+        node_id = self.annex.getconfig('node')
+        if not node_id:
+            # fall back on outdated 'project' parameter, which could be
+            # just the node ID or a full URL to a project
+            node_id = posixpath.basename(
+                urlparse(self.annex.getconfig('project')
+                         ).path.strip(posixpath.sep))
+
+        if not node_id:
+            raise RemoteError('Could not determine OSF node ID')
 
         try:
             # make use of DataLad's credential manager for a more convenient

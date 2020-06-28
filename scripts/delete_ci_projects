@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+# Look for, and offer to delete any OSF project that looks like a CI
+# leftover.
+#
+# Needs OSF_TOKEN environment variable set.
+#
+# Will ask for each to-be-deleted project.
+
+
+import os
+import sys
+from pprint import pprint
+
+from datalad_osf.osfclient.osfclient import OSF
+
+
+# only token-auth and only via env var
+osf = OSF(token=os.environ['OSF_TOKEN'])
+
+req_url = osf.session.build_url('users', 'me', 'nodes')
+
+while req_url:
+    res = osf.session.get(req_url)
+    res.raise_for_status()
+    res = res.json()
+
+    for node in res['data']:
+        title = node['attributes']['title']
+        if not (title.startswith('datalad_temp_tree_')
+                or title == 'CI dl-create'
+                or title.startswith('Temporary DataLad CI project: ')):
+            continue
+
+        print('Found: {} [{}; modified: {}]'.format(
+            node['id'],
+            node['attributes']['title'],
+            node['attributes']['date_modified']))
+        var = input(
+            "Type 'y' and hit enter to delete (anything else to skip): ")
+        if var != 'y':
+            print('Skipped')
+            continue
+
+        delete = osf.session.delete(
+            osf.session.build_url('nodes', node['id']))
+        print('-> HTTP[{}]'.format(delete.status_code))
+
+    req_url = res['links']['next']

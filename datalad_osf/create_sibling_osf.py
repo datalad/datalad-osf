@@ -140,6 +140,13 @@ class CreateSiblingOSF(Interface):
                 "instrumentation", "methods and measures", "procedure",
                 "project", "software", "other")
         ),
+        description=Parameter(
+            args=("--description",),
+            metavar="TEXT",
+            doc="""Description of the OSF node that will be displayed on
+            the associated project page. By default a description will
+            generated based on the mode the sibling is put into.""",
+            constraints=EnsureStr() | EnsureNone()),
     )
 
     @staticmethod
@@ -154,7 +161,8 @@ class CreateSiblingOSF(Interface):
                  trust_level=None,
                  tags=None,
                  public=False,
-                 category='data'
+                 category='data',
+                 description=None,
                  ):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
@@ -222,6 +230,18 @@ class CreateSiblingOSF(Interface):
         if ds.id and ds.id not in tags:
             tags.append(ds.id)
 
+        if not description:
+            description = \
+                "This component was built from a DataLad dataset using the " \
+                "datalad-osf extension " \
+                "(https://github.com/datalad/datalad-osf)."
+            if mode != 'exportonly':
+                description += \
+                    " With this extension installed, this component can be " \
+                    "git or datalad cloned from a 'osf://ID' URL, where " \
+                    "'ID' is the OSF node ID that shown in the OSF HTTP " \
+                    "URL, e.g. https://osf.io/q8xnk/ can be cloned from " \
+                    "osf://q8xnk"
         cred = get_credentials(allow_interactive=True)
         osf = OSF(**cred)
         node_id, node_url = create_node(
@@ -230,6 +250,7 @@ class CreateSiblingOSF(Interface):
             category=category,
             tags=tags if tags else None,
             public=EnsureBool()(public),
+            description=description,
         )
         if mode != 'gitonly':
             init_opts = ["encryption=none",

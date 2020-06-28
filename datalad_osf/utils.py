@@ -17,7 +17,7 @@ from datalad.downloaders.credentials import (
 
 # Note: This should ultimately go into osfclient
 def create_node(osf_session, title, category="data", tags=None,
-                public=False, parent=None):
+                public=False, parent=None, description=None):
     """ Create a node on OSF
 
     Parameters
@@ -55,6 +55,8 @@ def create_node(osf_session, title, category="data", tags=None,
                  }
     if tags:
         post_data["data"]["attributes"]["tags"] = tags
+    if description:
+        post_data["data"]["attributes"]["description"] = description
 
     response = osf_session.post(url, data=json.dumps(post_data))
     # TODO: figure what errors to better deal with /

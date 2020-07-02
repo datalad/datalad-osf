@@ -46,3 +46,19 @@ def test_readonly_access(path):
     # obtain content, from osfannex specifically to avoid 'wget'
     ds.repo.call_git(['annex', 'copy', str(test_file), '-f', 'osfannex'])
     eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], True)
+
+
+@with_tempfile
+@patch('datalad_osf.utils.get_credentials', no_credentials)
+def test_readonly_dataset_access(path):
+    # clone from OSF; ds is self-contained at OSF
+    ds = clone('osf://q8xnk', path)
+    # standard name storage remote
+    assert_in('osf-storage', ds.repo.get_remotes())
+    assert_in(
+        '7784367b-69c6-483d-9564-67f840715890',
+        ds.repo.whereis('inannex'))
+    test_file = ds.repo.pathobj / 'inannex' / 'animated.gif'
+    eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], False)
+    ds.repo.call_git(['annex', 'copy', str(test_file), '-f', 'osf-storage'])
+    eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], True)

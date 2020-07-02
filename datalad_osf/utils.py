@@ -13,6 +13,7 @@ from datalad.downloaders.credentials import (
     Token,
     UserPassword,
 )
+from datalad import ui
 
 
 # Note: This should ultimately go into osfclient
@@ -138,12 +139,14 @@ def get_credentials(allow_interactive=True):
         url='https://osf.io/settings/account',
     )
 
+    do_interactive = allow_interactive and ui.is_interactive()
+
     # get auth token, from environment, or from datalad credential store
     # if known-- we do not support first-time entry during a test run
     token = environ.get(
         'OSF_TOKEN',
         token_auth().get('token', None)
-        if allow_interactive or token_auth.is_known
+        if do_interactive or token_auth.is_known
         else None)
     username = None
     password = None
@@ -152,12 +155,12 @@ def get_credentials(allow_interactive=True):
         username = environ.get(
             'OSF_USERNAME',
             up_auth().get('user', None)
-            if allow_interactive or up_auth.is_known
+            if do_interactive or up_auth.is_known
             else None)
         password = environ.get(
             'OSF_PASSWORD',
             up_auth().get('password', None)
-            if allow_interactive or up_auth.is_known
+            if do_interactive or up_auth.is_known
             else None)
 
     return dict(token=token, username=username, password=password)

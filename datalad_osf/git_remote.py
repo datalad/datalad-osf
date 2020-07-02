@@ -63,6 +63,7 @@ class OSFGitRemote(object):
         self.osf = self._get_osf_api()
         self._osfproject = None
         self._osfstorage = None
+        self._remote_archive = None
 
         # TODO delay
         self.workdir.mkdir(parents=True, exist_ok=True)
@@ -140,9 +141,14 @@ class OSFGitRemote(object):
             refs = fp.read().decode('ascii')
         return refs
 
-    def get_remote_state(self):
-        """Return a dict with hashes for the remote repo archive or None
+    def get_remote_archive(self):
+        """Return an OSFclient file handle for the remove 7z archive
+
+        or None if there isn't one at the remote.
         """
+        if self._remote_archive:
+            return self._remote_archive
+        # otherwise search for it
         repo_handle = [
             f for f in self.osfstorage.files
             if f.path == '/.git/repo.7z'
@@ -150,9 +156,17 @@ class OSFGitRemote(object):
         if not len(repo_handle):
             # ls didn't find a repo at the remote end, but could talk to
             # the remote itself -> nothing to there
-            return None
-        repo_handle = repo_handle[0]
-        return repo_handle.hashes
+            repo_handle = None
+        else:
+            repo_handle = repo_handle[0]
+        self._remote_archive = repo_handle
+        return repo_handle
+
+    def get_remote_state(self):
+        """Return a dict with hashes for the remote repo archive or None
+        """
+        archive_handle = self.get_remote_archive()
+        return archive_handle.hashes if archive_handle else None
 
     def mirror_repo_if_needed(self):
         """Ensure a local Git repo mirror of the one archived at the remote.
@@ -188,12 +202,9 @@ class OSFGitRemote(object):
         sync_dir = self.workdir / 'sync'
         sync_dir.mkdir(parents=True, exist_ok=True)
         self.log('Downloading repository archive')
-        repo_handle = [
-            f for f in self.osfstorage.files
-            if f.path == '/.git/repo.7z'][0]
-        with (sync_dir / 'repo.7z').open('wb') as fp:
-            repo_handle.write_to(fp)
         repo_archive = sync_dir / 'repo.7z'
+        with (repo_archive).open('wb') as fp:
+            self.get_remote_archive().write_to(fp)
         self.log('Extracting repository archive')
         if self.repodir.exists():
             # if we extract, we cannot tollerate left-overs

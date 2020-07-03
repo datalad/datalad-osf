@@ -288,7 +288,7 @@ class CreateSiblingOSF(Interface):
             name=name,
             url='osf://{}'.format(node_id),
             fetch=False,
-            publish_depends=storage_name,
+            publish_depends=storage_name if mode != 'gitonly' else None,
             recursive=False,
             result_renderer=None,
         )

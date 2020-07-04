@@ -14,10 +14,16 @@ import json
 import os
 from tempfile import TemporaryFile
 from pathlib import Path
-from shutil import rmtree
+from shutil import (
+    rmtree,
+    make_archive,
+)
+import zipfile
 import subprocess
 import sys
 from urllib.parse import urlparse
+from unittest.mock import patch
+import posixpath
 
 from datalad_osf.osfclient.osfclient import OSF
 
@@ -142,23 +148,23 @@ class OSFGitRemote(object):
         return refs
 
     def get_remote_archive(self):
-        """Return an OSFclient file handle for the remove 7z archive
+        """Return an OSFclient file handle for the remote zip archive
 
         or None if there isn't one at the remote.
         """
         if self._remote_archive:
             return self._remote_archive
         # otherwise search for it
-        repo_handle = [
-            f for f in self.osfstorage.files
-            if f.path == '/.git/repo.7z'
-        ]
-        if not len(repo_handle):
-            # ls didn't find a repo at the remote end, but could talk to
-            # the remote itself -> nothing to there
-            repo_handle = None
-        else:
-            repo_handle = repo_handle[0]
+        repo_handle = {
+            f.path: f
+            for f in self.osfstorage.files
+            if f.path.startswith('/.git/repo')
+        }
+        # pick new-style LZMA-zip, fall back on old 7z, and
+        # lastly report None, if there isn't anything
+        repo_handle = repo_handle.get(
+            '/.git/repo.zip', repo_handle.get(
+                '/.git/repo.7z', None))
         self._remote_archive = repo_handle
         return repo_handle
 
@@ -202,19 +208,29 @@ class OSFGitRemote(object):
         sync_dir = self.workdir / 'sync'
         sync_dir.mkdir(parents=True, exist_ok=True)
         self.log('Downloading repository archive')
-        repo_archive = sync_dir / 'repo.7z'
+        repo_archive = sync_dir / posixpath.basename(
+            self.get_remote_archive().path)
         with (repo_archive).open('wb') as fp:
             self.get_remote_archive().write_to(fp)
         self.log('Extracting repository archive')
         if self.repodir.exists():
             # if we extract, we cannot tollerate left-overs
             rmtree(str(self.repodir), ignore_errors=True)
-        subprocess.run([
-            '7z', 'x', str(repo_archive)],
-            cwd=str(self.workdir),
-            stdout=subprocess.PIPE,
-            check=True,
-        )
+        if repo_archive.suffix == '.zip':
+            with zipfile.ZipFile(str(repo_archive)) as zip:
+                zip.extractall(
+                    str(self.workdir),
+                    # a bit of a safety-net, exclude all unexpected content
+                    members=[m for m in zip.namelist() if m.startswith('repo')]
+                )
+        else:
+            # fallback for previous times
+            subprocess.run([
+                '7z', 'x', str(repo_archive)],
+                cwd=str(self.workdir),
+                stdout=subprocess.PIPE,
+                check=True,
+            )
         rmtree(str(sync_dir), ignore_errors=True)
         # update sync stamp only after everything else was successful
         synced.write_text(json.dumps(repo_hashes))
@@ -275,7 +291,7 @@ class OSFGitRemote(object):
 
         The stream is fast-import'ed into a local repository mirror first.
         If not mirror repository exists, an empty one is created. The mirror
-        is then 7z'ed and uploaded.
+        is then zip'ed and uploaded.
         """
         # TODO acquire and release lock
         url = self.parsed_url
@@ -345,12 +361,15 @@ class OSFGitRemote(object):
         sync_dir = self.workdir / 'sync'
         if not sync_dir.exists():
             sync_dir.mkdir()
-        subprocess.run([
-            '7z', 'u', str(sync_dir / 'repo.7z'), 'repo'],
-            cwd=str(self.workdir),
-            stdout=subprocess.PIPE,
-            check=True,
-        )
+        # use our zipfile wrapper to get an LZMA compressed archive
+        # via the shutil convenience layer
+        with patch('zipfile.ZipFile', LZMAZipFile):
+            make_archive(
+                str(sync_dir / 'repo'),
+                'zip',
+                root_dir=str(self.workdir),
+                base_dir='repo',
+            )
         # dump refs for a later LIST of the remote
         (sync_dir / 'refs').write_text(
             self.format_refs_in_mirror())
@@ -358,7 +377,7 @@ class OSFGitRemote(object):
         self.log('Upload repository archive')
         try:
             for fpath, tpath in ((sync_dir / 'refs', '/.git/refs'),
-                          (sync_dir / 'repo.7z', '/.git/repo.7z')):
+                          (sync_dir / 'repo.zip', '/.git/repo.zip')):
                 with fpath.open('rb') as fp:
                     self.osfstorage.create_file(
                         tpath, fp, force=True, update=True)
@@ -440,6 +459,14 @@ class OSFGitRemote(object):
                 self.log('UNKNOWN COMMAND', line)
                 # unrecoverable error
                 return
+
+# tiny wrapper to monkey-patch zipfile in order to have
+# shutil.make_archive produce an LZMA-compressed ZIP
+class LZMAZipFile(zipfile.ZipFile):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('compression', None)
+        return super().__init__(
+            *args, compression=zipfile.ZIP_LZMA, **kwargs)
 
 
 def main():

@@ -55,9 +55,8 @@ def test_readonly_dataset_access(path):
     ds = clone('osf://q8xnk', path)
     # standard name storage remote
     assert_in('osf-storage', ds.repo.get_remotes())
-    assert_in(
-        '7784367b-69c6-483d-9564-67f840715890',
-        ds.repo.whereis('inannex'))
+    for avail in ds.repo.whereis('inannex'):
+        assert_in('7784367b-69c6-483d-9564-67f840715890', avail)
     test_file = ds.repo.pathobj / 'inannex' / 'animated.gif'
     eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], False)
     ds.repo.call_git(['annex', 'copy', str(test_file), '-f', 'osf-storage'])

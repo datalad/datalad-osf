@@ -15,6 +15,7 @@
 .. _git-annex: git-annex.branchable.com/
 .. _git: git-scm.com/
 .. _OSF: https://www.osf.io/
+.. _pip: https://pypi.org/project/pip/
 .. _Python: https://www.python.org/
 .. _Special Remote: https://git-annex.branchable.com/special_remotes/
 .. _Special Remotes: https://git-annex.branchable.com/special_remotes/

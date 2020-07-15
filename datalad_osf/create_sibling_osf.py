@@ -56,7 +56,7 @@ class CreateSiblingOSF(Interface):
     node will - in opposition to the 'annex' - be
     human-readable.
 
-    For authentification with OSF, you can define environment variables: Either
+    For authentication with OSF, you can define environment variables: Either
     'OSF_TOKEN', or both 'OSF_USERNAME' and 'OSF_PASSWORD'. If neither of these
     is defined, the tool will fall back to the datalad credential manager and
     inquire for credentials interactively.

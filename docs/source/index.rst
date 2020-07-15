@@ -29,19 +29,9 @@ Documentation
 .. toctree::
    :maxdepth: 1
 
-   generated/man/datalad-create-sibling-osf
-   generated/man/datalad-osf-credentials
-
-
-
-Git-annex utilities
--------------------
-
-.. currentmodule:: datalad_osf
-.. autosummary::
-   :toctree: generated
-
-   annex_remote.OSFSpecialRemote
+   cmd
+   api
+   git-annex-utils
 
 
 Indices and tables

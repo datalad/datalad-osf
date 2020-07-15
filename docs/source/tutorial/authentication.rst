@@ -35,7 +35,7 @@ This command prompts for user credentials and stores them internally for OSF ope
 Two different methods of authentication are supported and can be set with the ``--method`` flag:
 
 - ``token``: A personal access token. This is the recommended authentication type and default.
-  Generate a personal access token under your user account at `osf.io/settings/tokens <https://osf.io/settings/tokens>`_.
+  Generate a personal access token under your user account at `osf.io/settings/tokens <https://osf.io/settings/tokens>`_. Make sure to create a ``full_write`` token to be able to create OSF projects and upload data to OSF!
 - ``userpassword``: Your username and password combination from the OSF_ webinterface.
 
 .. code-block:: bash
@@ -60,7 +60,11 @@ Information on which user's credentials are stored can be found by re-running ``
 .. admonition:: Environment variables
 
    Alternatively, credentials can be set via environment variables:
-   ``OSF_TOKEN``, or both ``OSF_USERNAME`` and ``OSF_PASSWORD``.
+   ``OSF_TOKEN``, or both ``OSF_USERNAME`` and ``OSF_PASSWORD``, as in
+
+   .. code-block:: bash
+
+      export OSF_TOKEN=YOUR_TOKEN_FROM_OSF
 
 
 Resetting credentials

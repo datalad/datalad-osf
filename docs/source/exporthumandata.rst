@@ -64,7 +64,7 @@ Make sure to create a `full_write` token to be able to create OSF projects and u
     export OSF_TOKEN=YOUR_TOKEN_FROM_OSF.IO
 
 We are now going to use datalad to create a sibling dataset on OSF with name `OSF_PROJECT_NAME`.
-This will create a new project called `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
+This will create a new project entitled `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
 
 Note that the ``-s NAME_OF_REMOTE>`` flag is used to specify how ``git`` internally refers to your OSF project with the name `OSF_PROJECT_NAME`.
 It would be completely fine to use `OSF_PROJECT_NAME` also as a value for the ``-s`` flag.
@@ -73,7 +73,7 @@ You can later on list your remotes from the command line using the ``git remote 
 
 .. code-block:: bash
 
-     $ datalad create-sibling-osf -s NAME_OF_REMOTE OSF_PROJECT_NAME --mode export
+     $ datalad create-sibling-osf -s NAME_OF_REMOTE --title OSF_PROJECT_NAME --mode export
 
 After that we can export the current state (the `HEAD`) of our dataset in human readable form to OSF:
 

@@ -21,7 +21,7 @@ from datalad.tests.utils import (
 )
 from datalad.utils import Path
 from datalad_osf.utils import (
-    delete_project,
+    delete_node,
     get_credentials,
 )
 from datalad_osf.osfclient.osfclient import OSF
@@ -51,10 +51,15 @@ def test_create_osf_simple(path):
 
     file1 = Path('ds') / "file1.txt"
 
-    create_results = ds.create_sibling_osf(title="CI dl-create",
-                                           name="osf-storage")
+    create_results = ds.create_sibling_osf(name="osf")
 
-    assert_result_count(create_results, 2, status='ok', type='dataset')
+    assert_result_count(create_results, 2, status='ok')
+    assert_result_count(
+        create_results, 1,
+        status='ok', type='dataset', name="osf-storage", path=ds.path)
+    assert_result_count(
+        create_results, 1,
+        status='ok', type='sibling', name="osf", path=ds.path)
 
     # if we got here, we created something at OSF;
     # make sure, we clean up afterwards
@@ -62,7 +67,7 @@ def test_create_osf_simple(path):
         # special remote is configured:
         remote_log = ds.repo.call_git(['cat-file', 'blob',
                                        'git-annex:remote.log'])
-        assert_in("project={}".format(create_results[0]['id']), remote_log)
+        assert_in("node={}".format(create_results[0]['id']), remote_log)
 
         # copy files over
         ds.repo.copy_to('.', "osf-storage")
@@ -88,7 +93,7 @@ def test_create_osf_simple(path):
         # clean remote end:
         cred = get_credentials(allow_interactive=False)
         osf = OSF(**cred)
-        delete_project(osf.session, create_results[0]['id'])
+        delete_node(osf.session, create_results[0]['id'])
 
 
 @skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
@@ -98,11 +103,14 @@ def test_create_osf_export(path):
     ds = Dataset(path).create(force=True)
     ds.save()
 
-    create_results = ds.create_sibling_osf(title="CI dl-create",
-                                           name="osf-storage",
-                                           mode="export")
+    create_results = ds.create_sibling_osf(
+        title="CI dl-create",
+        # do not create a git-remote
+        mode="exportonly")
 
-    assert_result_count(create_results, 2, status='ok', type='dataset')
+    assert_result_count(
+        create_results, 1,
+        status='ok', type='dataset', name='osf-storage', path=ds.path)
 
     # if we got here, we created something at OSF;
     # make sure, we clean up afterwards
@@ -115,7 +123,7 @@ def test_create_osf_export(path):
         # clean remote end:
         cred = get_credentials(allow_interactive=False)
         osf = OSF(**cred)
-        delete_project(osf.session, create_results[0]['id'])
+        delete_node(osf.session, create_results[0]['id'])
 
 
 @skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')

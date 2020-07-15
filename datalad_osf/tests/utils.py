@@ -12,15 +12,15 @@ from datalad.utils import (
     wraps
 )
 from datalad_osf.utils import (
-    create_project,
-    delete_project,
+    create_node,
+    delete_node,
     get_credentials,
 )
 from datalad_osf.osfclient.osfclient import OSF
 
 
 @optional_args
-def with_project(f, osf_session=None, title=None, category="project"):
+def with_node(f, osf_session=None, title=None, category="data"):
     # we don't want the test hanging, no interaction
     creds = get_credentials(allow_interactive=False)
     # supply all credentials, so osfclient can fall back on user/pass
@@ -29,13 +29,13 @@ def with_project(f, osf_session=None, title=None, category="project"):
 
     @wraps(f)
     def new_func(*args, **kwargs):
-        proj_id, proj_url = create_project(
+        node_id, proj_url = create_node(
             osf.session,
             'Temporary DataLad CI project: {}'.format(title),
             category=category)
         try:
-            return f(*(args + (proj_id,)), **kwargs)
+            return f(*(args + (node_id,)), **kwargs)
         finally:
-            delete_project(osf.session, proj_id)
+            delete_node(osf.session, node_id)
 
     return new_func

@@ -13,46 +13,59 @@ from datalad.downloaders.credentials import (
     Token,
     UserPassword,
 )
+from datalad import ui
 
 
 # Note: This should ultimately go into osfclient
-def create_project(osf_session, title, category="project", tags=None):
-    """ Create a project on OSF
+def create_node(osf_session, title, category="data", tags=None,
+                public=False, parent=None, description=None):
+    """ Create a node on OSF
 
     Parameters
     ----------
     title: str
-        Title of the project
+        Title of the node
     category: str
-        categorization changes how the project is displayed
+        categorization changes how the node is displayed
         on OSF, but doesn't appear to have a "real" function
     tags: list of str
+    public: bool
+        whether to make the new node public
+    parent: str, optional
+        ID of an OSF parent node to create a child node for
 
     Returns
     -------
     str
-        ID of the created project
+        ID of the created node
     """
 
-    url = osf_session.build_url('nodes')
+    if parent:
+        # we have a parent, use its URL to create children
+        url = osf_session.build_url('nodes', parent, 'children')
+    else:
+        url = osf_session.build_url('nodes')
     post_data = {"data":
                      {"type": "nodes",
                       "attributes":
                           {"title": title,
-                           "category": category
+                           "category": category,
+                           "public": public,
                            }
                       }
                  }
     if tags:
         post_data["data"]["attributes"]["tags"] = tags
+    if description:
+        post_data["data"]["attributes"]["description"] = description
 
     response = osf_session.post(url, data=json.dumps(post_data))
     # TODO: figure what errors to better deal with /
     #       create a better message from
     response.raise_for_status()
 
-    # TODO: This should eventually return an `Project` instance (see osfclient).
-    #       Response contains all properties of the created project.
+    # TODO: This should eventually return an `node` instance (see osfclient).
+    #       Response contains all properties of the created node.
     node_id = response.json()['data']['id']
 
     # Note: Going for "html" URL here for reporting back to the user, since this
@@ -63,23 +76,23 @@ def create_project(osf_session, title, category="project", tags=None):
     return node_id, proj_url
 
 
-def delete_project(osf_session, project):
-    """ Delete a project on OSF
+def delete_node(osf_session, id_):
+    """ Delete a node on OSF
 
     Parameters
     ----------
-    project: str
+    id_: str
         to be deleted node ID
     """
 
-    url = osf_session.build_url('nodes', project)
+    url = osf_session.build_url('nodes', id_)
     response = osf_session.delete(url)
     response.raise_for_status()
 
 
-def initialize_osf_remote(remote, project,
+def initialize_osf_remote(remote, node,
                           encryption="none", autoenable="true"):
-    """Initialize special remote with a given project
+    """Initialize special remote with a given node
 
     convenience wrapper for git-annex-initremote w/o datalad
 
@@ -87,8 +100,8 @@ def initialize_osf_remote(remote, project,
     ----------
     remote: str
         name for the special remote
-    project: str
-        ID of the project/component to use
+    node: str
+        ID of the node/component to use
     encryption: str
         see git-annex-initremote; mandatory option;
     autoenable: str
@@ -100,7 +113,7 @@ def initialize_osf_remote(remote, project,
                  "externaltype=osf",
                  "encryption={}".format(encryption),
                  "autoenable={}".format(autoenable),
-                 "project={}".format(project)]
+                 "node={}".format(node)]
 
     import subprocess
     subprocess.run(["git", "annex", "initremote", remote] + init_opts)
@@ -126,12 +139,14 @@ def get_credentials(allow_interactive=True):
         url='https://osf.io/settings/account',
     )
 
+    do_interactive = allow_interactive and ui.is_interactive()
+
     # get auth token, from environment, or from datalad credential store
     # if known-- we do not support first-time entry during a test run
     token = environ.get(
         'OSF_TOKEN',
         token_auth().get('token', None)
-        if allow_interactive or token_auth.is_known
+        if do_interactive or token_auth.is_known
         else None)
     username = None
     password = None
@@ -140,12 +155,12 @@ def get_credentials(allow_interactive=True):
         username = environ.get(
             'OSF_USERNAME',
             up_auth().get('user', None)
-            if allow_interactive or up_auth.is_known
+            if do_interactive or up_auth.is_known
             else None)
         password = environ.get(
             'OSF_PASSWORD',
             up_auth().get('password', None)
-            if allow_interactive or up_auth.is_known
+            if do_interactive or up_auth.is_known
             else None)
 
     return dict(token=token, username=username, password=password)

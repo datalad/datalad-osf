@@ -14,6 +14,7 @@ from datalad.api import clone
 from datalad.tests.utils import (
     assert_in,
     eq_,
+    skip_if_on_windows,
     with_tempfile,
 )
 
@@ -45,4 +46,23 @@ def test_readonly_access(path):
         ds.repo.whereis('inannex'))
     # obtain content, from osfannex specifically to avoid 'wget'
     ds.repo.call_git(['annex', 'copy', str(test_file), '-f', 'osfannex'])
+    eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], True)
+
+
+# git remote helper does not work on windows, due to some unclear
+# line-ending(?) issue
+# https://github.com/datalad/datalad-osf/pull/106#issuecomment-653772696
+@skip_if_on_windows
+@with_tempfile
+@patch('datalad_osf.utils.get_credentials', no_credentials)
+def test_readonly_dataset_access(path):
+    # clone from OSF; ds is self-contained at OSF
+    ds = clone('osf://q8xnk', path)
+    # standard name storage remote
+    assert_in('osf-storage', ds.repo.get_remotes())
+    for avail in ds.repo.whereis('inannex'):
+        assert_in('7784367b-69c6-483d-9564-67f840715890', avail)
+    test_file = ds.repo.pathobj / 'inannex' / 'animated.gif'
+    eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], False)
+    ds.repo.call_git(['annex', 'copy', str(test_file), '-f', 'osf-storage'])
     eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], True)

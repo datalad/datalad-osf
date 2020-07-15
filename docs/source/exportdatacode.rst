@@ -68,11 +68,11 @@ You can create such a token in your account settings (`Personal access token` an
 
     $ export OSF_TOKEN=YOUR_TOKEN_FROM_OSF.IO
 
-We are now going to use datalad to create a sibling dataset on OSF with name `osf` - this will create a new dataset called `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
+We are now going to use datalad to create a sibling dataset on OSF with name `osf` - this will create a new OSF project entitle `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
 
 .. code-block:: bash
 
-    $ datalad create-sibling-osf -s osf OSF_PROJECT_NAME
+    $ datalad create-sibling-osf -s osf --title OSF_PROJECT_NAME
 
 Setting up GitHub Remote
 ^^^^^^^^^^^^^^^^^^^^^^^^

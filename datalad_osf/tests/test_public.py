@@ -14,6 +14,7 @@ from datalad.api import clone
 from datalad.tests.utils import (
     assert_in,
     eq_,
+    skip_if_on_windows,
     with_tempfile,
 )
 
@@ -48,6 +49,10 @@ def test_readonly_access(path):
     eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], True)
 
 
+# git remote helper does not work on windows, due to some unclear
+# line-ending(?) issue
+# https://github.com/datalad/datalad-osf/pull/106#issuecomment-653772696
+@skip_if_on_windows
 @with_tempfile
 @patch('datalad_osf.utils.get_credentials', no_credentials)
 def test_readonly_dataset_access(path):

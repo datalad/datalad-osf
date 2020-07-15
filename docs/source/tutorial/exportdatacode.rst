@@ -1,84 +1,88 @@
 .. include:: ../links.inc
 
-Use case 2: Using the OSF as a data store for a GitHub-based project
-====================================================================
+Use case 3: Using the OSF as a data store for a GitHub-based project
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Imagine you are a PhD student and want to collaborate on a fun little side
-project with a student at another institute. It is quite obvious for the two of
-you that your code will be hosted on GitHub_. And you also know enough about
-DataLad_, that using it for the whole project will be really beneficial.
+This walk-through is meant as a code-along tutorial.
+Open a terminal and code along, if you want.
 
-But what about the data you are collecting?
-The Dropbox is already full (`DataLad third party providers <http://handbook.datalad.org/en/latest/basics/101-138-sharethirdparty.html>`_).
-And Amazon services don't seem to be your best alternative.
-Suddenly you remember, that you got an OSF_ account recently, and that there is this nice `Datalad extension <https://github.com/datalad/datalad-osf/>`_ to set up a `Special Remote`_ on OSF_.
+.. admonition:: Problem statement
 
-Walk through
-------------
+   Imagine you are a PhD student and want to collaborate on a fun little side project with a student at another institute.
+   You agree that your code will be hosted on GitHub_ due to its easier accessibility and greater feature selection
+   But what about the data you are collecting?
+   The Dropbox is already full (`DataLad third party providers <http://handbook.datalad.org/en/latest/basics/101-138-sharethirdparty.html>`_).
+   And Amazon services don't seem to be your best alternative.
+   Suddenly you remember, that you got an OSF_ account recently: You decide to publish your dataset to GitHub_ and your data to the OSF_ and link both via a publication dependency.
 
-Installation
-^^^^^^^^^^^^
-For installation checkout the :ref:`installation page <install>`.
+   Therefore, you go with a sibling in ``annex`` mode.
+   While others *can* clone it from the OSF, you mostly utilize it for data access and clone the dataset from GitHub.
 
 
+Creating the OSF sibling
+""""""""""""""""""""""""
 
-Creating an Example Dataset
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Given OSF credentials are set, we can create a sibling in ``annex`` mode.
 
-As a very first step you want to set up a DataLad dataset. For this you should
-run. In all examples a `$` in front indicates a new line in the Bash-Shell,
-copying it will prevent your code from execution.
+As in use case 1, the code below will create a new public OSF project called ``our-study-data``, a dataset sibling called ``osf-annex2``, and a readily configured storage sibling ``osf-annex2-storage``.
 
 .. code-block:: bash
 
-    $ datalad create collab_osf
+   # inside of the tutorial DataLad dataset
+   $ datalad create-sibling-osf --title our-study-data \
+     -s osf-annex2 \
+     --category data \
+     --tag reproducibility \
+     --public
 
-After having created the dataset we want to populate it with some content (just like in the `DataLad Handbook`_).
-Importantly we don't want to upload this file on GitHub, only on OSF - in the real world this could be your data that is too large to upload to GitHub.
+   create-sibling-osf(ok): https://osf.io/<id>/
+   [INFO   ] Configure additional publication dependency on "osf-annex2-storage"
+   configure-sibling(ok): /tmp/collab_osf (sibling)
 
-.. code-block:: bash
+Creating a sibling on GitHub
+""""""""""""""""""""""""""""
 
-    $ cd collab_osf
-    $ datalad download-url http://www.tldp.org/LDP/Bash-Beginners-Guide/Bash-Beginners-Guide.pdf \
-    --dataset . \
-    -m "add beginners guide on bash" \
-    -O books/bash_guide.pdf
-
-And we also want to add a text file, which will be saved on GitHub_ - in your case this could be the code you are using.
-
-.. code-block:: bash
-
-    $ mkdir code
-    $ cd code
-    $ echo "This is just an example file just to show the different ways of saving data in a DataLad dataset." > example.txt
-    $ datalad save --to-git -m "created an example.txt"
-
-We now have a dataset with one file that can be worked on using GitHub and one that should be tracked using `git-annex`.
-
-Setting up the OSF Remote
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-To use OSF as a storage, you need to provide either your OSF credentials or an OSF access token.
-You can create such a token in your account settings (`Personal access token` and then `Create token`), make sure to create a `full_write` token to be able to create OSF projects and upload data to OSF.
+As the goal is to use data for data storage and expose the dataset also via GitHub, we're not done yet.
+We can set-up a GitHub Remote with name ``github`` and include a publication dependency to the OSF storage sibling -- that way, when we publish our dataset to GitHub, the data files get automatically uploaded to OSF.
 
 .. code-block:: bash
 
-    $ export OSF_TOKEN=YOUR_TOKEN_FROM_OSF.IO
+    $ datalad create-sibling-github our-study-data \
+      -s github \
+      --github-login LOGIN \
+      --publish-depends osf-annex2-storage
 
-We are now going to use datalad to create a sibling dataset on OSF with name `osf` - this will create a new OSF project entitle `OSF_PROJECT_NAME` on the OSF account associated with the OSF token in `$OSF_TOKEN`.
+    You need to authenticate with '<login>@github' credentials. https://github.com/login provides information on how to gain access
+    password: <password>
+    You need to authenticate with '<login>@github' credentials. https://github.com/login provides information on how to gain access
+    password (repeat): <password>
+    [INFO   ] Configure additional publication dependency on "osf-annex2-storage"
+    .: github(-) [https://<login>@github.com/<login>/our-study-data.git (git)]
+    'https://<login>@github.com/<login>/our-study-data.git' configured as sibling 'github' for Dataset(/tmp/collab_osf)
+
+Publish the dataset to GitHub and its data to OSF
+"""""""""""""""""""""""""""""""""""""""""""""""""
+
+Because a publication dependency to the OSF is set up, a ``datalad push`` to GitHub is sufficient.
 
 .. code-block:: bash
 
-    $ datalad create-sibling-osf -s osf --title OSF_PROJECT_NAME
+    $ datalad push --to github
+      Push to 'github':  [...]           | 1.00/4.00 [00:00<00:00, 25.9k Steps/s]
+      Password for 'https://adswa@github.com': <password>
+      copy(ok): /tmp/collab_osf/books/bash_guide.pdf (file) [to osf-annex2-storage...]
+      Push to 'github': [...]           | 1.00/4.00 [00:33<01:41, 33.9s/ Steps]
+      Update availability for 'github':  [...] | 3.00/4.00 [00:00<00:00, 60.5k Steps/s]
+      Password for 'https://adswa@github.com': <password>
+      publish(ok): /tmp/collab_osf (dataset) [refs/heads/master->github:refs/heads/master [new branch]]
+      Update availability for 'github':  [...] | 3.00/4.00 [00:15<00:05, 5.27s/ Steps]
+      Publish(ok): /tmp/collab_osf (dataset) [refs/heads/git-annex->github:refs/heads/git-annex [new branch]]
+      Update availability for 'github': [...] | 3.00/4.00 [00:15<00:05, 5.27s/ Steps]
 
-Setting up GitHub Remote
-^^^^^^^^^^^^^^^^^^^^^^^^
+Afterwards, the dataset can be cloned from GitHub.
+For a user, the experience will feel similar to use case 1: After cloning, the files in Git and all dataset history are available, all data stored in the annex is retrieved upon ``datalad get``.
+The file content, though, will be retrieved from the OSF, which now serves as a data store for the GitHub repository.
 
-We can set-up a GitHub Remote with name `github` and include a publish dependency with OSF - that way, when we publish our dataset to GitHub, the data files get automatically uploaded to OSF.
+.. image:: ../_static/datastore_sibling.png
 
-.. code-block:: bash
-
-    $ datalad create-sibling-github REPRONAME -s github --github-login GITHUB_NAME --publish-depends osf
-    $ datalad publish . --to github --transfer-data all
-
-This will publish example.txt in code/ to GitHub and only add the folder structure and symbolic links for all other file; at the same time it will upload the data to OSF - this way you can let OSF handle your data and GitHub your code.
+This way you can let OSF handle your data and GitHub your code.

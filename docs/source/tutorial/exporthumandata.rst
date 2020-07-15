@@ -1,4 +1,4 @@
-.. include:: ./links.inc
+.. include:: ../links.inc
 
 Export a human-readable dataset to OSF
 **************************************
@@ -14,11 +14,7 @@ Walk through
 
 Installation
 ^^^^^^^^^^^^
-For installation checkout the installation page of the documentation.
-
-.. toctree::
-
-    settingup.rst
+For installation instructions, please checkout the `installation page <install>`.
 
 
 Creating an Example Dataset

@@ -22,27 +22,9 @@ Documentation
 
    intro
    settingup
-   exporthumandata
-   exportdatacode
-   cloneosfdata
-
-
-API
-===
-
-High-level API commands
------------------------
-
-.. currentmodule:: datalad.api
-.. autosummary::
-   :toctree: generated
-
-   create_sibling_osf
-   osf_credentials
-
-
-Command line reference
-----------------------
+   tutorial
+   contributing
+   acknowledgements
 
 .. toctree::
    :maxdepth: 1

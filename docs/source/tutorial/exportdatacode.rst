@@ -1,7 +1,7 @@
-.. include:: ./links.inc
+.. include:: ../links.inc
 
-Export version-controlled data to OSF and code to GitHub
-********************************************************
+Use case 2: Using the OSF as a data store for a GitHub-based project
+====================================================================
 
 Imagine you are a PhD student and want to collaborate on a fun little side
 project with a student at another institute. It is quite obvious for the two of
@@ -18,11 +18,8 @@ Walk through
 
 Installation
 ^^^^^^^^^^^^
-For installation checkout the installation page of the documentation.
+For installation checkout the :ref:`installation page <install>`.
 
-.. toctree::
-
-    settingup.rst
 
 
 Creating an Example Dataset

@@ -8,6 +8,7 @@ Tutorial
 
    tutorial/authentication
    tutorial/osf-sibling
+   tutorial/codealong
    tutorial/cloneosfdata
    tutorial/exporthumandata
    tutorial/exportdatacode

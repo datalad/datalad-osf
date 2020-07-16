@@ -1,69 +1,39 @@
 .. include:: ./links.inc
 
-DataLad extension to interface with OSF
-***************************************
+DataLad-OSF: Opening up the Open Science Framework for DataLad
+--------------------------------------------------------------
 
-This extension enables DataLad_ to work with the Open Science Framework (OSF_).
-Use it to publish your dataset's data to an OSF project to utilize the OSF for dataset data storage and easy dataset sharing.
+This `DataLad extension <handbook.datalad.org/en/latest/r.html?extensions>`_ enables DataLad_ to work with the Open Science Framework (OSF_).
+Use it to publish your dataset's data to an OSF project to utilize the OSF for dataset data storage and share and collaborate on datasets.
 
-The extension was created during the OHBM Hackathon 2020.
-
-If you have any questions, comments, bug fixes or improvement suggestions, feel free to contact us via our `Github page <https://github.com/datalad/datalad-osf>`_.
-Before contributing, be sure to read the `contributing guidelines <https://github.com/datalad/datalad-osf/blob/master/CONTRIBUTING.md>`_.
+.. figure:: _static/git-annex-osf-logo.png
 
 
-.. toctree::
+The extension was created during the `OHBM Hackathon 2020 <https://ohbm.github.io/hackathon2020/>`_ and wouldn't have been possible without a `dedicated team of volunteers <https://github.com/datalad/datalad-osf#contributors->`_.
+If you want to get in touch or on board as well, please see our :ref:`contributing guidelines <contribute>`.
 
-Documentation
-=============
+Documentation overview
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
    :maxdepth: 2
 
    intro
    settingup
-   exporthumandata
-   exportdatacode
-   cloneosfdata
-
-
-API
-===
-
-High-level API commands
------------------------
-
-.. currentmodule:: datalad.api
-.. autosummary::
-   :toctree: generated
-
-   create_sibling_osf
-   osf_credentials
-
-
-Command line reference
-----------------------
+   tutorial
+   contributing
+   acknowledgements
 
 .. toctree::
    :maxdepth: 1
 
-   generated/man/datalad-create-sibling-osf
-   generated/man/datalad-osf-credentials
-
-
-
-Git-annex utilities
--------------------
-
-.. currentmodule:: datalad_osf
-.. autosummary::
-   :toctree: generated
-
-   annex_remote.OSFSpecialRemote
+   cmd
+   api
+   git-annex-utils
 
 
 Indices and tables
-==================
+^^^^^^^^^^^^^^^^^^
 
 * :ref:`genindex`
 * :ref:`modindex`

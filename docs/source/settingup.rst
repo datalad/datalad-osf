@@ -52,7 +52,7 @@ First, :ref:`provide your credentials <authenticate>`:
    osf_credentials(ok): [authenticated as <user> <e-mail>]
 
 Next, create a sibling on the OSF for a DataLad dataset of your choice.
-Chose between different sibling modes to adjust how much of your dataset can be published and how it will be displayed, adjust whether your project should be private or public, attach additional meta data, or configure local sibling properties.
+Choose between different sibling modes to adjust how much of your dataset can be published and how it will be displayed, adjust whether your project should be private or public, attach additional meta data, or configure local sibling properties.
 The minimal example below will create a new (private) project with minimal metadata on the OSF and apply the necessary configurations to publish your complete dataset to it.
 
 .. code-block:: bash

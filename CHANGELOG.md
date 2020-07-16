@@ -1,3 +1,53 @@
+0.2.0 () -- More DataLad and OSF integration
+
+- This release brings a variety improvements that jointly better utilize
+  DataLad and OSF features
+
+  - Add the ability to query a credential store via DataLad, when no
+    credentials are found in environment variables
+
+  - Add `osf-credentials` command to more conveniently set and reset
+    OSF credentials for use by DataLad
+
+  - `create-sibling-osf` can now create public projects
+
+  - OSF projects are now of category `data` by default and another category
+    can be set via `create-sibling-osf --category`
+
+  - Assign default OSF project tags to location any and specific datasets
+    via OSF search functionality
+
+  - Add the ability to use OSF projects as git-annex exports or actual annex
+    stores
+
+  - Add `git-remote-osf` Git remote helper to use an OSF project as a regular
+    Git remote, using `osf://<projectid>` URLs
+
+  - Ability to `datalad clone osf://<projectid>` to publish and obtain entire
+    datasets via OSF , without the use of a separate service for Git hosting
+
+- API changes
+
+  - Rename `create-sibling-osf --sibling` to `-s/--name` for uniformity with
+    other such DataLad commands
+
+  - Rename `create-sibling-osf --mode {annexstore,exporttree}` to
+    `--mode {annex,export}` to match git-annex terminology
+
+- Expanded test suite
+
+  - Credential-less read-only access to public datasets
+
+- Fixes
+
+  - User/password authentication used user as password and failed
+
+- Dropped dependency on `7z`, archive and compression is now implemented via
+  Python standard library functionality
+
+- Major documentation overhaul to reflect the new features and changed behavior
+
+
 0.1 (Jun 18, 2020) -- Sprint!
 
 - First implementation of a DataLad extension for exchanging data with and

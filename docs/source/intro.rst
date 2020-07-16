@@ -18,6 +18,7 @@ Projects can also be assigned digital object identifiers (DOIs) and archival res
 
 At the moment, a the OSF storage provides virtually unlimited storage capacity.
 As long as individual files are smaller than 5GB, any amount of data can be uploaded to the OSF.
+Certain modes of operation of this extension are also able to circumvent the 5GB file size limit.
 This makes the OSF_ a powerful, accessible, and free data sharing and collaboration platform for researchers.
 
 
@@ -27,10 +28,10 @@ Goal of the extension
 This extension allows DataLad_ to work with the Open Science Framework (OSF_) to make sharing and collaboration on data or DataLad datasets even easier.
 It comes with several features that enable the following main use cases:
 
-#. Export existing datasets to the OSF
-#. Clone published datasets from the OSF
-#. Utilize OSF projects as a third party storage provider for annexed data
-#. Export single-view snapshots of datasets to an OSF project
+#. Publish existing datasets to the OSF (the 5GB file size limit does **not** apply)
+#. Clone published datasets from the OSF (the 5GB file size limit does **not** apply)
+#. Utilize OSF projects as a third party storage provider for annexed data (the 5GB file size limit does **not** apply)
+#. Export single-view snapshots of datasets to an OSF project (max. file size 5GB)
 
 To enable these use cases, a dataset is published as an OSF project, and its OSF storage is used as a `git-annex`_ `special remote`_ to publish (large) file contents.
 Major OSF flexibility is exposed to control whether the resulting project is private (default) or public, and to attach meaningful metadata to it.
@@ -61,6 +62,7 @@ What can I **not** use this extension for?
 - This tool does not work for data that is stored in a storage service other than the OSF_, and within the OSF, only OSF storage, no other third party storage, is supported.
   Please refer to the list of `special remotes`_ as hosted by the `git-annex`_ website for other storage services and how to use them with DataLad.
 - Also, be mindful that OSF storage imposes a maximum file size of 5GB.
-  Individual files larger than 5GB can not be published with this extension.
+  The default ``annex`` mode of this extension can circumvent this file size limit by chunking files into smaller files of configurable sizes, but other modes of operations are not capable of doing this.
+  If you attempt to publish individual files larger that exceed 5GB in size without chunking, the operation will fail. More information on this is in section :ref:`osfsibling`.
 - Finally, the starting point for working with this extension is a (published) DataLad dataset, not a regular OSF project.
   This extension will not transform normal OSF projects into datasets, but expose DataLad datasets as OSF projects.

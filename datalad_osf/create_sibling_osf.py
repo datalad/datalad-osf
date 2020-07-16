@@ -144,7 +144,7 @@ class CreateSiblingOSF(Interface):
             args=("--description",),
             metavar="TEXT",
             doc="""Description of the OSF node that will be displayed on
-            the associated project page. By default a description will
+            the associated project page. By default a description will be
             generated based on the mode the sibling is put into.""",
             constraints=EnsureStr() | EnsureNone()),
     )

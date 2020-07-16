@@ -82,4 +82,4 @@ The file content, though, will be retrieved from the OSF, which now serves as a 
 
 .. image:: ../_static/datastore_sibling.png
 
-This way you can let OSF handle your data and GitHub your code.
+This way you can let OSF handle your data, but still use GitHub to expose your dataset.

@@ -1,7 +1,7 @@
 .. include:: ../links.inc
 
 Use case 1: Publishing and cloning datasets
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. admonition:: Problem statement
 

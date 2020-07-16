@@ -39,7 +39,7 @@ As in use case 1, the code below will create a new public OSF project called ``o
 Creating a sibling on GitHub
 """"""""""""""""""""""""""""
 
-As the goal is to use data for data storage and expose the dataset also via GitHub, we're not done yet.
+As the goal is to use OSF for data storage and expose the dataset also via GitHub, we're not done yet.
 We can set-up a GitHub Remote with name ``github`` and include a publication dependency to the OSF storage sibling -- that way, when we publish our dataset to GitHub, the data files get automatically uploaded to OSF.
 
 .. code-block:: bash

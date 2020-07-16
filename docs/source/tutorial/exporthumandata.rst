@@ -65,9 +65,8 @@ To export the current state (the ``HEAD``) of the dataset with this command we r
       (recording state in git...)
 
 The resulting project has a human readable structure, and all its data can be viewed and downloaded via the OSF interface.
-It is not possible to clone this dataset.
+It is not possible to clone this dataset with DataLad, however potential users can still download it from the standard OSF interface.
 
 .. image:: ../_static/public_exportonly_sibling.png
-
 
 

@@ -9,6 +9,7 @@ Requirements
 ^^^^^^^^^^^^
 
 DataLad and ``datalad-osf`` are available for all major operating systems (Linux, MacOS, Windows 10).
+The relevant requirements are listed below.
 
    An OSF_ account
        You need an OSF account to be able to interact with it. If you don't have an account yet, `register here <https://osf.io/register>`_ -- its free!
@@ -20,7 +21,7 @@ DataLad and ``datalad-osf`` are available for all major operating systems (Linux
        You should consider having an account on one or more repository hosting sites such as `GitHub <https://github.com/join>`__ , `GitLab <https://gitlab.com/users/sign_up>`_, `Bitbucket <https://bitbucket.org/account/signup/>`_ or similar.
 
 Installation
-------------
+^^^^^^^^^^^^
 
 ``datalad-osf`` is a Python package available on `pypi <https://pypi.org/project/datalad-osf/>`_ and installable via pip_.
 
@@ -88,3 +89,10 @@ All annexed data in this dataset will be available via ``datalad get``.
 
 Curious to find out more?
 Read on in the :ref:`tutorial` for more functionality and use cases.
+
+
+.. admonition:: HELP! I'm new to this!
+
+   If this is your reaction to reading the words DataLad dataset, sibling, or dataset publishing,  please head over to the `DataLad Handbook`_ for an introduction to DataLad.
+
+   .. image:: ./_static/clueless.gif

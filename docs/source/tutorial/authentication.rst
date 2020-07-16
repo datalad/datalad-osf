@@ -9,13 +9,6 @@ To enable this, the associated user needs to be authenticated using the :command
 Therefore, as the very first step, ``datalad osf-credentials`` needs to be ran to authenticate a user.
 Unless credentials expire or change, this command needs to be ran only once per user and system.
 
-.. admonition:: HELP! I'm new to this!
-
-   If this is your reaction to reading the words DataLad dataset, sibling, or dataset publishing,  please head over to the `DataLad Handbook`_ for an introduction to DataLad.
-
-   .. image:: ../_static/clueless.gif
-
-
 Setting credentials
 ^^^^^^^^^^^^^^^^^^^
 

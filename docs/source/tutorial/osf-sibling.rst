@@ -85,7 +85,7 @@ Meta data helps to make your project discoverable and understandable.
 The OSF provides several means of attaching meta data to a project: Tags and Categories.
 By default, two tags are created upon project creation: "DataLad dataset" and the unique ID of your dataset.
 Any amount of arbitrary additional tags can be specified with one or more ``--tag`` options.
-Note that each tag needs to be specified with its own ``--tag``.
+Note that each tag needs to be specified with its own ``--tag`` parameter.
 
 The category of a project determines the small icon displayed in a project and helps search organization.
 You can chose one out of several categories ("analysis", "communication", "data", "hypothesis",
@@ -95,4 +95,4 @@ By default, the category "data" is used.
 
 .. rubric:: Footnotes
 
-.. [#f1] What exactly is a non-human readable representation? One the OSF, the Git history will be compressed to a text file and a zip file, while all annexed data will appear under the hash it is stored in in the git-annex object tree. If you are interested in finding out more about this, take a look at `this section in the DataLad handbook <http://handbook.datalad.org/en/latest/basics/101-115-symlinks.html>`_. Once cloned from the OSF to a local filesystem, the dataset will have its usual, human-readable format.
+.. [#f1] What exactly is a non-human readable representation? One the OSF, the Git history will be compressed to a text file and a zip file, while all annexed data will appear under the hash it is stored in in the git-annex object tree, i.e., with an obscured file name. If you are interested in finding out more about this, take a look at `this section in the DataLad handbook <http://handbook.datalad.org/en/latest/basics/101-115-symlinks.html>`_. Once cloned from the OSF to a local filesystem, the dataset will have its usual, human-readable format.

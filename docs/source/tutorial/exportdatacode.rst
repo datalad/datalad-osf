@@ -3,20 +3,17 @@
 Use case 3: Using the OSF as a data store for a GitHub-based project
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This walk-through is meant as a code-along tutorial.
-Open a terminal and code along, if you want.
-
 .. admonition:: Problem statement
 
    Imagine you are a PhD student and want to collaborate on a fun little side project with a student at another institute.
-   You agree that your code will be hosted on GitHub_ due to its easier accessibility and greater feature selection
+   You agree that your code will be hosted on GitHub_ due to its easier accessibility and greater feature selection.
    But what about the data you are collecting?
    The Dropbox is already full (`DataLad third party providers <http://handbook.datalad.org/en/latest/basics/101-138-sharethirdparty.html>`_).
    And Amazon services don't seem to be your best alternative.
    Suddenly you remember, that you got an OSF_ account recently: You decide to publish your dataset to GitHub_ and your data to the OSF_ and link both via a publication dependency.
 
    Therefore, you go with a sibling in ``annex`` mode.
-   While others *can* clone it from the OSF, you mostly utilize it for data access and clone the dataset from GitHub.
+   While others *can* clone it from the OSF, you mostly utilize it for data access. Others clone the dataset from GitHub and are unaware where your data is stored.
 
 
 Creating the OSF sibling

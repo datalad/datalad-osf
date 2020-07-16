@@ -13,7 +13,7 @@ Setting credentials
 ^^^^^^^^^^^^^^^^^^^
 
 To set credentials, run ``datalad osf-credentials`` anywhere on your system.
-This command prompts for user credentials and stores them internally for OSF operations.
+This command prompts for user credentials and stores them in your system's secure credential store for OSF operations.
 
 .. code-block:: bash
 

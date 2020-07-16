@@ -20,7 +20,7 @@ The :command:`datalad create-sibling-osf` command can create a dataset clone und
 General command
 ^^^^^^^^^^^^^^^
 
-When relying on default parameters, ``create-sibling-osf`` requires only a project name for the resulting OSF project (``--title``) and a sibling name (``-s/--name``).
+When relying on default parameters, ``create-sibling-osf`` requires only a project name for the resulting OSF project (``--title``) and a sibling name (``-s/--name``, which defaults to ``osf``).
 
 .. code-block:: bash
 
@@ -57,7 +57,7 @@ Sibling modes
 ``create-sibling-osf`` supports several modes that determine the functionality and usage of the resulting sibling.
 
 - ``annex`` (default): **You can publish the complete dataset to the resulting OSF project**. This includes all Git history and annexed data. Afterwards, the OSF project URL can be cloned to retrieve the dataset, and ``datalad get`` will be able retrieve all file contents, even older versions. This mode is the most convenient if you aim to share complete datasets with all data and version history. Note that the dataset representation in the OSF project is not as readable as in a local dataset (clone), but a non-human readable representation [#f1]_ tuned to enable cloning. Publishing the dataset requires only ``datalad push``.
-- ``export``: **You can push the Git history of a dataset as well as one snapshot of its data to the resulting OSF project**. Afterwards, the OSF project URL can be cloned to retrieve the dataset and ``datalad get`` will be able retrieve all file contents *in one version*. Compared to the ``annex`` mode, the dataset representation on the OSF is human-readable, but only one version of each file can be published. This mode is convenient if you want to share a dataset and its history in a human-readable way but only make one version of it available. Publishing Git history requires ``git push`` or ``datalad push``, and exporting a single view of the data must be done via ``git-annex export``.
+- ``export``: **You can push the Git history of a dataset as well as one snapshot of its data to the resulting OSF project**. Afterwards, the OSF project URL can be cloned to retrieve the dataset and ``datalad get`` will be able to retrieve all file contents *in one version*. Compared to the ``annex`` mode, the dataset representation on the OSF is human-readable, but only one version of each file can be published. This mode is convenient if you want to share a dataset and its history in a human-readable way but only make one version of it available. Publishing Git history requires ``git push`` or ``datalad push``, and exporting a single view of the data must be done via ``git-annex export``.
 - ``gitonly``: **You can push the Git history of a dataset, but no annexed data to the resulting OSF project**.  Afterwards, the OSF project URL can be cloned to retrieve the dataset, but ``datalad get`` will not be able to retrieve file contents. This can be convenient if you want to use the OSF as an alternative to GitHub_. Note that the representation of the dataset is not human-readable, but tuned for cloning.  Publishing Git history requires ``git push`` or ``datalad push``.
 - ``exportonly``: **You can export the dataset in a human-readable way in one version**. Note that this type of sibling can not be cloned from the OSF. This option is the most convenient if you want to make one snapshot of your dataset available via the OSF. Exporting needs to be done via ``git-annex export`` and your dataset will only get a storage sibling.
 

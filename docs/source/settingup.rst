@@ -8,7 +8,7 @@ Quickstart
 Requirements
 ^^^^^^^^^^^^
 
-DataLad and ``datalad-osf`` are available for all major operating systems (Linux, MacOS, Windows 10).
+DataLad and ``datalad-osf`` are available for all major operating systems (Linux, MacOS, Windows 10 [#f1]_).
 The relevant requirements are listed below.
 
    An OSF_ account
@@ -32,17 +32,6 @@ Installation
    $ . ~/env/dl-osf/bin/activate
    # install from PyPi
    $ pip install datalad-osf.
-
-If you want to use the most recent development version, clone its `GitHub repository <https://github.com/datalad/datalad-osf>`_ to your local computer and install the package in editable mode:
-
-.. code-block:: bash
-
-   # create and enter a new virtual environment (optional)
-   $ virtualenv --python=python3 ~/env/dl-osf
-   $ . ~/env/dl-osf/bin/activate
-   # install from local repository clone
-   $ pip install -r requirements-devel.txt
-   $ pip install -e .
 
 Getting started
 ^^^^^^^^^^^^^^^
@@ -96,3 +85,7 @@ Read on in the :ref:`tutorial` for more functionality and use cases.
    If this is your reaction to reading the words DataLad dataset, sibling, or dataset publishing,  please head over to the `DataLad Handbook`_ for an introduction to DataLad.
 
    .. image:: ./_static/clueless.gif
+
+.. rubric:: Footnotes
+
+.. [#f1] While installable for Windows 10, the extension may not be able to perform all functionality documented here. Please get in touch if you are familiar with Windows `to help us fix bugs <https://github.com/datalad/datalad-osf/issues?q=is%3Aissue+is%3Aopen+windows>`_.

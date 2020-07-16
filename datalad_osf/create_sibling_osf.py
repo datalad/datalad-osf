@@ -147,6 +147,15 @@ class CreateSiblingOSF(Interface):
             the associated project page. By default a description will be
             generated based on the mode the sibling is put into.""",
             constraints=EnsureStr() | EnsureNone()),
+        chunk=Parameter(
+            args=("--chunk",),
+            doc="""Determine the size files are split up into for OSF special
+            remote upload, using the format '50mb'. This feature can circumvent
+            the 5GB file size limit of the OSF by uploading files in chunks of
+            the configured size when using the 'annex' sibling mode.
+            Defaults to 50mb. To disable chunking, specify '0'.
+            More info: https://git-annex.branchable.com/chunking/""",
+            constraints=EnsureStr() | EnsureNone()),
     )
 
     @staticmethod
@@ -163,6 +172,7 @@ class CreateSiblingOSF(Interface):
                  public=False,
                  category='data',
                  description=None,
+                 chunk='50mb'
                  ):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",
@@ -257,6 +267,7 @@ class CreateSiblingOSF(Interface):
                          "type=external",
                          "externaltype=osf",
                          "autoenable=true",
+                         "chunk={}".format(chunk),
                          "node={}".format(node_id)]
 
             if mode in ("export", "exportonly"):

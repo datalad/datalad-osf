@@ -46,7 +46,7 @@ Sibling configuration
 ``create-sibling-osf`` has a number of parameters that expose the underlying flexibility of DataLad, git-annex, and the OSF.
 The most important one is the *mode* (``--mode``) parameter.
 Depending on the mode for your OSF sibling, you will be able to publish different aspects of your dataset to the OSF, and each mode requires different commands for publishing.
-Other important parameters include the ``--public`` flag (for access control), and ``--tag``, ``--category`` and ``--description`` for additional project meta data.
+Other important parameters include the ``--public`` flag (for access control), the ``--chunk`` parameter, and ``--tag``, ``--category`` and ``--description`` for additional project meta data.
 For a complete overview of all parameters, see the :ref:`command documentation <cmd>`.
 
 .. _siblingmode:
@@ -57,14 +57,16 @@ Sibling modes
 ``create-sibling-osf`` supports several modes that determine the functionality and usage of the resulting sibling.
 
 - ``annex`` (default): **You can publish the complete dataset to the resulting OSF project**. This includes all Git history and annexed data. Afterwards, the OSF project URL can be cloned to retrieve the dataset, and ``datalad get`` will be able retrieve all file contents, even older versions. This mode is the most convenient if you aim to share complete datasets with all data and version history. Note that the dataset representation in the OSF project is not as readable as in a local dataset (clone), but a non-human readable representation [#f1]_ tuned to enable cloning. Publishing the dataset requires only ``datalad push``.
-- ``export``: **You can push the Git history of a dataset as well as one snapshot of its data to the resulting OSF project**. Afterwards, the OSF project URL can be cloned to retrieve the dataset and ``datalad get`` will be able to retrieve all file contents *in one version*. Compared to the ``annex`` mode, the dataset representation on the OSF is human-readable, but only one version of each file can be published. This mode is convenient if you want to share a dataset and its history in a human-readable way but only make one version of it available. Publishing Git history requires ``git push`` or ``datalad push``, and exporting a single view of the data must be done via ``git-annex export``.
-- ``gitonly``: **You can push the Git history of a dataset, but no annexed data to the resulting OSF project**.  Afterwards, the OSF project URL can be cloned to retrieve the dataset, but ``datalad get`` will not be able to retrieve file contents. This can be convenient if you want to use the OSF as an alternative to GitHub_. Note that the representation of the dataset is not human-readable, but tuned for cloning.  Publishing Git history requires ``git push`` or ``datalad push``.
-- ``exportonly``: **You can export the dataset in a human-readable way in one version**. Note that this type of sibling can not be cloned from the OSF. This option is the most convenient if you want to make one snapshot of your dataset available via the OSF. Exporting needs to be done via ``git-annex export`` and your dataset will only get a storage sibling.
+  This mode can circumvent the 5GB file size limit of the OSF by uploading files in chunks of a configurable (default: 50 MB) size.
+- ``export``: **You can push the Git history of a dataset as well as one snapshot of its data to the resulting OSF project**. Afterwards, the OSF project URL can be cloned to retrieve the dataset and ``datalad get`` will be able to retrieve all file contents *in one version*. Compared to the ``annex`` mode, the dataset representation on the OSF is human-readable, but only one version of each file can be published. This mode is convenient if you want to share a dataset and its history in a human-readable way but only make one version of it available. Publishing Git history requires ``git push`` or ``datalad push``, and exporting a single view of the data must be done via ``git-annex export``. The 5GB file size limit applies.
+- ``gitonly``: **You can push the Git history of a dataset, but no annexed data to the resulting OSF project**.  Afterwards, the OSF project URL can be cloned to retrieve the dataset, but ``datalad get`` will not be able to retrieve file contents. This can be convenient if you want to use the OSF as an alternative to GitHub_. Note that the representation of the dataset is not human-readable, but tuned for cloning.  Publishing Git history requires ``git push`` or ``datalad push``. The 5GB file size limit is not applicable as no file content is being uploaded.
+- ``exportonly``: **You can export the dataset in a human-readable way in one version**. Note that this type of sibling can not be cloned from the OSF. This option is the most convenient if you want to make one snapshot of your dataset available via the OSF. Exporting needs to be done via ``git-annex export`` and your dataset will only get a storage sibling. The 5GB file size limit applies.
 
 
 In deciding which mode suits your use case you can consider the following questions:
 
 #. Do you want collaborators to be able to ``datalad clone`` your project? If yes, go for ``annex``, ``export``, or ``gitonly``
+#. Do you have files that exceed 5GB in size? If yes, go for ``annex``.
 #. Do you want to share your data? If yes, go for ``annex``, or -- if you're okay with sharing only a one version per file -- ``export`` and ``export only``
 #. Do you care how data looks like on the OSF? If not, go for ``annex``, if yes, use one of the ``export`` modes. Find out more about this in the :ref:`tutorial on exporting data <export>`.
 
@@ -92,6 +94,16 @@ You can chose one out of several categories ("analysis", "communication", "data"
 "instrumentation", "methods and measures", "procedure", "project", "software", "other") and specify it using the ``--category`` parameter.
 By default, the category "data" is used.
 
+File chunking
+"""""""""""""
+
+If used in the default mode (``annex``), ``datalad-osf`` circumvents OSF's 5GB file limit by uploading files in smaller chunks.
+Upon cloning the project, file chunks will be re-assembled to complete files.
+The chunking size is exposed via the ``--chunk`` parameter and defaults to ``50mb``.
+Other chunk sizes can be configured (e.g. to not reach the per day rate limit of the OSF with very large datasets, or to adjust the chunk size to your computers hardware (see `git-annex.branchable.com/chunking/ <https://git-annex.branchable.com/chunking/>`_ for more info)) by supplying a size configuration in the format ``<size>mb`` to the ``--chunk`` parameter.
+To disable chunking (for example if files are strictly smaller than 5GB), use ``--chunk 0``.
+
+Note that only the ``annex`` mode is capable of uploading files in chunks.
 
 .. rubric:: Footnotes
 

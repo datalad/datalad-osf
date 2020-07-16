@@ -1,6 +1,6 @@
 .. include:: ../links.inc
 
-Usecase 1: Publishing and cloning datasets
+Use case 1: Publishing and cloning datasets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. admonition:: Problem statement

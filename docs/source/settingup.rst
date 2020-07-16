@@ -36,7 +36,7 @@ Installation
 Getting started
 ^^^^^^^^^^^^^^^
 
-Here's the gists of some of this extension's functionality.
+Here's the gist of some of this extension's functionality.
 Checkout the :ref:`Tutorial` for more detailed demonstrations.
 
 First, :ref:`provide your credentials <authenticate>`:

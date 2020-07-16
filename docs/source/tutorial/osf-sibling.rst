@@ -6,7 +6,7 @@ Step 2: Create an OSF sibling
 
 Once authenticated, DataLad can -- if called from within a DataLad dataset -- create and modify projects on the OSF and publish annexed data, a single version view, or the complete dataset to it.
 The command that enables this is :command:`datalad create-sibling-osf`.
-It supports different modes, exposes a large number of features from the OSF webinterface and yields a custom dataset configuration for your use case at hand.
+It supports different modes, exposes a large number of features from the OSF web interface and yields a custom dataset configuration for your use case at hand.
 This section introduces the command and its functionality, and the upcoming use cases demonstrate several workflow types it can be used for.
 
 What's a sibling?
@@ -95,4 +95,4 @@ By default, the category "data" is used.
 
 .. rubric:: Footnotes
 
-.. [#f1] What exactly is a non-human readable representation? One the OSF, the Git history will be compressed to a text file and a zip file, while all annexed data will appear under the hash it is stored in in the git-annex object tree, i.e., with an obscured file name. If you are interested in finding out more about this, take a look at `this section in the DataLad handbook <http://handbook.datalad.org/en/latest/basics/101-115-symlinks.html>`_. Once cloned from the OSF to a local filesystem, the dataset will have its usual, human-readable format.
+.. [#f1] What exactly is a non-human readable representation? On the OSF, the Git history will be compressed to a text file and a zip file, while all annexed data will appear under the hash it is stored in in the git-annex object tree, i.e., with an obscured file name. If you are interested in finding out more about this, take a look at `this section in the DataLad handbook <http://handbook.datalad.org/en/latest/basics/101-115-symlinks.html>`_. Once cloned from the OSF to a local file system, the dataset will have its usual, human-readable format.

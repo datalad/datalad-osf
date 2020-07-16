@@ -29,7 +29,7 @@ Two different methods of authentication are supported and can be set with the ``
 
 - ``token``: A personal access token. This is the recommended authentication type and default.
   Generate a personal access token under your user account at `osf.io/settings/tokens <https://osf.io/settings/tokens>`_. Make sure to create a ``full_write`` token to be able to create OSF projects and upload data to OSF!
-- ``userpassword``: Your username and password combination from the OSF_ webinterface.
+- ``userpassword``: Your username and password combination from the OSF_ web interface.
 
 .. code-block:: bash
 

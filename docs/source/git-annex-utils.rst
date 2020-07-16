@@ -1,6 +1,6 @@
 .. include:: ./links.inc
 
-Git-annex utilities
+git-annex utilities
 ===================
 
 ``datalad-osf`` comes with a git-annex special remote implementation for the OSF.

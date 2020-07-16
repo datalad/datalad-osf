@@ -10,7 +10,7 @@ Use case 2: Export a human-readable dataset to OSF
 
     Imagine you have been collecting data and want to share it with others.
     All your colleagues have only sparse experience with the command line, but are frequent OSF users.
-    Therefore, you place all data in a dataset and export the latest version of your data to the OSF in a human readable way, for others to view it conveniently in the webinterface.
+    Therefore, you place all data in a dataset and export the latest version of your data to the OSF in a human readable way, for others to view it conveniently in the web interface.
 
     As you want a human-readable representation and decide to not share the version history, but only the most recent state of the data, you pick the ``exportonly`` sibling mode.
 

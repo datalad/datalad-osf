@@ -7,7 +7,7 @@ Introduction
 The Open Science Framework
 --------------------------
 
-The Open Science Framework (OSF_), developed and maintained by the Center for Open Science (COS), is a tool that promotes open, centralized workflows by enabling capture of different aspects and products of the research lifecycle, including developing a research idea, designing a study, storing and analyzing collected data, and writing and publishing reports or papers.
+The Open Science Framework (OSF_), developed and maintained by the Center for Open Science (COS), is a tool that promotes open, centralized workflows by enabling capture of different aspects and products of the research life-cycle, including developing a research idea, designing a study, storing and analyzing collected data, and writing and publishing reports or papers.
 In the scientific community, it is commonly used for registered reports, as a preprint server, and for study archival and data sharing.
 In order to use the OSF, a free registration is required.
 
@@ -43,7 +43,7 @@ You can use this extension to publish, store, collaborate on, or share your data
 Here is some inspiration on what you could do:
 
 - Publish your study (including its version history, data, code, results, and provenance) as a DataLad dataset to the OSF.
-  Share the project's OSF URL with colleages and collaborators to give them easy access to your work with a single ``datalad clone``.
+  Share the project's OSF URL with colleagues and collaborators to give them easy access to your work with a single ``datalad clone``.
 - Clone a friend's dataset -- from the OSF!
 - Use the OSF as a `special remote`_ to store data in the annex of your dataset.
   With this, you can publish a dataset to `GitHub`_ or similar Git repository hosting services, and have your data published to the OSF (via a publication dependency).
@@ -52,7 +52,7 @@ Here is some inspiration on what you could do:
   This publishes one version of your project in a human-readable fashion to the OSF to make it available to the outside world.
 
 ``datalad-osf`` comes with a range of hidden convenience functions for OSF interactions.
-Importantly, you will not need to create OSF projects via the OSF webinterface -- given appropriate credentials, ``datalad create-sibling-osf`` will create new projects under your user account and report back the generated URL.
+Importantly, you will not need to create OSF projects via the OSF web interface -- given appropriate credentials, ``datalad create-sibling-osf`` will create new projects under your user account and report back the generated URL.
 
 
 What can I **not** use this extension for?

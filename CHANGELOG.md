@@ -21,7 +21,10 @@
     stores
 
   - Add `git-remote-osf` Git remote helper to use an OSF project as a regular
-    Git remote, using `osf://<projectid>` URLs
+    Git remote, using `osf://<projectid>` URLs. Performance can be suboptimal
+    when used with `datalad push` in DataLad versions up to 0.13.0 (repeated,
+    avoidable Git repository uploads). Fixes have been queue for 0.13.1, and
+    0.14.0.
 
   - Ability to `datalad clone osf://<projectid>` to publish and obtain entire
     datasets via OSF , without the use of a separate service for Git hosting

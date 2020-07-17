@@ -1,4 +1,4 @@
-0.2.0 () -- More DataLad and OSF integration
+0.2.0 (Jul 17, 2020) -- More DataLad and OSF integration
 
 - This release brings a variety improvements that jointly better utilize
   DataLad and OSF features

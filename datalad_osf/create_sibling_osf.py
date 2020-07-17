@@ -149,12 +149,12 @@ class CreateSiblingOSF(Interface):
             constraints=EnsureStr() | EnsureNone()),
         chunk=Parameter(
             args=("--chunk",),
-            doc="""Determine the size files are split up into for OSF special
+            doc="""Specify a size files are split up into for OSF special
             remote upload, using the format '50mb'. This feature can circumvent
             the 5GB file size limit of the OSF by uploading files in chunks of
             the configured size when using the 'annex' sibling mode.
-            Defaults to 50mb. To disable chunking, specify '0'.
-            More info: https://git-annex.branchable.com/chunking/""",
+            Disabled by default. More info on chunking and chunk sizes:
+            https://git-annex.branchable.com/chunking/""",
             constraints=EnsureStr() | EnsureNone()),
     )
 
@@ -172,7 +172,7 @@ class CreateSiblingOSF(Interface):
                  public=False,
                  category='data',
                  description=None,
-                 chunk='50mb'
+                 chunk='0'
                  ):
         ds = require_dataset(dataset,
                              purpose="create OSF remote",

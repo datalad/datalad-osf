@@ -94,14 +94,21 @@ You can chose one out of several categories ("analysis", "communication", "data"
 "instrumentation", "methods and measures", "procedure", "project", "software", "other") and specify it using the ``--category`` parameter.
 By default, the category "data" is used.
 
+.. _chunking:
+
 File chunking
 """""""""""""
 
-If used in the default mode (``annex``), ``datalad-osf`` circumvents OSF's 5GB file limit by uploading files in smaller chunks.
+If used in the default mode (``annex``), ``datalad-osf`` can circumvent OSF's 5GB file limit by uploading files in smaller chunks.
 Upon cloning the project, file chunks will be re-assembled to complete files.
-The chunking size is exposed via the ``--chunk`` parameter and defaults to ``50mb``.
-Other chunk sizes can be configured (e.g. to not reach the per day rate limit of the OSF with very large datasets, or to adjust the chunk size to your computers hardware (see `git-annex.branchable.com/chunking/ <https://git-annex.branchable.com/chunking/>`_ for more info)) by supplying a size configuration in the format ``<size>mb`` to the ``--chunk`` parameter.
-To disable chunking (for example if files are strictly smaller than 5GB), use ``--chunk 0``.
+Chunking is disabled by default, but can be enabled and configured with the ``--chunk`` parameter by supplying a size configuration in the format ``<size>mb``.
+With ``--chunk 50mb``, for example, all files will be uploaded in chunks of 50MB or less.
+Chunking should be enabled if you have or expect to have files that exceed 5GB.
+When deciding on a chunking size, take the amount of files to upload and your computer's hardware into consideration: Too small chunk sizes increase the amount of API requests and very large datasets can reach the per day rate limit of the OSF (10000 requests per day).
+Too large chunks can overwhelm your computer (see `git-annex.branchable.com/chunking/ <https://git-annex.branchable.com/chunking/>`_ for more information).
+``50mb`` or ``100mb`` can be a sensible starting point.
+
+To enable chunking in the special remote **after** you created the OSF sibling, re-enable the storage sibling using ``git-annex enableremote`` (see its documentation `here <https://git-annex.branchable.com/git-annex-enableremote/>`_) and pass a ``chunk=<size>`` parameter to it.
 
 Note that only the ``annex`` mode is capable of uploading files in chunks.
 

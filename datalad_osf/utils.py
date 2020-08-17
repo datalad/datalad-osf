@@ -76,6 +76,31 @@ def create_node(osf_session, title, category="data", tags=None,
     return node_id, proj_url
 
 
+def update_node(osf_session, id_, category=None, tags=None, description=None):
+    """Updates a node on the osf
+
+    id_: str
+        to be updated node ID
+    """
+    url = osf_session.build_url('nodes', id_)
+    patch_data = {"data":
+                     {"type": "nodes",
+                      "id": id_,
+                      "attributes":
+                          {}
+                      }
+                 }
+    if category:
+        patch_data["data"]["attributes"]["category"] = category
+    if tags:
+        patch_data["data"]["attributes"]["tags"] = tags
+    if description:
+        patch_data["data"]["attributes"]["description"] = description
+
+    response = osf_session.patch(url, data=json.dumps(patch_data))
+    response.raise_for_status()
+
+
 def delete_node(osf_session, id_):
     """ Delete a node on OSF
 

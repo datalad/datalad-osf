@@ -240,8 +240,8 @@ class CreateSiblingOSF(Interface):
                     " With this extension installed, this component can be " \
                     "git or datalad cloned from a 'osf://ID' URL, where " \
                     "'ID' is the OSF node ID that shown in the OSF HTTP " \
-                    "URL, e.g. https://osf.io/q8xnk/ can be cloned from " \
-                    "osf://q8xnk"
+                    "URL, e.g. https://osf.io/q8xnk can be cloned from " \
+                    "osf://q8xnk. "
         cred = get_credentials(allow_interactive=True)
         osf = OSF(**cred)
         node_id, node_url = create_node(

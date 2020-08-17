@@ -33,6 +33,7 @@ from datalad.interface.results import get_status_dict
 from datalad_osf.osfclient.osfclient import OSF
 from datalad_osf.utils import (
     create_node,
+    update_node,
     get_credentials,
 )
 from datalad.utils import ensure_list
@@ -277,6 +278,13 @@ class CreateSiblingOSF(Interface):
 
         if mode == 'exportonly':
             return
+
+        # append how to clone this specific dataset to the description
+        description += "This particular project can be cloned using" \
+                       " 'datalad clone osf://{}'".format(node_id)
+        update_node(osf_session=osf.session,
+                    id_=node_id,
+                    description=description)
 
         ds.config.set(
             'remote.{}.annex-ignore'.format(name), 'true',

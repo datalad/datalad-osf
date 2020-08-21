@@ -50,4 +50,4 @@ jobs:
         cd __testhome__
         # give detailed info on actual test setup
         datalad wtf
-        python -m nose -s -v --with-doctest --with-coverage --cover-package datalad_osf datalad_osf.tests
+        python -m nose -s -v --logging-level=DEBUG --with-doctest --with-coverage --cover-package  datalad_osf datalad_osf.tests

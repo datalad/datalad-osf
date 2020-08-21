@@ -45,6 +45,7 @@ jobs:
         OSF_PASSWORD: ${{ secrets.OSF_PASSWORD }}
         ACTIONS_RUNNER_DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG}}
         ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG}}
+        DATALAD_LOG_LEVEL: debug
       run: |
         mkdir -p __testhome__
         cd __testhome__

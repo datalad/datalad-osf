@@ -43,6 +43,8 @@ jobs:
         OSF_USERNAME: ${{ secrets.OSF_USERNAME }}
         OSF_TOKEN: ${{ secrets.OSF_TOKEN }}
         OSF_PASSWORD: ${{ secrets.OSF_PASSWORD }}
+        ACTIONS_RUNNER_DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG}}
+        ACTIONS_STEP_DEBUG: ${{ secrets.ACTIONS_STEP_DEBUG}}
       run: |
         mkdir -p __testhome__
         cd __testhome__

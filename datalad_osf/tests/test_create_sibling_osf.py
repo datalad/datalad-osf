@@ -117,7 +117,9 @@ def test_create_osf_export(path):
     try:
         print("started the export")
         # for now just run an export and make sure it doesn't fail
-        ds.repo.call_git(['annex', '--debug', '--verbose', 'export', 'HEAD', '--to', 'osf-storage'])
+        ds.repo._git_custom_command(files=None,
+                                    cmd_str=['git', 'annex', '--debug', '--verbose', 'export', 'HEAD', '--to', 'osf-storage'],
+                                    )
         print("finished export")
     finally:
         # clean remote end:

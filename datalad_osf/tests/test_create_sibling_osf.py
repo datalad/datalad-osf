@@ -17,7 +17,8 @@ from datalad.tests.utils import (
     assert_result_count,
     skip_if,
     SkipTest,
-    with_tree
+    with_tree,
+    skip_if_on_windows
 )
 from datalad.utils import Path
 from datalad_osf.utils import (
@@ -98,6 +99,7 @@ def test_create_osf_simple(path):
 
 @skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
 @with_tree(tree=minimal_repo)
+@skip_if_on_windows
 def test_create_osf_export(path):
     print("Started the test")
     ds = Dataset(path).create(force=True)

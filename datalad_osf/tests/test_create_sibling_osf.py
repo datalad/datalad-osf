@@ -47,9 +47,11 @@ def test_invalid_calls(path):
 def test_create_osf_simple(path):
 
     ds = Dataset(path).create(force=True)
+    print("dataset: ", ds, "path: ", path)
     ds.save()
 
     file1 = Path('ds') / "file1.txt"
+
 
     create_results = ds.create_sibling_osf(name="osf")
 

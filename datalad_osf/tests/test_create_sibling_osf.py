@@ -99,15 +99,15 @@ def test_create_osf_simple(path):
 @skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
 @with_tree(tree=minimal_repo)
 def test_create_osf_export(path):
-    print("Started the test")
+
     ds = Dataset(path).create(force=True)
     ds.save()
-    print("created a dataset")
+
     create_results = ds.create_sibling_osf(
         title="CI dl-create",
         # do not create a git-remote
         mode="exportonly")
-    print("Created the sibling")
+
     assert_result_count(
         create_results, 1,
         status='ok', type='dataset', name='osf-storage', path=ds.path)
@@ -115,17 +115,16 @@ def test_create_osf_export(path):
     # if we got here, we created something at OSF;
     # make sure, we clean up afterwards
     try:
-        print("started the export")
+
         # for now just run an export and make sure it doesn't fail
-        ds.repo.call_git(['annex', '--debug', '--verbose', 'export', 'HEAD', '--to', 'osf-storage'])
-        print("finished export")
+        ds.repo.call_git(['annex', 'export', 'HEAD', '--to', 'osf-storage'])
+
     finally:
         # clean remote end:
-        print("started cleaing")
         cred = get_credentials(allow_interactive=False)
         osf = OSF(**cred)
         delete_node(osf.session, create_results[0]['id'])
-        print("finished cleaning")
+
 
 @skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
 def test_create_osf_existing():

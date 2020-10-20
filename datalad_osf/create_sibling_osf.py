@@ -68,7 +68,7 @@ class CreateSiblingOSF(Interface):
     _params_ = dict(
         dataset=Parameter(
             args=("-d", "--dataset"),
-            doc=""""Dataset to create a sibling for.""",
+            doc="""Dataset to create a sibling for.""",
             constraints=EnsureDataset() | EnsureNone()
         ),
         title=Parameter(

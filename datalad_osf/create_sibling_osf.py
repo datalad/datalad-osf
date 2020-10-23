@@ -68,9 +68,7 @@ class CreateSiblingOSF(Interface):
     _params_ = dict(
         dataset=Parameter(
             args=("-d", "--dataset"),
-            doc=""""Dataset to create a sibling for. If no further
-        constraining path is given, metadata is extracted from all files
-        of the dataset.""",
+            doc="""Dataset to create a sibling for.""",
             constraints=EnsureDataset() | EnsureNone()
         ),
         title=Parameter(

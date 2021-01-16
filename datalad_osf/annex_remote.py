@@ -18,8 +18,8 @@ from os.path import (
 import posixpath # OSF uses posix paths!
 from urllib.parse import urlparse
 
-from datalad_osf.osfclient.osfclient import OSF
-from datalad_osf.osfclient.osfclient.exceptions import UnauthorizedException
+from osfclient import OSF
+from osfclient.exceptions import UnauthorizedException
 
 from annexremote import (
     Master,

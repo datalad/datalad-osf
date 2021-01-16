@@ -24,7 +24,7 @@ from datalad_osf.utils import (
     delete_node,
     get_credentials,
 )
-from datalad_osf.osfclient.osfclient import OSF
+from osfclient import OSF
 
 
 minimal_repo = {'ds': {'file1.txt': 'content',

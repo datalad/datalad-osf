@@ -28,8 +28,8 @@ from datalad.downloaders.credentials import (
     Token,
     UserPassword,
 )
-from datalad_osf.osfclient.osfclient import OSF
-from datalad_osf.osfclient.osfclient.exceptions import UnauthorizedException
+from osfclient import OSF
+from osfclient.exceptions import UnauthorizedException
 
 
 @build_doc

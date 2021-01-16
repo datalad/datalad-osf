@@ -12,7 +12,7 @@ import os
 import sys
 from pprint import pprint
 
-from datalad_osf.osfclient.osfclient import OSF
+from osfclient import OSF
 
 
 # only token-auth and only via env var

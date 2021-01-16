@@ -25,7 +25,7 @@ from urllib.parse import urlparse
 from unittest.mock import patch
 import posixpath
 
-from datalad_osf.osfclient.osfclient import OSF
+from osfclient import OSF
 
 
 class OSFGitRemote(object):

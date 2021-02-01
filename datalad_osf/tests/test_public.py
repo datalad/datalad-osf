@@ -10,9 +10,10 @@
 from mock import patch
 
 from datalad.api import clone
-
+from datalad.support.exceptions import IncompleteResultsError
 from datalad.tests.utils import (
     assert_in,
+    assert_raises,
     eq_,
     skip_if_on_windows,
     with_tempfile,
@@ -66,3 +67,10 @@ def test_readonly_dataset_access(path):
     eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], False)
     ds.repo.call_git(['annex', 'copy', str(test_file), '-f', 'osf-storage'])
     eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], True)
+
+
+@with_tempfile
+@patch('datalad_osf.utils.get_credentials', no_credentials)
+def test_invalid_url(path):
+
+    assert_raises(IncompleteResultsError, clone, 'osf://q8xnk/somepath', path)

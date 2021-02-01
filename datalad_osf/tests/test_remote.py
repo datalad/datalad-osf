@@ -35,10 +35,7 @@ common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
 @with_node(title="CI osf-special-remote")
 @with_tempfile
 def test_gitannex(osf_id, dspath):
-    from datalad.cmd import (
-        GitRunner,
-        WitlessRunner
-    )
+    from datalad.cmd import GitWitlessRunner
     dspath = Path(dspath)
 
     ds = Dataset(dspath).create()
@@ -53,8 +50,9 @@ def test_gitannex(osf_id, dspath):
     # run git-annex-testremote
     # note, that we don't want to capture output. If something goes wrong we
     # want to see it in test build's output log.
-    WitlessRunner(
+    # TODO use AnnexRepo._call_annex(..., protocol=None) with 0.14+
+    GitWitlessRunner(
         cwd=dspath,
-        env=GitRunner.get_git_environ_adjusted()).run(
+        env=GitWitlessRunner.get_git_environ_adjusted()).run(
             ['git', 'annex', 'testremote', 'osfproject', "--fast"]
     )

@@ -474,15 +474,21 @@ class LZMAZipFile(zipfile.ZipFile):
 
 
 def main():
-    if len(sys.argv) < 3:
-        raise ValueError("Usage: git-remote-osf REMOTE-NAME URL")
+    try:
+        if len(sys.argv) < 3:
+            raise ValueError("Usage: git-remote-osf REMOTE-NAME URL")
 
-    remote, url = sys.argv[1:3]
-    # no fallback, must be present
-    gitdir = os.environ['GIT_DIR']
+        remote, url = sys.argv[1:3]
+        # no fallback, must be present
+        gitdir = os.environ['GIT_DIR']
 
-    osf = OSFGitRemote(gitdir, remote, url)
-    osf.communicate()
+        osf = OSFGitRemote(gitdir, remote, url)
+        osf.communicate()
+    except Exception as e:
+        # Receiving an exception here is "fatal" by definition.
+        # Mimicking git's error reporting style.
+        print("fatal: " + str(e), file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == '__main__':

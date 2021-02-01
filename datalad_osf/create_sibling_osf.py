@@ -33,6 +33,7 @@ from datalad.interface.results import get_status_dict
 from datalad_osf.osfclient.osfclient import OSF
 from datalad_osf.utils import (
     create_node,
+    update_node,
     get_credentials,
 )
 from datalad.utils import ensure_list
@@ -238,8 +239,8 @@ class CreateSiblingOSF(Interface):
                     " With this extension installed, this component can be " \
                     "git or datalad cloned from a 'osf://ID' URL, where " \
                     "'ID' is the OSF node ID that shown in the OSF HTTP " \
-                    "URL, e.g. https://osf.io/q8xnk/ can be cloned from " \
-                    "osf://q8xnk"
+                    "URL, e.g. https://osf.io/q8xnk can be cloned from " \
+                    "osf://q8xnk. "
         cred = get_credentials(allow_interactive=True)
         osf = OSF(**cred)
         node_id, node_url = create_node(
@@ -275,6 +276,13 @@ class CreateSiblingOSF(Interface):
 
         if mode == 'exportonly':
             return
+
+        # append how to clone this specific dataset to the description
+        description += "This particular project can be cloned using" \
+                       " 'datalad clone osf://{}'".format(node_id)
+        update_node(osf_session=osf.session,
+                    id_=node_id,
+                    description=description)
 
         ds.config.set(
             'remote.{}.annex-ignore'.format(name), 'true',

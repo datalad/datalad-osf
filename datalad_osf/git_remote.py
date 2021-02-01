@@ -55,7 +55,8 @@ class OSFGitRemote(object):
           Stream for logging.
         """
         self.parsed_url = urlparse(url)
-        if self.parsed_url.path:  # project urls have no path
+        if self.parsed_url.path and self.parsed_url.path != '/':
+            # project urls have no path
             raise RuntimeError("Only URLs of type osf://<PROJECT ID> are "
                                "supported. Got: %s" % url)
         self.remote = remote

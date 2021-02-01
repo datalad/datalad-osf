@@ -7,6 +7,8 @@
     id>).
     This led to an infinite recursion when installing subdatasets.
 
+- An internal function allows to update existing project metadata
+
 - Several tweaks to the documentation
 
 - Changes in continuous integration testing with no implications for users

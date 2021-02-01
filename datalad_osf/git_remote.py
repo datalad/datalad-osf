@@ -56,7 +56,8 @@ class OSFGitRemote(object):
         """
         self.parsed_url = urlparse(url)
         if self.parsed_url.path:  # project urls have no path
-            raise RuntimeError("Invalid OSF project URL: %s" % url)
+            raise RuntimeError("Only URLs of type osf://<PROJECT ID> are "
+                               "supported. Got: %s" % url)
         self.remote = remote
         # internal logic relies on workdir to be an absolute path
         self.workdir = Path(gitdir, 'osf', remote).resolve()

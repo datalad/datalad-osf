@@ -1,3 +1,19 @@
+0.2.1 (Feb 1, 2021) -- Bugfix
+
+- Fixes
+
+  - A bug that allowed to clone an OSF project from misshaped URLs of type
+    osf://<project id>/some/where/underneath (was treated as osf://<project
+    id>).
+    This led to an infinite recursion when installing subdatasets.
+
+- Several tweaks to the documentation
+
+- Changes in continuous integration testing with no implications for users
+
+- Updated internal osfclient fork
+
+
 0.2.0 (Jul 17, 2020) -- More DataLad and OSF integration
 
 - This release brings a variety improvements that jointly better utilize

@@ -16,7 +16,7 @@ from datalad_osf.utils import (
     delete_node,
     get_credentials,
 )
-from datalad_osf.osfclient.osfclient import OSF
+from osfclient import OSF
 
 
 @optional_args

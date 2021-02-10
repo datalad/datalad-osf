@@ -1,3 +1,9 @@
+0.2.2 (Feb 10, 2021) -- No forks
+
+- The internal fork of osfclient has been removed and a dependency to
+  version 0.0.5 (which comes with all necessary features) was added.
+
+
 0.2.1 (Feb 1, 2021) -- Bugfix
 
 - Fixes

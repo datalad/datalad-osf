@@ -30,7 +30,7 @@ from datalad.support.constraints import (
     EnsureBool,
 )
 from datalad.interface.results import get_status_dict
-from datalad_osf.osfclient.osfclient import OSF
+from osfclient import OSF
 from datalad_osf.utils import (
     create_node,
     update_node,

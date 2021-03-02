@@ -1,3 +1,9 @@
+0.2.3 (Mar 2, 2021) -- Cleanup
+
+- Mainly updating the release on PyPi to remove accidentally included
+  remains of the previous osfclient fork.
+
+
 0.2.2 (Feb 10, 2021) -- No forks
 
 - The internal fork of osfclient has been removed and a dependency to

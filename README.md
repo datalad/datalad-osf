@@ -66,3 +66,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+## Acknowledgements
+
+This DataLad extension was developed with support from the German Federal
+Ministry of Education and Research (BMBF 01GQ1905), and the US National Science
+Foundation (NSF 1912266).

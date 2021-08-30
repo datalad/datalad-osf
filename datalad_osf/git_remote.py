@@ -43,6 +43,8 @@ class GGRemoteBase(object):
        just use it in combination with specific backend.
     """
 
+    codename = None  # define in subclass
+
     def __init__(self,
                  gitdir,
                  remote,
@@ -86,27 +88,65 @@ class GGRemoteBase(object):
         self.marks_git.touch()
         self.marks_rmt.touch()
 
+    #
+    # The interface to overload
+    #
 
-    def log(self, *args):
-        print(*args, file=self.errstream)
+    def _init_backend(self):
+        pass
 
-    def send(self, msg):
-        print(msg, end='', file=self.outstream, flush=True)
-
-    # ??? might still be OSF specific TODO
-    def get_remote_state(self):
-        """Return a dict with hashes for the remote repo archive or None
+    def get_remote_archive(self):
         """
-        archive_handle = self.get_remote_archive()
-        return archive_handle.hashes if archive_handle else None
+        Return path to the archive under sync/
 
-    def mirror_repo_if_needed(self):
+        TODO: make place to download under an arg?
+        """
+        raise NotImplementedError
+
+    def get_remote_state(self):
+        """Return the state of the remote storage for early detection of either has needed "state"
+
+        ATM: OSF specific - collection of hashes known to OSF
+        """
+        raise NotImplementedError
+
+    def get_remote_refs(self):
+        raise NotImplementedError
+
+    def put_to_remote_archive_refs(self, archive, refs):
+        raise NotImplementedError
+
+    #
+    # Conveniences to centralize naming etc
+    #
+
+    @property
+    def repodir_env(self):
+        env = os.environ.copy()
+        env['GIT_DIR'] = str(self.repodir)
+        return env
+
+    @property
+    def _upload_failed_marker(self):
+        return self.workdir / 'upload_failed'
+
+    @property
+    def _syncdir(self):
+        return self.workdir / 'sync'
+
+    @property
+    def _synced(self):
+        """Synced state
+        """
+        return self.workdir / 'synced'
+
+    def _mirror_repo_if_needed(self):
         """Ensure a local Git repo mirror of the one archived at the remote.
         """
         # TODO acquire and release lock
         # stamp file with last synchronization IDs
-        synced = self.workdir / 'synced'
         repo_hashes = None
+        synced = self._synced
         if synced.exists():
             repo_hashes = self.get_remote_state()
             if repo_hashes is None:
@@ -130,16 +170,15 @@ class GGRemoteBase(object):
         if repo_hashes is None:
             # there is nothing at the remote end
             return
-        sync_dir = self.workdir / 'sync'
-        sync_dir.mkdir(parents=True, exist_ok=True)
+
+        syncdir = self._syncdir
+        syncdir.mkdir(parents=True, exist_ok=True)
         self.log('Downloading repository archive')
-        repo_archive = sync_dir / posixpath.basename(
-            self.get_remote_archive().path)
-        with (repo_archive).open('wb') as fp:
-            self.get_remote_archive().write_to(fp)
+        repo_archive = self.get_remote_archive()
+
         self.log('Extracting repository archive')
         if self.repodir.exists():
-            # if we extract, we cannot tollerate left-overs
+            # if we extract, we cannot tolerate left-overs
             rmtree(str(self.repodir), ignore_errors=True)
         if repo_archive.suffix == '.zip':
             with zipfile.ZipFile(str(repo_archive)) as zip:
@@ -156,7 +195,7 @@ class GGRemoteBase(object):
                 stdout=subprocess.PIPE,
                 check=True,
             )
-        rmtree(str(sync_dir), ignore_errors=True)
+        rmtree(str(syncdir), ignore_errors=True)
         # update sync stamp only after everything else was successful
         synced.write_text(json.dumps(repo_hashes))
 
@@ -165,6 +204,7 @@ class GGRemoteBase(object):
 
         The mirror must exist, when this functional is called.
         """
+        self._mirror_repo_if_needed()
         if not self.repodir.exists():
             # this should not happen.If we get here, it means that Git
             # was promised some refs to be available, but there the mirror
@@ -173,18 +213,16 @@ class GGRemoteBase(object):
             # before
             raise RuntimeError(
                 f'{self.codename} repository mirror not found')
-        env = os.environ.copy()
-        env['GIT_DIR'] = str(self.repodir)
         subprocess.run([
             'git', 'fast-export',
             '--import-marks={}'.format(str(self.marks_rmt)),
             '--export-marks={}'.format(str(self.marks_rmt)),
             '--refspec', self.refspec] + refs,
-            env=env,
+            env=self.repodir_env,
             check=True,
         )
 
-    def format_refs_in_mirror(self):
+    def _format_refs_in_mirror(self):
         """Format a report on refs in the mirror like LIST wants it
 
         If the mirror is empty, the report will be empty.
@@ -192,8 +230,7 @@ class GGRemoteBase(object):
         refs = ''
         if not self.repodir.exists():
             return refs
-        env = os.environ.copy()
-        env['GIT_DIR'] = str(self.repodir)
+        env = self.repodir_env
         refs += subprocess.run([
             'git', 'for-each-ref', "--format=%(objectname) %(refname)"],
             env=env,
@@ -219,8 +256,52 @@ class GGRemoteBase(object):
         is then zip'ed and uploaded.
         """
         # TODO acquire and release lock
-        env = os.environ.copy()
-        env['GIT_DIR'] = str(self.repodir)
+        updated_refs = self._update_mirror()
+
+        # TODO acknowledge a failed upload
+        if not updated_refs:
+            return
+
+        archive, refs = self.export_mirror_under_sync()
+
+        self.log('Upload repository archive')
+        try:
+            self.put_to_remote_archive_refs(archive, refs)
+        except Exception as e:
+            # TODO we could retry...
+            # make a record which refs failed to update/upload
+            self._upload_failed_marker.write_text(
+                json.dumps(updated_refs))
+            # to not report refs as successfully updated
+            raise e
+
+        # we no longer need the repo archive, we keep the actual
+        # repo mirror
+        self.cleanup_sync()
+
+
+        # upload was successful, so we can report that
+        for ref in updated_refs:
+            self.send(f'ok {ref}\n')
+
+        # lastly update the sync stamp to avoid redownload of what was
+        # just uploaded
+        synced = self._synced
+        repo_hashes = self.get_remote_state()
+        if repo_hashes is None:
+            self.log('Failed to update sync stamp after successful upload')
+        else:
+            synced.write_text(json.dumps(repo_hashes))
+
+    def _update_mirror(self):
+        """Updates (creates if needed) mirror via fast-import
+
+        Returns a list of refs which either got updated or were known from
+        previous failed attempt
+        """
+        self._mirror_repo_if_needed()
+
+        env = self.repodir_env
         if not self.repodir.exists():
             # ensure we have a repo
             self.repodir.mkdir()
@@ -245,6 +326,14 @@ class GGRemoteBase(object):
             env=env,
             check=True,
         )
+        # figure out if anything happened
+        upload_failed_marker = self._upload_failed_marker
+        if upload_failed_marker.exists():
+            # we have some unsync'ed data from a previous attempt
+            updated_refs = json.load(upload_failed_marker.open())
+            upload_failed_marker.unlink()
+        else:
+            updated_refs = []
         # which refs do we have now?
         after = subprocess.run([
             'git', 'for-each-ref', "--format= %(refname) %(objectname) "],
@@ -253,27 +342,22 @@ class GGRemoteBase(object):
             stdout=subprocess.PIPE,
             universal_newlines=True,
         ).stdout
-        # figure out if anything happened
-        upload_failed_marker = (self.workdir / 'upload_failed')
-        if upload_failed_marker.exists():
-            # we have some unsync'ed data from a previous attempt
-            updated_refs = json.load(upload_failed_marker.open())
-            need_sync = True
-            upload_failed_marker.unlink()
-        else:
-            updated_refs = []
-            need_sync = False
-        for line in after.splitlines():
-            if line in before:
-                # no change in ref
-                continue
-            else:
-                updated_refs.append(line.strip().split()[0])
-                need_sync = True
+        updated_refs += [
+            line.strip().split()[0]
+            for line in after.splitlines()
+            if line not in before
+        ]
+        return env, updated_refs
 
-        # TODO acknowledge a failed upload
-        if not need_sync:
-            return
+    def export_mirror_under_sync(self):
+        """Archive mirror under /sync within workdir
+
+        Returns
+        -------
+        Path, Path:
+          archive (.zip), refs
+        """
+        env = self.repodir_env
         subprocess.run([
             'git', 'gc'],
             env=env,
@@ -282,51 +366,35 @@ class GGRemoteBase(object):
             check=False,
         )
         # prepare upload pack
-        sync_dir = self.workdir / 'sync'
-        if not sync_dir.exists():
-            sync_dir.mkdir()
+        syncdir = self._syncdir
+        if not syncdir.exists():
+            syncdir.mkdir()
         # use our zipfile wrapper to get an LZMA compressed archive
         # via the shutil convenience layer
         with patch('zipfile.ZipFile', LZMAZipFile):
             make_archive(
-                str(sync_dir / 'repo'),
+                str(syncdir / 'repo'),
                 'zip',
                 root_dir=str(self.workdir),
                 base_dir='repo',
             )
         # dump refs for a later LIST of the remote
-        (sync_dir / 'refs').write_text(
-            self.format_refs_in_mirror())
+        (syncdir / 'refs').write_text(
+            self._format_refs_in_mirror())
+        return (syncdir / 'repo.zip'), (syncdir / 'refs')
 
-        self.log('Upload repository archive')
-        try:
-            refs = sync_dir / 'refs'
-            archive = sync_dir / 'repo.zip'
-            self.put_to_remote_archive_refs(archive, refs)
-        except Exception as e:
-            # TODO we could retry...
-            # make a record which refs failed to update/upload
-            upload_failed_marker.write_text(
-                json.dumps(updated_refs))
-            # to not report refs as successfully updated
-            raise e
+    def cleanup_sync(self):
+        rmtree(str(self._syncdir), ignore_errors=True)
 
-        # we no longer need the repo archive, we keep the actual
-        # repo mirror
-        rmtree(str(sync_dir), ignore_errors=True)
+    #
+    # Actual git remote logic
+    #
 
-        # upload was successful, so we can report that
-        for ref in updated_refs:
-            print('ok {}'.format(ref))
+    def log(self, *args):
+        print(*args, file=self.errstream)
 
-        # lastly update the sync stamp to avoid redownload of what was
-        # just uploaded
-        synced = self.workdir / 'synced'
-        repo_hashes = self.get_remote_state()
-        if repo_hashes is None:
-            self.log('Failed to update sync stamp after successful upload')
-        else:
-            synced.write_text(json.dumps(repo_hashes))
+    def send(self, msg):
+        print(msg, end='', file=self.outstream, flush=True)
 
     def communicate(self):
         """Implement the necessary pieces of the git-remote-helper protocol
@@ -354,7 +422,6 @@ class GGRemoteBase(object):
                 self.send('{}\n'.format(self.get_remote_refs()))
             elif line.startswith('import '):
                 # data is being imported from remote
-                self.mirror_repo_if_needed()
                 refs = [line[7:].strip()]
                 while True:
                     line = self.instream.readline()
@@ -371,7 +438,6 @@ class GGRemoteBase(object):
                 self.send('done\n')
             elif line == 'export\n':
                 # data is being exported to remote
-                self.mirror_repo_if_needed()
                 self.export_to_remote()
                 self.send(
                     '\n'
@@ -439,7 +505,6 @@ class OSFGitRemote(GGRemoteBase):
             self._osfstorage = self.osfproject.storage()
         return self._osfstorage
 
-
     def get_remote_refs(self):
         """Report remote refs
 
@@ -463,7 +528,7 @@ class OSFGitRemote(GGRemoteBase):
             refs = fp.read().decode('ascii')
         return refs
 
-    def get_remote_archive(self):
+    def _get_remote_archive_handle(self):
         """Return an OSFclient file handle for the remote zip archive
 
         or None if there isn't one at the remote.
@@ -483,6 +548,20 @@ class OSFGitRemote(GGRemoteBase):
                 '/.git/repo.7z', None))
         self._remote_archive = repo_handle
         return repo_handle
+
+    def get_remote_state(self):
+        """Return a dict with hashes for the remote repo archive or None
+        """
+        archive_handle = self._get_remote_archive_handle()
+        return archive_handle.hashes if archive_handle else None
+
+    def get_remote_archive(self):
+        archive_handle = self._get_remote_archive_handle()
+        repo_archive = self._syncdir / posixpath.basename(
+            archive_handle.path)
+        with repo_archive.open('wb') as fp:
+            archive_handle.write_to(fp)
+        return repo_archive
 
     def put_to_remote_archive_refs(self, archive, refs):
         for fpath, tpath in ((refs, '/.git/refs'),

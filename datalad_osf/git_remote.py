@@ -28,8 +28,21 @@ import posixpath
 from osfclient import OSF
 
 
-class OSFGitRemote(object):
-    """git-remote-helper implementation to maintain a repo archive in OSF projects."""
+class GGRemoteBase(object):
+    """A base (backend independent) implementation for any Git Guts git remote.
+
+    Implements all logic to do all the dances with git export/import and refs, and
+    subclasses implement GET/PUT functionality of archive and refs files from/to
+    remote.
+
+    TODO:
+    1. might as well be not inheritance  but delegation to the minimal API
+       of the corresponding backend to get/put those few files.
+    2. might be further RFed to just provide implementation of all unique
+       functionality without being a "git-remote", and then git remote would
+       just use it in combination with specific backend.
+    """
+
     def __init__(self,
                  gitdir,
                  remote,
@@ -55,72 +68,24 @@ class OSFGitRemote(object):
           Stream for logging.
         """
         self.parsed_url = urlparse(url)
-        if self.parsed_url.path and self.parsed_url.path != '/':
-            # project urls have no path
-            raise RuntimeError("Only URLs of type osf://<PROJECT ID> are "
-                               "supported. Got: %s" % url)
         self.remote = remote
         # internal logic relies on workdir to be an absolute path
-        self.workdir = Path(gitdir, 'osf', remote).resolve()
+        self.workdir = Path(gitdir, self.codename, remote).resolve()
         self.repodir = self.workdir / 'repo'
         self.marks_git = self.workdir / "git.marks"
-        self.marks_osf = self.workdir / "osf.marks"
-        self.refspec = "refs/heads/*:refs/osf/{}/*".format(remote)
+        self.marks_rmt = self.workdir / f"{self.codename}.marks"
+        self.refspec = f"refs/heads/*:refs/{self.codename}/{remote}/*"
         self.instream = instream
         self.outstream = outstream
         self.errstream = errstream
 
-        self.osf = self._get_osf_api()
-        self._osfproject = None
-        self._osfstorage = None
-        self._remote_archive = None
+        self._init_backend()
 
         # TODO delay
         self.workdir.mkdir(parents=True, exist_ok=True)
         self.marks_git.touch()
-        self.marks_osf.touch()
+        self.marks_rmt.touch()
 
-    def _get_osf_api(self):
-        """"""
-        try:
-            # make use of DataLad's credential manager for a more convenient
-            # out-of-the-box behavior
-            from datalad_osf.utils import get_credentials
-            # we should be able to allow interactive
-            creds = get_credentials(allow_interactive=True)
-        except ImportError as e:
-            # whenever anything goes wrong here, stay clam and fall back
-            # on envvars.
-            # we want this special remote to be fully functional without
-            # datalad
-            creds = dict(
-                username=os.environ.get('OSF_USERNAME', None),
-                password=os.environ.get('OSF_PASSWORD', None),
-                token=os.environ.get('OSF_TOKEN', None),
-            )
-        # next one just sets up the stage, no requests performed yet, hence
-        # no error checking needed
-        # supply both auth credentials, so osfclient can fall back on user/pass
-        # if needed
-        return OSF(**creds)
-
-    @property
-    def osfproject(self):
-        if self._osfproject is None:
-            # next one performs initial auth, and raise of that goes wrong
-            # because of insufficient auth
-            self._osfproject = self.osf.project(
-                self.parsed_url.netloc.strip('/'))
-        return self._osfproject
-
-    @property
-    def osfstorage(self):
-        if self._osfstorage is None:
-            # TODO select storage other than 'osfstorage'?
-            # could be done by using the 'path' part of the
-            # osf:// URL
-            self._osfstorage = self.osfproject.storage()
-        return self._osfstorage
 
     def log(self, *args):
         print(*args, file=self.errstream)
@@ -128,50 +93,7 @@ class OSFGitRemote(object):
     def send(self, msg):
         print(msg, end='', file=self.outstream, flush=True)
 
-    def get_remote_refs(self):
-        """Report remote refs
-
-        There are kept in a dedicated "refs" file at the remote.
-
-        Returns
-        -------
-        str
-        """
-        refs_handle = [
-            f for f in self.osfstorage.files
-            if f.path == '/.git/refs']
-        if not len(refs_handle):
-            # ls didn't find a repo at the remote end, but could talk to
-            # the remote itself -> nothing to there
-            return ''
-        refs_handle = refs_handle[0]
-        with TemporaryFile() as fp:
-            refs_handle.write_to(fp)
-            fp.seek(0)
-            refs = fp.read().decode('ascii')
-        return refs
-
-    def get_remote_archive(self):
-        """Return an OSFclient file handle for the remote zip archive
-
-        or None if there isn't one at the remote.
-        """
-        if self._remote_archive:
-            return self._remote_archive
-        # otherwise search for it
-        repo_handle = {
-            f.path: f
-            for f in self.osfstorage.files
-            if f.path.startswith('/.git/repo')
-        }
-        # pick new-style LZMA-zip, fall back on old 7z, and
-        # lastly report None, if there isn't anything
-        repo_handle = repo_handle.get(
-            '/.git/repo.zip', repo_handle.get(
-                '/.git/repo.7z', None))
-        self._remote_archive = repo_handle
-        return repo_handle
-
+    # ??? might still be OSF specific TODO
     def get_remote_state(self):
         """Return a dict with hashes for the remote repo archive or None
         """
@@ -182,8 +104,7 @@ class OSFGitRemote(object):
         """Ensure a local Git repo mirror of the one archived at the remote.
         """
         # TODO acquire and release lock
-        url = self.parsed_url
-        # stamp file with last syncronization IDs
+        # stamp file with last synchronization IDs
         synced = self.workdir / 'synced'
         repo_hashes = None
         if synced.exists():
@@ -251,13 +172,13 @@ class OSFGitRemote(object):
             # any recovery form such a situation should have happened
             # before
             raise RuntimeError(
-                'osf repository mirror not found')
+                f'{self.codename} repository mirror not found')
         env = os.environ.copy()
         env['GIT_DIR'] = str(self.repodir)
         subprocess.run([
             'git', 'fast-export',
-            '--import-marks={}'.format(str(self.marks_osf)),
-            '--export-marks={}'.format(str(self.marks_osf)),
+            '--import-marks={}'.format(str(self.marks_rmt)),
+            '--export-marks={}'.format(str(self.marks_rmt)),
             '--refspec', self.refspec] + refs,
             env=env,
             check=True,
@@ -290,15 +211,14 @@ class OSFGitRemote(object):
         refs += '@{} HEAD\n'.format(HEAD_ref.strip())
         return refs
 
-    def export_to_osf(self):
-        """Export a fast-export stream to osf.
+    def export_to_remote(self):
+        """Export a fast-export stream to remote.
 
         The stream is fast-import'ed into a local repository mirror first.
         If not mirror repository exists, an empty one is created. The mirror
         is then zip'ed and uploaded.
         """
         # TODO acquire and release lock
-        url = self.parsed_url
         env = os.environ.copy()
         env['GIT_DIR'] = str(self.repodir)
         if not self.repodir.exists():
@@ -320,8 +240,8 @@ class OSFGitRemote(object):
         # perform actual import
         subprocess.run([
             'git', 'fast-import', '--quiet',
-            '--import-marks={}'.format(str(self.marks_osf)),
-            '--export-marks={}'.format(str(self.marks_osf))],
+            '--import-marks={}'.format(str(self.marks_rmt)),
+            '--export-marks={}'.format(str(self.marks_rmt))],
             env=env,
             check=True,
         )
@@ -380,11 +300,9 @@ class OSFGitRemote(object):
 
         self.log('Upload repository archive')
         try:
-            for fpath, tpath in ((sync_dir / 'refs', '/.git/refs'),
-                          (sync_dir / 'repo.zip', '/.git/repo.zip')):
-                with fpath.open('rb') as fp:
-                    self.osfstorage.create_file(
-                        tpath, fp, force=True, update=True)
+            refs = sync_dir / 'refs'
+            archive = sync_dir / 'repo.zip'
+            self.put_to_remote_archive_refs(archive, refs)
         except Exception as e:
             # TODO we could retry...
             # make a record which refs failed to update/upload
@@ -392,7 +310,6 @@ class OSFGitRemote(object):
                 json.dumps(updated_refs))
             # to not report refs as successfully updated
             raise e
-            return
 
         # we no longer need the repo archive, we keep the actual
         # repo mirror
@@ -436,7 +353,7 @@ class OSFGitRemote(object):
             elif line == 'list\n':
                 self.send('{}\n'.format(self.get_remote_refs()))
             elif line.startswith('import '):
-                # data is being imported from osf
+                # data is being imported from remote
                 self.mirror_repo_if_needed()
                 refs = [line[7:].strip()]
                 while True:
@@ -453,9 +370,9 @@ class OSFGitRemote(object):
                 self.import_refs_from_mirror(refs)
                 self.send('done\n')
             elif line == 'export\n':
-                # data is being exported to osf
+                # data is being exported to remote
                 self.mirror_repo_if_needed()
-                self.export_to_osf()
+                self.export_to_remote()
                 self.send(
                     '\n'
                 )
@@ -463,6 +380,117 @@ class OSFGitRemote(object):
                 self.log('UNKNOWN COMMAND', line)
                 # unrecoverable error
                 return
+
+
+class OSFGitRemote(GGRemoteBase):
+    """git-remote-helper implementation to maintain a repo archive in OSF projects."""
+
+    codename = 'osf'
+
+    def _init_backend(self):
+        if self.parsed_url.path and self.parsed_url.path != '/':
+            # project urls have no path
+            raise RuntimeError("Only URLs of type osf://<PROJECT ID> are "
+                               "supported. Got: %s" % url)
+        self.osf = self._get_osf_api()
+        self._osfproject = None
+        self._osfstorage = None
+        self._remote_archive = None
+
+    def _get_osf_api(self):
+        """"""
+        try:
+            # make use of DataLad's credential manager for a more convenient
+            # out-of-the-box behavior
+            from datalad_osf.utils import get_credentials
+            # we should be able to allow interactive
+            creds = get_credentials(allow_interactive=True)
+        except ImportError as e:
+            # whenever anything goes wrong here, stay clam and fall back
+            # on envvars.
+            # we want this special remote to be fully functional without
+            # datalad
+            creds = dict(
+                username=os.environ.get('OSF_USERNAME', None),
+                password=os.environ.get('OSF_PASSWORD', None),
+                token=os.environ.get('OSF_TOKEN', None),
+            )
+        # next one just sets up the stage, no requests performed yet, hence
+        # no error checking needed
+        # supply both auth credentials, so osfclient can fall back on user/pass
+        # if needed
+        return OSF(**creds)
+
+    @property
+    def osfproject(self):
+        if self._osfproject is None:
+            # next one performs initial auth, and raise of that goes wrong
+            # because of insufficient auth
+            self._osfproject = self.osf.project(
+                self.parsed_url.netloc.strip('/'))
+        return self._osfproject
+
+    @property
+    def osfstorage(self):
+        if self._osfstorage is None:
+            # TODO select storage other than 'osfstorage'?
+            # could be done by using the 'path' part of the
+            # osf:// URL
+            self._osfstorage = self.osfproject.storage()
+        return self._osfstorage
+
+
+    def get_remote_refs(self):
+        """Report remote refs
+
+        There are kept in a dedicated "refs" file at the remote.
+
+        Returns
+        -------
+        str
+        """
+        refs_handle = [
+            f for f in self.osfstorage.files
+            if f.path == '/.git/refs']
+        if not len(refs_handle):
+            # ls didn't find a repo at the remote end, but could talk to
+            # the remote itself -> nothing to there
+            return ''
+        refs_handle = refs_handle[0]
+        with TemporaryFile() as fp:
+            refs_handle.write_to(fp)
+            fp.seek(0)
+            refs = fp.read().decode('ascii')
+        return refs
+
+    def get_remote_archive(self):
+        """Return an OSFclient file handle for the remote zip archive
+
+        or None if there isn't one at the remote.
+        """
+        if self._remote_archive:
+            return self._remote_archive
+        # otherwise search for it
+        repo_handle = {
+            f.path: f
+            for f in self.osfstorage.files
+            if f.path.startswith('/.git/repo')
+        }
+        # pick new-style LZMA-zip, fall back on old 7z, and
+        # lastly report None, if there isn't anything
+        repo_handle = repo_handle.get(
+            '/.git/repo.zip', repo_handle.get(
+                '/.git/repo.7z', None))
+        self._remote_archive = repo_handle
+        return repo_handle
+
+    def put_to_remote_archive_refs(self, archive, refs):
+        for fpath, tpath in ((refs, '/.git/refs'),
+                             (archive, '/.git/repo.zip')):
+            with fpath.open('rb') as fp:
+                self.osfstorage.create_file(
+                    tpath, fp, force=True, update=True)
+
 
 # tiny wrapper to monkey-patch zipfile in order to have
 # shutil.make_archive produce an LZMA-compressed ZIP

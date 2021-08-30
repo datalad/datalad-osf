@@ -350,7 +350,7 @@ class GGRemoteBase(object):
             for line in after.splitlines()
             if line not in before
         ]
-        return env, updated_refs
+        return updated_refs
 
     def export_mirror_under_sync(self):
         """Archive mirror under /sync within workdir

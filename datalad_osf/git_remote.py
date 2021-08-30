@@ -103,18 +103,37 @@ class GGRemoteBase(object):
         """
         raise NotImplementedError
 
-    def get_remote_state(self):
-        """Return the state of the remote storage for early detection of either has needed "state"
-
-        ATM: OSF specific - collection of hashes known to OSF
-        """
-        raise NotImplementedError
-
     def get_remote_refs(self):
         raise NotImplementedError
 
     def put_to_remote_archive_refs(self, archive, refs):
         raise NotImplementedError
+
+    # Detection of either remote state is changed.
+    # OSF uses some hashes, but generally might not be available, so we would just
+    # rely on the fact that if refs are exactly the same as before -- no new pair of archive +refs new was
+    # uploaded.  But that also begs a question - either that OSF state handling is needed/worth the hassle
+
+    @property
+    def _synced(self):
+        """Synced state
+        """
+        return self.workdir / 'synced'
+
+    def get_remote_state(self):
+        """Return the state of the remote storage for early detection of either has needed "state"
+
+        Return
+        ------
+        json-serializable object
+        """
+        return {'refs': self.get_remote_refs()}
+
+    def is_remote_state_unchanged(self, remote_state, synced_state):
+        return remote_state == synced_state
+
+    def _save_synced_state(self, remote_state):
+        self._synced.write_text(json.dumps(remote_state))
 
     #
     # Conveniences to centralize naming etc
@@ -134,40 +153,25 @@ class GGRemoteBase(object):
     def _syncdir(self):
         return self.workdir / 'sync'
 
-    @property
-    def _synced(self):
-        """Synced state
-        """
-        return self.workdir / 'synced'
-
     def _mirror_repo_if_needed(self):
         """Ensure a local Git repo mirror of the one archived at the remote.
         """
         # TODO acquire and release lock
         # stamp file with last synchronization IDs
-        repo_hashes = None
+        remote_state = self.get_remote_state()
         synced = self._synced
         if synced.exists():
-            repo_hashes = self.get_remote_state()
-            if repo_hashes is None:
+            if remote_state is None:
                 # we had it sync'ed before, but now it is gone from the
                 # remote -- we have all that is left locally
                 synced.unlink()
                 # sync stamp removed, but leave any local mirror untouched
                 # it may be the only copy left
                 return
-            # compare states, try to be robust and take any hash match
-            # unclear when which hash is available, but any should be good
-            last_hashes = json.load(synced.open())
-            if any(repo_hashes.get(k, None) == v
-                    for k, v in last_hashes.items()):
+            if self.is_remote_state_unchanged(remote_state, json.load(synced.open())):
                 # local sync matches remote situation
                 return
-        if repo_hashes is None:
-            # in case we never sync'ed, obtain the ID info prior download
-            # so we have it, whenever the download succeeded
-            repo_hashes = self.get_remote_state()
-        if repo_hashes is None:
+        if remote_state is None:
             # there is nothing at the remote end
             return
 
@@ -197,7 +201,7 @@ class GGRemoteBase(object):
             )
         rmtree(str(syncdir), ignore_errors=True)
         # update sync stamp only after everything else was successful
-        synced.write_text(json.dumps(repo_hashes))
+        self._save_synced_state(remote_state)
 
     def import_refs_from_mirror(self, refs):
         """Uses fast-export to pull refs from the local repository mirror
@@ -279,19 +283,18 @@ class GGRemoteBase(object):
         # repo mirror
         self.cleanup_sync()
 
-
         # upload was successful, so we can report that
         for ref in updated_refs:
             self.send(f'ok {ref}\n')
 
         # lastly update the sync stamp to avoid redownload of what was
         # just uploaded
-        synced = self._synced
-        repo_hashes = self.get_remote_state()
-        if repo_hashes is None:
+        # TODO: if "state" is just refs, not worth another round-trip
+        remote_state = self.get_remote_state()
+        if remote_state is None:
             self.log('Failed to update sync stamp after successful upload')
         else:
-            synced.write_text(json.dumps(repo_hashes))
+            self._save_synced_state(remote_state)
 
     def _update_mirror(self):
         """Updates (creates if needed) mirror via fast-import
@@ -549,12 +552,6 @@ class OSFGitRemote(GGRemoteBase):
         self._remote_archive = repo_handle
         return repo_handle
 
-    def get_remote_state(self):
-        """Return a dict with hashes for the remote repo archive or None
-        """
-        archive_handle = self._get_remote_archive_handle()
-        return archive_handle.hashes if archive_handle else None
-
     def get_remote_archive(self):
         archive_handle = self._get_remote_archive_handle()
         repo_archive = self._syncdir / posixpath.basename(
@@ -569,6 +566,25 @@ class OSFGitRemote(GGRemoteBase):
             with fpath.open('rb') as fp:
                 self.osfstorage.create_file(
                     tpath, fp, force=True, update=True)
+
+    #
+    # Custom OSF specific "state" handling for a lightweight (?) detection of changes
+    #
+
+    def get_remote_state(self):
+        """Return a dict with hashes for the remote repo archive or None
+        """
+        archive_handle = self._get_remote_archive_handle()
+        return archive_handle.hashes if archive_handle else None
+
+    def is_remote_state_unchanged(self, remote_state, synced_state):
+        # compare states, try to be robust and take any hash match
+        # unclear when which hash is available, but any should be good
+        if any(remote_state.get(k, None) == v
+               for k, v in synced_state.items()):
+            # local sync matches remote situation
+            return True
+        return False
 
 
 # tiny wrapper to monkey-patch zipfile in order to have

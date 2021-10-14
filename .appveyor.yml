@@ -41,8 +41,8 @@
 #     will run until the file is removed (or 60 min have passed)
 
 
-# make repository clone cheap
-shallow_clone: true
+# do not make repository clone cheap: interfers with versioneer
+shallow_clone: false
 
 
 environment:

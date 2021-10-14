@@ -62,6 +62,7 @@ environment:
       DTS: datalad_osf
       APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu2004
       INSTALL_SYSPKGS: python3-virtualenv
+      CODECOV_BINARY: https://uploader.codecov.io/latest/linux/codecov
       # system git-annex is way too old, use better one
       INSTALL_GITANNEX: git-annex -m deb-url --url http://snapshot.debian.org/archive/debian/20201228T023115Z/pool/main/g/git-annex/git-annex_8.20201127-1_amd64.deb
     # Windows core tests
@@ -78,6 +79,7 @@ environment:
       PY: 3.8
       INSTALL_GITANNEX: git-annex
       DATALAD_LOCATIONS_SOCKETS: /Users/appveyor/DLTMP/sockets
+      CODECOV_BINARY: https://uploader.codecov.io/latest/macos/codecov
 
 
 # it is OK to specify paths that may not exist for a particular test run
@@ -178,10 +180,11 @@ after_test:
   # prepare coverage.xml in a separate invocation.
   # if invoked directly with nose - do not include test_ files themselves
   - python -m coverage xml
-  - cmd: powershell Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-  - cmd: "set PATH=C:\\msys64\\usr\\bin;%PATH%"
-  - cmd: bash codecov.sh -f "coverage.xml" -U "-s" -A "-s" 
-  - sh: bash <(curl -s https://codecov.io/bash)
+  - cmd: powershell Invoke-WebRequest -Uri ' https://uploader.codecov.io/latest/windows/codecov.exe' -OutFile codecov.exe
+  - cmd: .\codecov.exe
+  - sh: "curl -Os $CODECOV_BINARY"
+  - sh: chmod +x codecov
+  - sh: ./codecov
 
 
 #on_success:

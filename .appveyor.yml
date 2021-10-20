@@ -181,7 +181,7 @@ after_test:
   # if invoked directly with nose - do not include test_ files themselves
   - python -m coverage xml
   - cmd: powershell Invoke-WebRequest -Uri ' https://uploader.codecov.io/latest/windows/codecov.exe' -OutFile codecov.exe
-  - cmd: .\codecov.exe -f "coverage.xml"
+  - cmd: .\codecov.exe -f "coverage.xml" -v
   - sh: "curl -Os $CODECOV_BINARY"
   - sh: chmod +x codecov
   - sh: ./codecov

@@ -121,6 +121,15 @@
         "doc",
         "userTesting"
       ]
+    },
+    {
+      "login": "thomasrockhu-codecov",
+      "name": "Tom Hu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/88201630?v=4",
+      "profile": "https://github.com/thomasrockhu-codecov",
+      "contributions": [
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,

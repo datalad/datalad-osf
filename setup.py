@@ -40,6 +40,9 @@ if __name__ == '__main__':
                   # valid datalad interface specification (see demo in this extensions
                   'osf=datalad_osf:command_suite',
               ],
+              'datalad.downloaders': [
+                  'gg=datalad_osf.git_remote:GGDownloader',
+              ],
               'console_scripts': [
                   'git-remote-osf=datalad_osf.git_remote:main',
                   'git-annex-remote-osf=datalad_osf.annex_remote:main',

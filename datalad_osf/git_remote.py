@@ -27,6 +27,127 @@ import posixpath
 
 from osfclient import OSF
 
+class GitGutter(object):
+    pass
+
+from datalad.distribution.dataset import require_dataset
+from datalad.dochelpers import borrowkwargs
+from datalad.downloaders.base import BaseDownloader
+from datalad.downloaders.providers import Provider
+from datalad.support.network import URL
+
+
+class GGDownloader(BaseDownloader):
+
+    @borrowkwargs(BaseDownloader)
+    def __init__(self, credential=None, authenticator=None):
+        assert credential is None
+        assert authenticator is None
+        super().__init__()
+
+    def get_status_from_headers(cls, headers):
+        import pdb; pdb.set_trace()
+
+    def get_downloader_session(self, url):
+        import pdb; pdb.set_trace()
+        return  # no session is needed really?
+
+    def download(self, url, path=None, **kwargs):
+        # assert path is None -- path to download to?!
+        # assert not kwargs  -- {'overwrite': False} -- I thought it is done above!?
+        url_ri = URL(url)
+        ds = require_dataset(None)  # only in CWD, to be used within special remote anyways
+        import pdb; pdb.set_trace()
+        gg = GGExporter(ds.repo.dot_git)
+        if url_ri.hostname == 'refs':
+            print(gg.get_formatted_refs())
+        elif url_ri.hostname == 'archive':
+            # both at once only ATM
+            archive, refs = gg.export_mirror('/tmp/TEMP-sync')
+            print(archive)
+        else:
+            raise ValueError(f"Have no clue how to get {url}")
+
+
+# TODO: need to patch DataLad to allow for extending providers with ones from entry points
+Provider.DOWNLOADERS['gg'] = {'class': GGDownloader}
+
+
+class GGExporter:
+
+    def __init__(self, repodir):
+        self.repodir = Path(repodir)
+
+    @property
+    def repodir_env(self):
+        env = os.environ.copy()
+        env['GIT_DIR'] = str(self.repodir)
+        return env
+
+    def get_formatted_refs(self):
+        """Format a report on refs in the mirror like LIST wants it
+
+        If the mirror is empty, the report will be empty.
+        """
+        refs = ''
+        if not self.repodir.exists():
+            return refs
+        env = self.repodir_env
+        refs += subprocess.run([
+            'git', 'for-each-ref', "--format=%(objectname) %(refname)"],
+            env=env,
+            check=True,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        ).stdout
+        HEAD_ref = subprocess.run([
+            'git', 'symbolic-ref', 'HEAD'],
+            env=env,
+            check=True,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        ).stdout
+        refs += '@{} HEAD\n'.format(HEAD_ref.strip())
+        return refs
+
+
+    def export_mirror(self, syncdir):
+        """Archive mirror under /sync within workdir
+
+        Returns
+        -------
+        Path, Path:
+          archive (.zip), refs
+        """
+        env = self.repodir_env
+        subprocess.run([
+            'git', 'gc'],
+            env=env,
+            # who knows why this would fail, but it would not be then end
+            # of the world
+            check=False,
+        )
+        # prepare upload pack
+        syncdir = Path(syncdir)
+        if not syncdir.exists():
+            syncdir.mkdir()
+        # use our zipfile wrapper to get an LZMA compressed archive
+        # via the shutil convenience layer
+        with patch('zipfile.ZipFile', LZMAZipFile):
+            make_archive(
+                str(syncdir / 'repo'),
+                'zip',
+                root_dir=str(self.workdir),
+                base_dir='repo',
+            )
+        # dump refs for a later LIST of the remote
+        (syncdir / 'refs').write_text(
+            self.get_formatted_refs())
+        return (syncdir / 'repo.zip'), (syncdir / 'refs')
+
+    def cleanup_sync(self):
+        rmtree(str(self._syncdir), ignore_errors=True)
+
 
 class GGRemoteBase(object):
     """A base (backend independent) implementation for any Git Guts git remote.
@@ -80,6 +201,9 @@ class GGRemoteBase(object):
         self.instream = instream
         self.outstream = outstream
         self.errstream = errstream
+
+        # Its duty is simple -- export of the repo and refs
+        self._gg = GGExporter(repodir=self.repodir)
 
         self._init_backend()
 
@@ -226,32 +350,6 @@ class GGRemoteBase(object):
             check=True,
         )
 
-    def _format_refs_in_mirror(self):
-        """Format a report on refs in the mirror like LIST wants it
-
-        If the mirror is empty, the report will be empty.
-        """
-        refs = ''
-        if not self.repodir.exists():
-            return refs
-        env = self.repodir_env
-        refs += subprocess.run([
-            'git', 'for-each-ref', "--format=%(objectname) %(refname)"],
-            env=env,
-            check=True,
-            stdout=subprocess.PIPE,
-            universal_newlines=True,
-        ).stdout
-        HEAD_ref = subprocess.run([
-            'git', 'symbolic-ref', 'HEAD'],
-            env=env,
-            check=True,
-            stdout=subprocess.PIPE,
-            universal_newlines=True,
-        ).stdout
-        refs += '@{} HEAD\n'.format(HEAD_ref.strip())
-        return refs
-
     def export_to_remote(self):
         """Export a fast-export stream to remote.
 
@@ -266,7 +364,7 @@ class GGRemoteBase(object):
         if not updated_refs:
             return
 
-        archive, refs = self.export_mirror_under_sync()
+        archive, refs = self._gg.export_mirror(self._syncdir)
 
         self.log('Upload repository archive')
         try:
@@ -351,43 +449,6 @@ class GGRemoteBase(object):
             if line not in before
         ]
         return updated_refs
-
-    def export_mirror_under_sync(self):
-        """Archive mirror under /sync within workdir
-
-        Returns
-        -------
-        Path, Path:
-          archive (.zip), refs
-        """
-        env = self.repodir_env
-        subprocess.run([
-            'git', 'gc'],
-            env=env,
-            # who knows why this would fail, but it would not be then end
-            # of the world
-            check=False,
-        )
-        # prepare upload pack
-        syncdir = self._syncdir
-        if not syncdir.exists():
-            syncdir.mkdir()
-        # use our zipfile wrapper to get an LZMA compressed archive
-        # via the shutil convenience layer
-        with patch('zipfile.ZipFile', LZMAZipFile):
-            make_archive(
-                str(syncdir / 'repo'),
-                'zip',
-                root_dir=str(self.workdir),
-                base_dir='repo',
-            )
-        # dump refs for a later LIST of the remote
-        (syncdir / 'refs').write_text(
-            self._format_refs_in_mirror())
-        return (syncdir / 'repo.zip'), (syncdir / 'refs')
-
-    def cleanup_sync(self):
-        rmtree(str(self._syncdir), ignore_errors=True)
 
     #
     # Actual git remote logic

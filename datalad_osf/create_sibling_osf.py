@@ -19,10 +19,7 @@ from datalad.distribution.dataset import (
     EnsureDataset,
     require_dataset
 )
-from datalad.interface.utils import (
-    ac,
-    eval_results,
-)
+from datalad.interface.base import eval_results
 from datalad.support.constraints import (
     EnsureChoice,
     EnsureNone,
@@ -30,6 +27,7 @@ from datalad.support.constraints import (
     EnsureBool,
 )
 from datalad.interface.results import get_status_dict
+from datalad.interface.utils import ac
 from osfclient import OSF
 from datalad_osf.utils import (
     create_node,

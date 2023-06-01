@@ -17,7 +17,7 @@ from datalad.distribution.dataset import (
     datasetmethod,
     EnsureDataset,
 )
-from datalad.interface.utils import (
+from datalad.interface.base import (
     eval_results,
 )
 from datalad.support.constraints import (

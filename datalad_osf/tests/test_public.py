@@ -7,31 +7,32 @@
 #
 # ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
 
-from mock import patch
-
 from datalad.api import clone
-from datalad.support.exceptions import IncompleteResultsError
-from datalad.tests.utils import (
+from datalad_next.exceptions import IncompleteResultsError
+from datalad_next.tests.utils import (
     assert_in,
     assert_raises,
     eq_,
     skip_if_on_windows,
-    with_tempfile,
 )
+import datalad_osf.utils as dlosf_utils
 
 
 def no_credentials(*args, **kwargs):
     return dict(token=None, username=None, password=None)
 
 
-@with_tempfile
-# make sure that even with locally configured credentials
-# none actually reach the special remote
-@patch('datalad_osf.utils.get_credentials', no_credentials)
-def test_readonly_access(path):
+def test_readonly_access(tmp_path, monkeypatch):
     # obtain a prepared minimal dataset with pre-configured
     # OSF remotes and prestaged data
-    ds = clone('https://github.com/datalad/testrepo--minimalds-osf.git', path)
+    # make sure that even with locally configured credentials
+    # none actually reach the special remote
+    with monkeypatch.context() as m:
+        m.setattr(dlosf_utils, 'get_credentials', no_credentials)
+        ds = clone(
+            'https://github.com/datalad/testrepo--minimalds-osf.git',
+            tmp_path,
+        )
     # check that both OSF remotes were enabled
     assert_in('osfannex', ds.repo.get_remotes())
     assert_in('osftree', ds.repo.get_remotes())
@@ -54,11 +55,13 @@ def test_readonly_access(path):
 # line-ending(?) issue
 # https://github.com/datalad/datalad-osf/pull/106#issuecomment-653772696
 @skip_if_on_windows
-@with_tempfile
-@patch('datalad_osf.utils.get_credentials', no_credentials)
-def test_readonly_dataset_access(path):
+def test_readonly_dataset_access(tmp_path, monkeypatch):
     # clone from OSF; ds is self-contained at OSF
-    ds = clone('osf://q8xnk', path)
+    # make sure that even with locally configured credentials
+    # none actually reach the special remote
+    with monkeypatch.context() as m:
+        m.setattr(dlosf_utils, 'get_credentials', no_credentials)
+        ds = clone('osf://q8xnk', tmp_path)
     # standard name storage remote
     assert_in('osf-storage', ds.repo.get_remotes())
     for avail in ds.repo.whereis('inannex'):
@@ -69,8 +72,12 @@ def test_readonly_dataset_access(path):
     eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], True)
 
 
-@with_tempfile
-@patch('datalad_osf.utils.get_credentials', no_credentials)
-def test_invalid_url(path):
-
-    assert_raises(IncompleteResultsError, clone, 'osf://q8xnk/somepath', path)
+def test_invalid_url(tmp_path, monkeypatch):
+    # make sure that even with locally configured credentials
+    # none actually reach the special remote
+    with monkeypatch.context() as m:
+        m.setattr(dlosf_utils, 'get_credentials', no_credentials)
+        assert_raises(
+            IncompleteResultsError,
+            clone, 'osf://q8xnk/somepath', tmp_path,
+        )

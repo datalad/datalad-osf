@@ -253,6 +253,13 @@ class OSFSpecialRemote(ExportRemote):
                 f.path.lstrip(posixpath.sep): f
                 for f in self.storage.files
             }
+            for p, key in (
+                ('.git/refs', 'XDLRA--refs'),
+                ('.git/repo.zip', 'XDLRA--repo-export'),
+            ):
+                handle = self._files.get(p)
+                if handle is not None:
+                    self._files[key] = handle
         return self._files
 
     def removeexportdirectory(self, remote_directory):

@@ -7,21 +7,7 @@
 #
 # ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
 
-from datalad.api import (
-    Dataset,
-)
-from datalad.utils import Path
-from datalad.tests.utils import (
-    with_tempfile,
-    skip_if_on_windows,
-    skip_if,
-)
-from datalad_osf.tests.utils import (
-    with_node,
-)
-from datalad_osf.utils import (
-    get_credentials,
-)
+from datalad_next.tests.utils import skip_if_on_windows
 
 common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
                     "autoenable=true"]
@@ -31,17 +17,12 @@ common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
 # remote. It might just be that the SHA256 key paths get too long
 # https://github.com/datalad/datalad-osf/issues/71
 @skip_if_on_windows
-@skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
-@with_node(title="CI osf-special-remote")
-@with_tempfile
-def test_gitannex(osf_id, dspath):
+def test_gitannex(osf_node, minimal_dataset):
     from datalad.cmd import GitWitlessRunner
-    dspath = Path(dspath)
-
-    ds = Dataset(dspath).create()
+    ds = minimal_dataset
 
     # add remote parameters here
-    init_remote_opts = ["node={}".format(osf_id)]
+    init_remote_opts = ["node={}".format(osf_node)]
 
     # add special remote
     init_opts = common_init_opts + init_remote_opts
@@ -52,7 +33,7 @@ def test_gitannex(osf_id, dspath):
     # want to see it in test build's output log.
     # TODO use AnnexRepo._call_annex(..., protocol=None) with 0.14+
     GitWitlessRunner(
-        cwd=dspath,
+        cwd=ds.path,
         env=GitWitlessRunner.get_git_environ_adjusted()).run(
             ['git', 'annex', 'testremote', 'osfproject', "--fast"]
     )

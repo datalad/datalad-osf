@@ -7,49 +7,24 @@
 #
 # ## ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ##
 
-from datalad.api import (
-    Dataset,
-)
-from datalad.tests.utils import (
-    assert_equal,
-    assert_in,
-    assert_not_in,
-    assert_result_count,
-    skip_if,
-    SkipTest,
-    with_tree
-)
-from datalad.utils import Path
-from datalad_osf.utils import (
-    delete_node,
-    get_credentials,
-)
+from datalad_next.tests.utils import assert_result_count
+from datalad_osf.utils import delete_node
 from osfclient import OSF
 
 
-minimal_repo = {'ds': {'file1.txt': 'content',
-                       'subdir': {'file2.txt': 'different content'}
-                       }
-                }
+#def test_invalid_calls(minimal_dataset):
+#
+#    # - impossible w/o dataset
+#    # - impossible w/o annex
+#    # - mandatory arguments
+#    raise SkipTest("TODO")
 
 
-@with_tree(tree=minimal_repo)
-def test_invalid_calls(path):
+def test_create_osf_simple(osf_credentials_or_skip, minimal_dataset):
 
-    # - impossible w/o dataset
-    # - impossible w/o annex
-    # - mandatory arguments
-    raise SkipTest("TODO")
+    ds = minimal_dataset
 
-
-@skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
-@with_tree(tree=minimal_repo)
-def test_create_osf_simple(path):
-
-    ds = Dataset(path).create(force=True)
-    ds.save()
-
-    file1 = Path('ds') / "file1.txt"
+    file1 = ds.pathobj / "file1.txt"
 
     create_results = ds.create_sibling_osf(name="osf")
 
@@ -67,41 +42,37 @@ def test_create_osf_simple(path):
         # special remote is configured:
         remote_log = ds.repo.call_git(['cat-file', 'blob',
                                        'git-annex:remote.log'])
-        assert_in("node={}".format(create_results[0]['id']), remote_log)
+        assert "node={}".format(create_results[0]['id']) in remote_log
 
         # copy files over
         ds.repo.copy_to('.', "osf-storage")
         whereis = ds.repo.whereis(str(file1))
         here = ds.config.get("annex.uuid")
         # files should be 'here' and on remote end:
-        assert_equal(len(whereis), 2)
-        assert_in(here, whereis)
+        assert len(whereis) == 2
+        assert here in whereis
 
         # drop content here
         ds.drop('.')
         whereis = ds.repo.whereis(str(file1))
         # now on remote end only
-        assert_equal(len(whereis), 1)
-        assert_not_in(here, whereis)
+        assert len(whereis) == 1
+        assert here not in whereis
 
         # and get content again from remote:
         ds.get('.')
         whereis = ds.repo.whereis(str(file1))
-        assert_equal(len(whereis), 2)
-        assert_in(here, whereis)
+        assert len(whereis) == 2
+        assert here in whereis
     finally:
         # clean remote end:
-        cred = get_credentials(allow_interactive=False)
-        osf = OSF(**cred)
+        osf = OSF(**osf_credentials_or_skip)
         delete_node(osf.session, create_results[0]['id'])
 
 
-@skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
-@with_tree(tree=minimal_repo)
-def test_create_osf_export(path):
+def test_create_osf_export(osf_credentials_or_skip, minimal_dataset):
 
-    ds = Dataset(path).create(force=True)
-    ds.save()
+    ds = minimal_dataset
 
     create_results = ds.create_sibling_osf(
         title="CI dl-create",
@@ -121,12 +92,9 @@ def test_create_osf_export(path):
 
     finally:
         # clean remote end:
-        cred = get_credentials(allow_interactive=False)
-        osf = OSF(**cred)
+        osf = OSF(**osf_credentials_or_skip)
         delete_node(osf.session, create_results[0]['id'])
 
 
-@skip_if(cond=not any(get_credentials().values()), msg='no OSF credentials')
-def test_create_osf_existing():
-
-    raise SkipTest("TODO")
+# def test_create_osf_existing(osf_credentials_or_skip):
+#     raise SkipTest("TODO")

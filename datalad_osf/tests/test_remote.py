@@ -13,10 +13,6 @@ common_init_opts = ["encryption=none", "type=external", "externaltype=osf",
                     "autoenable=true"]
 
 
-# testremote itself fails in the prep-phase, before talking to the special
-# remote. It might just be that the SHA256 key paths get too long
-# https://github.com/datalad/datalad-osf/issues/71
-@skip_if_on_windows
 def test_gitannex(osf_node, minimal_dataset):
     from datalad.cmd import GitWitlessRunner
     ds = minimal_dataset

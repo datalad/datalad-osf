@@ -1,0 +1,6 @@
+This directory contains changelog items for the next release.
+
+The easiest way to add new change log items is to run
+`scriv create`, and edit and commit the generated template.
+
+`scriv` is available at https://pypi.org/project/scriv/

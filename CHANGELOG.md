@@ -1,3 +1,33 @@
+# 0.3.0 (2023-06-09) -- Leaner is better!
+
+## 💫 Enhancements and new features
+
+- The Git remote helper `git-remote-osf` has been reimplemented using the
+  `datalad-annex` Git remote helper from `datalad-next`. This has allowed
+  for removing 25% of the code base with no loss of functionality, and
+  actually gaining features (plus various bug fixes). With this release,
+  also "export-mode" dataset deposits can be cloned directly from OSF.
+  Previously, this was just possible for "annex-mode" deposits that suffer
+  from the lack of human-readability.
+
+## 🐛 Bug Fixes
+
+- Git remote helper is now fully functional on Windows too.
+  Fixed https://github.com/datalad/datalad-osf/issues/112
+
+- Repeated pushes are now working properly.
+  Fixed https://github.com/datalad/datalad-osf/issues/148
+
+- Force-pushes are now supported.
+  Fixed https://github.com/datalad/datalad-osf/issues/162
+
+## 🛡 Tests
+
+- The test battery has been ported to `pytest`.
+
+- `git annex testremote` is now also exercised on Windows.
+
+
 # 0.2.3 (Mar 2, 2021) -- Cleanup
 
 ## 🏠 Internal

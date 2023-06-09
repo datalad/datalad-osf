@@ -12,3 +12,4 @@ Tutorial
    tutorial/cloneosfdata
    tutorial/exporthumandata
    tutorial/exportdatacode
+   tutorial/exportmode

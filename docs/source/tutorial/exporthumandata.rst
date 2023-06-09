@@ -21,7 +21,7 @@ Creating the OSF sibling
 Given OSF credentials are set, we can create a sibling in ``export-only`` mode.
 We will also make the project public (``--public``), and attach a custom description (``--description``) to it.
 
-The code below will create a new public OSF project called ``best-data-ever``, a dataset sibling called ``osf-exportonly-storage``. This sibling is a sole storage sibling -- in technical terms, a git-annex_ `special remote`_ -- and can only be used with pure git-annex commands.
+The code below will create a new public OSF project called ``best-data-ever``, a dataset sibling called ``osf-exportonly-storage``. This sibling is a sole storage sibling -- in technical terms, a git-annex_ `special remote`_. It will not contain version history, but all your dataset's files.
 
 .. code-block:: bash
 
@@ -44,25 +44,18 @@ The code below will create a new public OSF project called ``best-data-ever``, a
 Publishing the dataset
 """"""""""""""""""""""
 
-In ``exportonly`` mode, the only way to publish data is via ``git annex export`` (more on this command `here <https://git-annex.branchable.com/git-annex-export/>`_).
-This command is a pure git-annex_ command and can export a *tree* (a branch, tag, or any other tree-ish accepted by Git including e.g., ``master:subdir``) to the OSF without obscuring filenames.
-
-To export the current state (the ``HEAD``) of the dataset with this command we run:
+To publish the current state (the ``HEAD``) of the dataset, simply run:
 
 .. code-block:: bash
 
-    $ git-annex export HEAD --to osf-export-storage
-      export osf-export-storage .datalad/.gitattributes
-      ok
-      export osf-export-storage .datalad/config
-      ok
-      export osf-export-storage .gitattributes
-      ok
-      export osf-export-storage books/bash_guide.pdf
-      ok
-      export osf-export-storage code/example.txt
-      ok
-      (recording state in git...)
+    $ datalad push  --to osf-export-storage
+      copy(ok): .datalad/.gitattributes
+      copy(ok): .datalad/config
+      copy(ok): .gitattributes
+      copy(ok): books/bash_guide.pdf
+      copy(ok): code/example.txt
+      action summary:
+         copy (ok: 5)
 
 The resulting project has a human readable structure, and all its data can be viewed and downloaded via the OSF interface.
 It is not possible to clone this dataset with DataLad, however potential users can still download it from the standard OSF interface.

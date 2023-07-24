@@ -12,7 +12,7 @@ In the scientific community, it is commonly used for registered reports, as a pr
 In order to use the OSF, a free registration is required.
 
 The core functionality of the OSF_ is its ability to create and develop *projects*, with a project being a private or public workspace for collaboration, data sharing, or data archival.
-Projects have an associate storage (either via OSF storage or third party providers) for (large) data, and can have *components*, associated sub-projects.
+Projects have an associated storage (either via OSF storage or third party providers) for (large) data, and can have *components*, associated sub-projects.
 Each OSF user, project, component, and file is given a unique, persistent uniform resource locator (URL) to enable sharing and promote attribution.
 Projects can also be assigned digital object identifiers (DOIs) and archival resource keys (ARKs) if they are made publicly available.
 

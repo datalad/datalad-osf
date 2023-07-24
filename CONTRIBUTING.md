@@ -13,7 +13,7 @@ You are very welcome to help out developing this tool further. You can contribut
 
 ## How to contribute
 The preferred way to contribute to this repository is
-to fork the [master branch of this repository](https://github.com/datalad/datalad-osf/tree/master) on GitHub.  
+to fork the [main branch of this repository](https://github.com/datalad/datalad-osf/tree/main) on GitHub.  
 Note that you can test the software on our [Testing repository on Open Science Framework](https://osf.io/zhcqw/).
 
 Here we outline the workflow used by the developers:
@@ -23,7 +23,7 @@ Here we outline the workflow used by the developers:
 
           git clone git://github.com/datalad/datalad-osf
 
-1. Fork the [master branch of this repository](https://github.com/datalad/datalad-osf/tree/master): click on the 'Fork'
+1. Fork the [main branch of this repository](https://github.com/datalad/datalad-osf/tree/main): click on the 'Fork'
    button near the top of the page.  This creates a copy of the code
    base under your account on the GitHub server.
 
@@ -53,7 +53,7 @@ Here we outline the workflow used by the developers:
     such as `ghpr` (to fetch existing pr from someone's remote) and 
     `ghsendpr` could be found at [yarikoptic's bash config file](http://git.onerussian.com/?p=etc/bash.git;a=blob;f=.bash/bashrc/30_aliases_sh;hb=HEAD#l865)
 
-3. Create a branch (generally off the `origin/master`) to hold your changes:
+3. Create a branch (generally off the `origin/main`) to hold your changes:
 
           git checkout -b nf-my-feature
 
@@ -64,7 +64,7 @@ Here we outline the workflow used by the developers:
     - `rf-` for refactoring
     - `doc-` for documentation contributions (including in the code docstrings).
     - `bm-` for changes to benchmarks
-    We recommend to **not** work in the ``master`` branch!
+    We recommend to **not** work in the ``main`` branch!
 
 4. Work on this copy on your computer using Git to do the version control. When
    you're done editing, do:

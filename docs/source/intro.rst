@@ -16,9 +16,8 @@ Projects have an associated storage (either via OSF storage or third party provi
 Each OSF user, project, component, and file is given a unique, persistent uniform resource locator (URL) to enable sharing and promote attribution.
 Projects can also be assigned digital object identifiers (DOIs) and archival resource keys (ARKs) if they are made publicly available.
 
-At the moment, a the OSF storage provides virtually unlimited storage capacity.
-As long as individual files are smaller than 5GB, any amount of data can be uploaded to the OSF.
-This makes the OSF_ a powerful, accessible, and free data sharing and collaboration platform for researchers.
+The OSF_ is a powerful, accessible, and free data sharing and collaboration platform for researchers. However, the storage that OSF_ provides is `not unlimited <https://help.osf.io/article/137-osf-storage-caps>`_. Please check their current storage capacity and check if it fits your needs.
+
 
 
 Goal of the extension

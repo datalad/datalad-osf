@@ -46,7 +46,7 @@ class OSFSpecialRemote(ExportRemote):
     Initialize the special remote::
 
        git annex initremote osf type=external externaltype=osf \\
-            encryption=none node=https://osf.io/<your-component-id>/
+            encryption=none node=<your-component-id>
 
     To upload files you need to supply credentials.
 

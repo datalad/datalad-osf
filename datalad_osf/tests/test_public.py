@@ -13,7 +13,6 @@ from datalad_next.tests.utils import (
     assert_in,
     assert_raises,
     eq_,
-    skip_if_on_windows,
 )
 import datalad_osf.utils as dlosf_utils
 
@@ -51,10 +50,6 @@ def test_readonly_access(tmp_path, monkeypatch):
     eq_(ds.repo.annexstatus([test_file])[test_file]['has_content'], True)
 
 
-# git remote helper does not work on windows, due to some unclear
-# line-ending(?) issue
-# https://github.com/datalad/datalad-osf/pull/106#issuecomment-653772696
-@skip_if_on_windows
 def test_readonly_dataset_access(tmp_path, monkeypatch):
     # clone from OSF; ds is self-contained at OSF
     # make sure that even with locally configured credentials

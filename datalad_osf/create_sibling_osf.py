@@ -107,7 +107,29 @@ class CreateSiblingOSF(Interface):
             specified, the default git-annex trust level is used.""",),
         mode=Parameter(
             args=("--mode",),
-            doc=""" """,
+            doc="""Siblings can be created in various modes: annex', 'export',
+            'exportonly', and 'gitonly'. 'annex' uses the OSF node as joint
+            publication point for a representation of a Git repository as well
+            as a key-value store. This representation can be cloned from, and
+            used by git-annex to copy data to and retrieve data from (latest
+            and past versions), but the OSF project webinterface does not show
+            human-readable file names.
+            'export' uses the OSF node as joint publication point for a
+            representation of a Git repository as well as a snapshot of the
+            latest version of the annexed files. This representation can be
+            cloned from, and used by git-annex to export or retrieve the latest
+            annexed data. The OSF project webinterface will contain
+            human-readable file names.
+            'exportonly' uses 'git annex export' to publish a snapshot of a
+            particular version of the dataset. Such an OSF node will be
+            human-readable, but not clone-able.
+            The 'gitonly' mode allows to publish a representation of a Git
+            repository to the OSF that can be cloned from, but does not store
+            any annexed data.
+            All modes that allow 'push' to deposit a Git repository
+            representation make use of datalad-next's 'datalad_annex' remote
+            helper. Please see datalad-next's documentation for detailed
+            information about the resulting layout.""",
             constraints=EnsureChoice(
                 "annex", "export", "exportonly", "gitonly")
         ),

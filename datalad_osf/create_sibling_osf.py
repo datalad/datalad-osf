@@ -338,6 +338,12 @@ class CreateSiblingOSF(Interface):
                 action=ac.color_word(res['action'], ac.BOLD),
                 status=ac.color_status(res['status']))
             )
+        elif res['action'] == "configure-sibling":
+            ui.message("{action}({status}): {url}".format(
+                action=ac.color_word(res['action'], ac.BOLD),
+                status=ac.color_status(res['status']),
+                url=res.get('url', ''))
+            )
         else:
             from datalad.interface.utils import default_result_renderer
             default_result_renderer(res)

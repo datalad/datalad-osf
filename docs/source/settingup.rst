@@ -33,6 +33,14 @@ Installation
    # install from PyPi
    $ pip install datalad-osf.
 
+Afterwards, configure DataLad to load the ``datalad-next`` extension:
+
+.. code-block:: bash
+
+   $ git config --global --add datalad.extensions.load next
+
+
+
 Getting started
 ^^^^^^^^^^^^^^^
 

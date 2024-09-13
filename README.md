@@ -12,7 +12,7 @@ The development of this tool started at [OHBM Brainhack 2020](https://github.com
 
 ## Requirements
 
-- Datalad: relies on [git-annex](http://docs.datalad.org/projects/osf/en/latest/git-annex.branchable.com/), [Git](http://docs.datalad.org/projects/osf/en/latest/git-scm.com/) and Python. If you don’t have DataLad installed yet, please follow the instructions [here](http://handbook.datalad.org/en/latest/intro/installation.html).
+- Datalad and datalad-next: relies on [git-annex](http://docs.datalad.org/projects/osf/en/latest/git-annex.branchable.com/), [Git](http://docs.datalad.org/projects/osf/en/latest/git-scm.com/) and Python. If you don’t have DataLad installed yet, please follow the instructions [here](http://handbook.datalad.org/en/latest/intro/installation.html).
 - Account on the [Open Science Framework (OSF)](https://osf.io/register)
 
 ## Installation
@@ -23,6 +23,12 @@ $ virtualenv --python=python3 ~/env/dl-osf
 $ . ~/env/dl-osf/bin/activate
 # install from PyPi
 $ pip install datalad-osf
+```
+
+Afterwards, configure DataLad to load the ``datalad-next`` extension:
+
+```
+git config --global --add datalad.extensions.load next
 ```
 
 ## How to use

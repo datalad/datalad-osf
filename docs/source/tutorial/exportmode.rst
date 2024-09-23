@@ -61,3 +61,23 @@ This dataset can now be cloned in the familiar way, using the OSF ID:
 	 install(ok): /tmp/my-best-yet
 
 Its the best of both world!
+
+Pushing back from a clone
+"""""""""""""""""""""""""
+
+Retrieving data is working without additional setup from this clone.
+In case you'd like to push updates back, any location *different from the original dataset* should remember two aspects:
+
+- The publication dependency that was automatically set up at osf-sibling creation, and resulted in the ability to push annexed files and Git history with a single push is a *local* only configuration (see `this handbook section <https://handbook.datalad.org/en/latest/basics/101-122-config.html#git-config-versus-other-configuration-files>`_ for the difference between local and sticky configurations).
+  Thus, dataset clones need to re-establish this link manually:
+
+  .. code-block:: bash
+
+     # assuming the upstream dataset is known as "origin" after cloning:
+     $ datalad siblings -s origin --publish-depends osf-storage configure
+
+- Changes to annexed files need to be force-pushed (```datalad push --force``) if they come from a different repository.
+  As the OSF project contains only a snapshot instead of the entire file history, this is a safety mechanism to not accidentally overwrite files.
+  As with every ``--force``, make sure you understand what you are doing.
+
+This not necessary in the original dataset the project has been created from.

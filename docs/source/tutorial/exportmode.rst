@@ -80,4 +80,4 @@ In case you'd like to push updates back, any location *different from the origin
   As the OSF project contains only a snapshot instead of the entire file history, this is a safety mechanism to not accidentally overwrite files.
   As with every ``--force``, make sure you understand what you are doing.
 
-This not necessary in the original dataset the project has been created from.
+This is not necessary in the original dataset the project has been created from.
